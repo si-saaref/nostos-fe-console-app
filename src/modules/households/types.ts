@@ -19,11 +19,12 @@ export interface HouseholdMember {
 }
 
 export interface HouseholdAdmin {
+  id: string
   name: string
   email: string
   claimStatus: AdminClaimStatus
+  claimedAt: string | null
   lastLoginAt: string | null
-  inviteSentAt: string | null
 }
 
 export interface HouseholdDetail {
@@ -32,9 +33,36 @@ export interface HouseholdDetail {
   status: HouseholdStatus
   createdAt: string
   scheduledDeletionDate: string | null
-  graceExpiresAt: string | null
   admin: HouseholdAdmin
   members: HouseholdMember[]
+}
+
+export interface HouseholdDetailBackendResponse {
+  success: boolean
+  household: {
+    id: string
+    name: string
+    status: HouseholdStatus
+    created_at: string
+    deletion_requested_at: string | null
+    scheduled_deletion_date: string | null
+  }
+  admin: {
+    id: string
+    name: string
+    email: string
+    claim_status: AdminClaimStatus
+    claimed_at: string | null
+    last_login_at: string | null
+  }
+  members: Array<{
+    id: string
+    name: string | null
+    email: string
+    role: string
+    joined_at: string
+    last_activity_at: string | null
+  }>
 }
 
 export interface HouseholdsListResponse {
