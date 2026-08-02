@@ -62,6 +62,14 @@
   box-sizing: border-box;
 }
 
+/* Full-screen layouts (signin) bypass the centered container */
+#root > .signin-container {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  max-width: none;
+  border: none;
+}
+
 body {
   margin: 0;
 }

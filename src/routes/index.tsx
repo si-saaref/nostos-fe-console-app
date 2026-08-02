@@ -12,7 +12,7 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<Navigate to="/console/dashboard" replace />} />
       <Route path="/console/signin" element={<ConsoleSigninPage />} />
-      <Route path="/api/v1/console/auth/signin/:token" element={<ConsoleSigninCallbackPage />} />
+      <Route path="/console/auth/signin/:token" element={<ConsoleSigninCallbackPage />} />
       <Route
         path="/console/dashboard"
         element={

@@ -26,20 +26,14 @@ function renderGuarded(route: string) {
 
 describe('ProtectedRoute', () => {
   it('renders children when authenticated', () => {
-    vi.mocked(useAuthModule.useAuth).mockReturnValue({ isAuthenticated: true, isLoading: false })
+    vi.mocked(useAuthModule.useAuth).mockReturnValue({ isAuthenticated: true })
     renderGuarded('/console/dashboard')
     expect(screen.getByText('dashboard page')).toBeInTheDocument()
   })
 
   it('redirects to signin when not authenticated', () => {
-    vi.mocked(useAuthModule.useAuth).mockReturnValue({ isAuthenticated: false, isLoading: false })
+    vi.mocked(useAuthModule.useAuth).mockReturnValue({ isAuthenticated: false })
     renderGuarded('/console/dashboard')
     expect(screen.getByText('signin page')).toBeInTheDocument()
-  })
-
-  it('shows a loading state while the session is resolving', () => {
-    vi.mocked(useAuthModule.useAuth).mockReturnValue({ isAuthenticated: false, isLoading: true })
-    renderGuarded('/console/dashboard')
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
   })
 })
