@@ -120,18 +120,19 @@ button:disabled {
   padding: var(--space-md);
   border-radius: 4px;
   margin: var(--space-md) 0;
+  border-top: 2px solid;
 }
 
 [role="alert"] {
   background: #fee;
   color: #c00;
-  border-left: 4px solid var(--color-danger);
+  border-top-color: var(--color-danger);
 }
 
 [role="status"] {
   background: #efe;
   color: #060;
-  border-left: 4px solid var(--color-success);
+  border-top-color: var(--color-success);
 }
 
 /* Breadcrumb */
