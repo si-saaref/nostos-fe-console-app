@@ -20,20 +20,25 @@ describe('useHouseholds', () => {
         expect(url.searchParams.get('search')).toBe('Adios')
         expect(url.searchParams.get('sort')).toBe('createdAt:desc')
         return HttpResponse.json({
-          data: [
+          success: true,
+          households: [
             {
               id: '1',
               name: 'Adios Family',
-              adminName: 'Javier',
-              adminEmail: 'javier@adios.com',
-              createdAt: '2026-07-15T00:00:00.000Z',
-              memberCount: 4,
+              admin_name: 'Javier',
+              admin_email: 'javier@adios.com',
+              created_at: '2026-07-15T00:00:00.000Z',
+              member_count: 4,
               status: 'ACTIVE',
+              deletion_scheduled_for: null,
             },
           ],
-          page: 1,
-          totalPages: 7,
-          total: 65,
+          pagination: {
+            page: 1,
+            limit: 50,
+            total: 65,
+            total_pages: 7,
+          },
         })
       }),
     )

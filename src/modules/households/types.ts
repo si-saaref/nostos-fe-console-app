@@ -44,6 +44,26 @@ export interface HouseholdsListResponse {
   total: number
 }
 
+export interface HouseholdsBackendResponse {
+  success: boolean
+  households: Array<{
+    id: string
+    name: string
+    admin_name: string
+    admin_email: string
+    created_at: string
+    member_count: number
+    status: HouseholdStatus
+    deletion_scheduled_for: string | null
+  }>
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    total_pages: number
+  }
+}
+
 export interface CreateHouseholdInput {
   household_name: string
   admin_email: string
