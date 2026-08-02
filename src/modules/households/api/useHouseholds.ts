@@ -6,7 +6,7 @@ export function useHouseholds(filters: HouseholdFilters) {
   return useQuery({
     queryKey: ['console', 'households', filters],
     queryFn: async () => {
-      const response = await apiClient.get<HouseholdsBackendResponse>('/console/households', {
+      const response = await apiClient.get<HouseholdsBackendResponse>('/api/v1/console/households', {
         params: filters,
       })
 

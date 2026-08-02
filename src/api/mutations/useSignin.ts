@@ -9,7 +9,7 @@ interface SigninResponse {
 export function useSignin() {
   return useMutation({
     mutationFn: async (email: string) => {
-      const response = await apiClient.post<{ success: boolean; data: SigninResponse }>('/console/auth/signin', { email })
+      const response = await apiClient.post<{ success: boolean; data: SigninResponse }>('/api/v1/console/auth/signin', { email })
       return unwrapBackendResponse<SigninResponse>(response.data)
     },
   })

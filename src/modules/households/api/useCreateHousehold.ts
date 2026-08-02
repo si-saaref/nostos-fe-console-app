@@ -9,7 +9,7 @@ export function useCreateHousehold() {
   return useMutation({
     mutationFn: async (input: CreateHouseholdInput) => {
       const response = await apiClient.post<{ success: boolean; data: CreateHouseholdResponse }>(
-        '/console/households',
+        '/api/v1/console/households',
         input,
       )
       return unwrapBackendResponse<CreateHouseholdResponse>(response.data)

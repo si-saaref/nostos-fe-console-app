@@ -12,7 +12,7 @@ export function useSession() {
   return useQuery({
     queryKey: SESSION_QUERY_KEY,
     queryFn: async () => {
-      const response = await apiClient.get<{ success: boolean; data: Session }>('/console/auth/session')
+      const response = await apiClient.get<{ success: boolean; data: Session }>('/api/v1/console/auth/session')
       return unwrapBackendResponse(response.data)
     },
     retry: false,

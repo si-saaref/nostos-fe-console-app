@@ -9,7 +9,7 @@ export function useRestoreHousehold() {
   return useMutation({
     mutationFn: async (householdId: string) => {
       const response = await apiClient.post<{ success: boolean; data: RestoreHouseholdResponse }>(
-        `/console/households/${householdId}/restore`,
+        `/api/v1/console/households/${householdId}/restore`,
         {},
       )
       return unwrapBackendResponse<RestoreHouseholdResponse>(response.data)

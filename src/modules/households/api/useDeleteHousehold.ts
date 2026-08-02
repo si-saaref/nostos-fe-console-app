@@ -9,7 +9,7 @@ export function useDeleteHousehold() {
   return useMutation({
     mutationFn: async (householdId: string) => {
       const response = await apiClient.post<{ success: boolean; data: DeleteHouseholdResponse }>(
-        `/console/households/${householdId}/delete`,
+        `/api/v1/console/households/${householdId}/delete`,
         { confirmation: 'DELETE' },
       )
       return unwrapBackendResponse<DeleteHouseholdResponse>(response.data)

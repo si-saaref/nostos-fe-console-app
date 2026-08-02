@@ -8,7 +8,7 @@ export function useMetrics() {
     queryKey: ['console', 'metrics'],
     queryFn: async (): Promise<DashboardMetrics> => {
       const response = await apiClient.get<{ success: boolean; data: DashboardMetrics }>(
-        '/console/dashboard/metrics',
+        '/api/v1/console/dashboard/metrics',
       )
       return unwrapBackendResponse<DashboardMetrics>(response.data)
     },

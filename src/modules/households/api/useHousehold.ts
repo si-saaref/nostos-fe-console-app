@@ -8,7 +8,7 @@ export function useHousehold(id: string) {
     queryKey: ['console', 'households', id],
     queryFn: async (): Promise<HouseholdDetail> => {
       const response = await apiClient.get<HouseholdDetailBackendResponse>(
-        `/console/households/${id}`,
+        `/api/v1/console/households/${id}`,
       )
 
       const backend = response.data
