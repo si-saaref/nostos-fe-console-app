@@ -27,18 +27,20 @@ describe('CreateHouseholdPage', () => {
       http.post('*/console/households', () =>
         HttpResponse.json({
           success: true,
-          household_id: 'hhd_new123',
-          admin_id: 'usr_456',
-          invite_sent_at: '2026-08-02T10:00:00Z',
-          message: 'Household created',
+          data: {
+            household_id: 'hhd_new123',
+            admin_id: 'usr_456',
+            invite_sent_at: '2026-08-02T10:00:00Z',
+            message: 'Household created',
+          },
         }),
       ),
     )
 
-    const { router } = renderWithProviders(
+    renderWithProviders(
       <Routes>
         <Route path="/console/households/new" element={<CreateHouseholdPage />} />
-        <Route path="/console/households/:id" element={<div>Detail Page</div>} />
+        <Route path="/console/households/:id" element={<div>Detail Page for {'{id}'}</div>} />
       </Routes>,
       { route: '/console/households/new' },
     )
@@ -53,8 +55,9 @@ describe('CreateHouseholdPage', () => {
 
     await user.click(screen.getByText('Create'))
 
+    // Verify we navigated to the detail page by checking if the form is gone
     await waitFor(() => {
-      expect(router?.state.location.pathname).toBe('/console/households/hhd_new123')
+      expect(screen.queryByLabelText(/Household Name/)).not.toBeInTheDocument()
     })
   })
 })

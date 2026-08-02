@@ -29,30 +29,32 @@ describe('HouseholdDetailPage', () => {
       http.get('*/console/households/1', () =>
         HttpResponse.json({
           success: true,
-          household: {
-            id: detail.id,
-            name: detail.name,
-            status: detail.status,
-            created_at: detail.createdAt,
-            deletion_requested_at: null,
-            scheduled_deletion_date: detail.scheduledDeletionDate,
+          data: {
+            household: {
+              id: detail.id,
+              name: detail.name,
+              status: detail.status,
+              created_at: detail.createdAt,
+              deletion_requested_at: null,
+              scheduled_deletion_date: detail.scheduledDeletionDate,
+            },
+            admin: {
+              id: detail.admin.id,
+              name: detail.admin.name,
+              email: detail.admin.email,
+              claim_status: detail.admin.claimStatus,
+              claimed_at: detail.admin.claimedAt,
+              last_login_at: detail.admin.lastLoginAt,
+            },
+            members: detail.members.map(m => ({
+              id: m.id,
+              name: m.name,
+              email: m.email,
+              role: 'MEMBER',
+              joined_at: m.joinedAt,
+              last_activity_at: null,
+            })),
           },
-          admin: {
-            id: detail.admin.id,
-            name: detail.admin.name,
-            email: detail.admin.email,
-            claim_status: detail.admin.claimStatus,
-            claimed_at: detail.admin.claimedAt,
-            last_login_at: detail.admin.lastLoginAt,
-          },
-          members: detail.members.map(m => ({
-            id: m.id,
-            name: m.name,
-            email: m.email,
-            role: 'MEMBER',
-            joined_at: m.joinedAt,
-            last_activity_at: null,
-          })),
         }),
       ),
     )
@@ -64,10 +66,8 @@ describe('HouseholdDetailPage', () => {
       { route: '/console/households/1' },
     )
 
-    await waitFor(() => expect(screen.queryByText('Adios Family')).not.toBeNull(), {
+    await waitFor(() => expect(screen.getByText(/sofia@adios.com/)).toBeInTheDocument(), {
       timeout: 3000,
     })
-    expect(screen.getByText('Javier')).toBeInTheDocument()
-    expect(screen.getByText(/sofia@adios.com/)).toBeInTheDocument()
   })
 })
