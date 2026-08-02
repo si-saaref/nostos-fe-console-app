@@ -3,12 +3,12 @@ import { apiClient } from '@/api/client'
 import { unwrapBackendResponse } from '@/utils/responseHandlers'
 import type { HouseholdDetail, HouseholdDetailBackendResponse } from '../types'
 
-export function useHouseholdDetail(householdId: string) {
+export function useHousehold(id: string) {
   return useQuery({
-    queryKey: ['console', 'household', householdId],
+    queryKey: ['console', 'households', id],
     queryFn: async (): Promise<HouseholdDetail> => {
       const response = await apiClient.get<HouseholdDetailBackendResponse>(
-        `/console/households/${householdId}`,
+        `/console/households/${id}`,
       )
 
       const backend = response.data
@@ -38,6 +38,6 @@ export function useHouseholdDetail(householdId: string) {
         })),
       }
     },
-    enabled: !!householdId,
+    enabled: !!id,
   })
 }
