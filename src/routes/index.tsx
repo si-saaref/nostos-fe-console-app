@@ -3,6 +3,7 @@ import { ProtectedRoute } from './ProtectedRoute'
 import { ConsoleSigninPage } from '@/modules/auth/pages/ConsoleSigninPage'
 import { ConsoleDashboardPage } from '@/modules/dashboard/pages/ConsoleDashboardPage'
 import { HouseholdsPage } from '@/modules/households/pages/HouseholdsPage'
+import { CreateHouseholdPage } from '@/modules/households/pages/CreateHouseholdPage'
 import { HouseholdDetailPage } from '@/modules/households/pages/HouseholdDetailPage'
 
 export function AppRoutes() {
@@ -23,6 +24,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <HouseholdsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/console/households/new"
+        element={
+          <ProtectedRoute>
+            <CreateHouseholdPage />
           </ProtectedRoute>
         }
       />

@@ -105,3 +105,11 @@ export interface HouseholdFilters {
   sort_by?: string
   sort_order?: 'ASC' | 'DESC'
 }
+
+export interface CreateHouseholdResponse {
+  success: boolean
+  household_id: string
+  admin_id: string
+  invite_sent_at: string
+  message: string
+}

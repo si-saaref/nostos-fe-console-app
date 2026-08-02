@@ -1,0 +1,60 @@
+import { describe, expect, it, vi } from 'vitest'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { Route, Routes } from 'react-router-dom'
+import { server } from '@/test/msw/server'
+import { renderWithProviders } from '@/test/test-utils'
+import { CreateHouseholdPage } from '../CreateHouseholdPage'
+
+describe('CreateHouseholdPage', () => {
+  it('renders create household form', () => {
+    renderWithProviders(
+      <Routes>
+        <Route path="/console/households/new" element={<CreateHouseholdPage />} />
+      </Routes>,
+      { route: '/console/households/new' },
+    )
+
+    expect(screen.getByText('Create Household')).toBeInTheDocument()
+    expect(screen.getByLabelText(/Household Name/)).toBeInTheDocument()
+  })
+
+  it('navigates to household detail page on success', async () => {
+    const user = userEvent.setup()
+
+    server.use(
+      http.post('*/console/households', () =>
+        HttpResponse.json({
+          success: true,
+          household_id: 'hhd_new123',
+          admin_id: 'usr_456',
+          invite_sent_at: '2026-08-02T10:00:00Z',
+          message: 'Household created',
+        }),
+      ),
+    )
+
+    const { router } = renderWithProviders(
+      <Routes>
+        <Route path="/console/households/new" element={<CreateHouseholdPage />} />
+        <Route path="/console/households/:id" element={<div>Detail Page</div>} />
+      </Routes>,
+      { route: '/console/households/new' },
+    )
+
+    const nameInput = screen.getByLabelText(/Household Name/)
+    const emailInput = screen.getByLabelText(/Admin Email/)
+    const adminNameInput = screen.getByLabelText(/Admin Name/)
+
+    await user.type(nameInput, 'New Family')
+    await user.type(emailInput, 'admin@newfamily.com')
+    await user.type(adminNameInput, 'Admin')
+
+    await user.click(screen.getByText('Create'))
+
+    await waitFor(() => {
+      expect(router?.state.location.pathname).toBe('/console/households/hhd_new123')
+    })
+  })
+})
