@@ -113,3 +113,19 @@ export interface CreateHouseholdResponse {
   invite_sent_at: string
   message: string
 }
+
+export interface DeleteHouseholdResponse {
+  success: boolean
+  household_id: string
+  status: HouseholdStatus
+  deletion_requested_at: string
+  scheduled_deletion_date: string
+  message: string
+}
+
+export interface RestoreHouseholdResponse {
+  success: boolean
+  household_id: string
+  status: HouseholdStatus
+  message: string
+}
