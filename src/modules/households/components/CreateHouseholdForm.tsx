@@ -19,7 +19,9 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
   const onSubmit = (data: CreateHouseholdInput) => {
     mutate(data, {
       onSuccess: (response) => {
-        onSuccess(response.household_id)
+        if (response) {
+          onSuccess(response.household_id)
+        }
       },
     })
   }

@@ -7,12 +7,10 @@ export function useMetrics() {
   return useQuery({
     queryKey: ['console', 'metrics'],
     queryFn: async (): Promise<DashboardMetrics> => {
-      const response = await apiClient.get<{ success: boolean; metrics: DashboardMetrics } | DashboardMetrics>(
+      const response = await apiClient.get<{ success: boolean; data: DashboardMetrics }>(
         '/console/dashboard/metrics',
       )
-      // Handle both wrapped { success, metrics } and direct response formats
-      const unwrapped = unwrapBackendResponse<DashboardMetrics>(response.data)
-      return (unwrapped || response.data) as DashboardMetrics
+      return unwrapBackendResponse<DashboardMetrics>(response.data)
     },
     refetchInterval: 5 * 60 * 1000,
     staleTime: 1 * 60 * 1000,

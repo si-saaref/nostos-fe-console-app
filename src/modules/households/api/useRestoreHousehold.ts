@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
+import { unwrapBackendResponse } from '@/utils/responseHandlers'
 import type { RestoreHouseholdResponse } from '../types'
 
 export function useRestoreHousehold() {
@@ -7,15 +8,17 @@ export function useRestoreHousehold() {
 
   return useMutation({
     mutationFn: async (householdId: string) => {
-      const { data } = await apiClient.post<RestoreHouseholdResponse>(
+      const response = await apiClient.post<{ success: boolean; data: RestoreHouseholdResponse }>(
         `/console/households/${householdId}/restore`,
         {},
       )
-      return data
+      return unwrapBackendResponse<RestoreHouseholdResponse>(response.data)
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['console', 'households'] })
-      queryClient.invalidateQueries({ queryKey: ['console', 'household', data.household_id] })
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['console', 'households'] })
+        queryClient.invalidateQueries({ queryKey: ['console', 'household', data.household_id] })
+      }
     },
   })
 }

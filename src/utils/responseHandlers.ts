@@ -9,7 +9,7 @@ interface BackendResponse<T> {
   households?: T
 }
 
-export function unwrapBackendResponse<T>(response: unknown): T | undefined {
+export function unwrapBackendResponse<T>(response: unknown): T {
   // If it's not an object, return as-is
   if (!response || typeof response !== 'object') {
     return response as T
@@ -26,8 +26,8 @@ export function unwrapBackendResponse<T>(response: unknown): T | undefined {
     throw new Error(r.error || r.message || 'Unknown error')
   }
 
-  // Try different common response shapes
-  return (r.data ?? r.metrics ?? r.households ?? response) as T | undefined
+  // Try different common response shapes, ensure we return the data
+  return (r.data ?? r.metrics ?? r.households ?? response) as T
 }
 
 export function getBackendErrorMessage(error: unknown): string {

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
+import { unwrapBackendResponse } from '@/utils/responseHandlers'
 import type { ResendInviteResponse } from '../types'
 
 export function useResendInvite() {
@@ -7,11 +8,11 @@ export function useResendInvite() {
 
   return useMutation({
     mutationFn: async (householdId: string) => {
-      const { data } = await apiClient.post<ResendInviteResponse>(
+      const response = await apiClient.post<{ success: boolean; data: ResendInviteResponse }>(
         `/console/households/${householdId}/admin/resend-invite`,
         {},
       )
-      return data
+      return unwrapBackendResponse<ResendInviteResponse>(response.data)
     },
     onSuccess: (_data, householdId) => {
       queryClient.invalidateQueries({ queryKey: ['console', 'household', householdId] })

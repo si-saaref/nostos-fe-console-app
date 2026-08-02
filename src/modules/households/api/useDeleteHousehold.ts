@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
+import { unwrapBackendResponse } from '@/utils/responseHandlers'
 import type { DeleteHouseholdResponse } from '../types'
 
 export function useDeleteHousehold() {
@@ -7,15 +8,17 @@ export function useDeleteHousehold() {
 
   return useMutation({
     mutationFn: async (householdId: string) => {
-      const { data } = await apiClient.post<DeleteHouseholdResponse>(
+      const response = await apiClient.post<{ success: boolean; data: DeleteHouseholdResponse }>(
         `/console/households/${householdId}/delete`,
         { confirmation: 'DELETE' },
       )
-      return data
+      return unwrapBackendResponse<DeleteHouseholdResponse>(response.data)
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['console', 'households'] })
-      queryClient.invalidateQueries({ queryKey: ['console', 'household', data.household_id] })
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['console', 'households'] })
+        queryClient.invalidateQueries({ queryKey: ['console', 'household', data.household_id] })
+      }
     },
   })
 }
