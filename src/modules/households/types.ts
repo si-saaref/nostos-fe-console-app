@@ -129,3 +129,9 @@ export interface RestoreHouseholdResponse {
   status: HouseholdStatus
   message: string
 }
+
+export interface ResendInviteResponse {
+  success: boolean
+  message: string
+  new_expiry: string
+}

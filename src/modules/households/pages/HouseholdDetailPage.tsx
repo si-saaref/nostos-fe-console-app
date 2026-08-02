@@ -29,7 +29,7 @@ export function HouseholdDetailPage() {
         ]}
       />
       <HouseholdInfo household={household} onRefresh={handleRefresh} />
-      <AdminSection admin={household.admin} />
+      <AdminSection admin={household.admin} householdId={household.id} />
       <MembersList members={household.members} />
     </main>
   )
