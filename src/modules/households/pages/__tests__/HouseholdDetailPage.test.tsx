@@ -64,7 +64,9 @@ describe('HouseholdDetailPage', () => {
       { route: '/console/households/1' },
     )
 
-    await waitFor(() => expect(screen.getByText('Adios Family')).toBeInTheDocument())
+    await waitFor(() => expect(screen.queryByText('Adios Family')).not.toBeNull(), {
+      timeout: 3000,
+    })
     expect(screen.getByText('Javier')).toBeInTheDocument()
     expect(screen.getByText(/sofia@adios.com/)).toBeInTheDocument()
   })

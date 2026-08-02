@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
-import { getBackendErrorMessage } from '@/utils/responseHandlers'
 import type { ResendInviteResponse } from '../types'
 
 export function useResendInvite() {
@@ -16,10 +15,6 @@ export function useResendInvite() {
     },
     onSuccess: (_data, householdId) => {
       queryClient.invalidateQueries({ queryKey: ['console', 'household', householdId] })
-    },
-    onError: (error) => {
-      const message = getBackendErrorMessage(error)
-      throw new Error(message)
     },
   })
 }

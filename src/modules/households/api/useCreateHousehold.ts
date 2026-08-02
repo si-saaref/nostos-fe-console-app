@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
-import { getBackendErrorMessage } from '@/utils/responseHandlers'
 import type { CreateHouseholdInput, CreateHouseholdResponse } from '../types'
 
 export function useCreateHousehold() {
@@ -16,10 +15,6 @@ export function useCreateHousehold() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['console', 'households'] })
-    },
-    onError: (error) => {
-      const message = getBackendErrorMessage(error)
-      throw new Error(message)
     },
   })
 }

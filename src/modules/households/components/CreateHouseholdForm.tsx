@@ -8,6 +8,7 @@ interface CreateHouseholdFormProps {
 
 export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<CreateHouseholdInput>({
+    mode: 'onBlur',
     defaultValues: { household_name: '', admin_email: '', admin_name: '', notes: '' },
   })
   const { mutate, isPending, error } = useCreateHousehold()
