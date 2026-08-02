@@ -74,5 +74,6 @@ export interface CreateHouseholdInput {
 export interface HouseholdFilters {
   page: number
   search: string
-  sort: string
+  sort_by?: string
+  sort_order?: 'ASC' | 'DESC'
 }

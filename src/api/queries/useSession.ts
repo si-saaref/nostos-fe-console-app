@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
+import { unwrapBackendResponse } from '@/utils/responseHandlers'
 
 export interface Session {
   email: string
@@ -12,7 +13,8 @@ export function useSession() {
     queryKey: SESSION_QUERY_KEY,
     queryFn: async () => {
       const response = await apiClient.get<Session>('/console/auth/session')
-      return response.data
+      // Handle both wrapped { success, data } and direct response formats
+      return unwrapBackendResponse(response.data) || response.data
     },
     retry: false,
     staleTime: Infinity,

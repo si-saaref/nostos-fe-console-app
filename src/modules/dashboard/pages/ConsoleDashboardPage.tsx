@@ -5,6 +5,8 @@ import { MetricsGrid } from '../components/MetricsGrid'
 export function ConsoleDashboardPage() {
   const { data: metrics, isLoading } = useMetrics()
 
+  const hasMetrics = metrics && Object.keys(metrics).length > 0
+
   return (
     <main>
       <h1>Nostos Operator Console</h1>
@@ -15,7 +17,7 @@ export function ConsoleDashboardPage() {
       <Link to="/console/households/new" role="button">
         New Household
       </Link>
-      {isLoading || !metrics ? (
+      {isLoading || !hasMetrics ? (
         <p role="status">Loading metrics…</p>
       ) : (
         <MetricsGrid metrics={metrics} />

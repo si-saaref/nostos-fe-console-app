@@ -18,7 +18,8 @@ describe('useHouseholds', () => {
         const url = new URL(request.url)
         expect(url.searchParams.get('page')).toBe('1')
         expect(url.searchParams.get('search')).toBe('Adios')
-        expect(url.searchParams.get('sort')).toBe('createdAt:desc')
+        expect(url.searchParams.get('sort_by')).toBe('created_at')
+        expect(url.searchParams.get('sort_order')).toBe('DESC')
         return HttpResponse.json({
           success: true,
           households: [
@@ -44,7 +45,7 @@ describe('useHouseholds', () => {
     )
 
     const { result } = renderHook(
-      () => useHouseholds({ page: 1, search: 'Adios', sort: 'createdAt:desc' }),
+      () => useHouseholds({ page: 1, search: 'Adios', sort_by: 'created_at', sort_order: 'DESC' }),
       { wrapper },
     )
 

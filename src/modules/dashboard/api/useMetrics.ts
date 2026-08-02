@@ -1,13 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
+import { unwrapBackendResponse } from '@/utils/responseHandlers'
 import type { DashboardMetrics } from '../types'
 
 export function useMetrics() {
   return useQuery({
     queryKey: ['console', 'metrics'],
-    queryFn: async () => {
-      const response = await apiClient.get<DashboardMetrics>('/console/dashboard/metrics')
-      return response.data
+    queryFn: async (): Promise<DashboardMetrics> => {
+      const response = await apiClient.get<{ success: boolean; metrics: DashboardMetrics } | DashboardMetrics>(
+        '/console/dashboard/metrics',
+      )
+      // Handle both wrapped { success, metrics } and direct response formats
+      const unwrapped = unwrapBackendResponse<DashboardMetrics>(response.data)
+      return (unwrapped || response.data) as DashboardMetrics
     },
     refetchInterval: 5 * 60 * 1000,
     staleTime: 1 * 60 * 1000,

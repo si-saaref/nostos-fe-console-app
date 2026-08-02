@@ -23,7 +23,11 @@ function wrapper({ children }: { children: ReactNode }) {
 
 describe('useMetrics', () => {
   it('fetches dashboard metrics', async () => {
-    server.use(http.get('*/console/dashboard/metrics', () => HttpResponse.json(metrics)))
+    server.use(
+      http.get('*/console/dashboard/metrics', () =>
+        HttpResponse.json({ success: true, metrics }),
+      ),
+    )
 
     const { result } = renderHook(() => useMetrics(), { wrapper })
 
