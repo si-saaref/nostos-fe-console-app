@@ -34,6 +34,8 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
           placeholder="e.g., Adios Family"
           maxLength={100}
           disabled={isPending}
+          aria-required="true"
+          aria-describedby={errors.household_name ? 'household_name-error' : 'household_name-hint'}
           {...register('household_name', {
             required: 'Household name is required',
             minLength: { value: 1, message: 'Household name is required' },
@@ -44,8 +46,12 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        <small>{nameLength}/100</small>
-        {errors.household_name && <span role="alert">{errors.household_name.message}</span>}
+        <small id="household_name-hint">{nameLength}/100</small>
+        {errors.household_name && (
+          <span id="household_name-error" role="alert">
+            {errors.household_name.message}
+          </span>
+        )}
       </div>
 
       <div>
@@ -55,6 +61,9 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
           type="email"
           placeholder="e.g., javier@adios.com"
           disabled={isPending}
+          aria-required="true"
+          aria-describedby={errors.admin_email ? 'admin_email-error' : undefined}
+          autoComplete="email"
           {...register('admin_email', {
             required: 'Admin email is required',
             pattern: {
@@ -63,7 +72,11 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        {errors.admin_email && <span role="alert">{errors.admin_email.message}</span>}
+        {errors.admin_email && (
+          <span id="admin_email-error" role="alert">
+            {errors.admin_email.message}
+          </span>
+        )}
       </div>
 
       <div>
@@ -74,6 +87,8 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
           placeholder="e.g., Javier"
           maxLength={50}
           disabled={isPending}
+          aria-required="true"
+          aria-describedby={errors.admin_name ? 'admin_name-error' : undefined}
           {...register('admin_name', {
             required: 'Admin name is required',
             minLength: { value: 1, message: 'Admin name is required' },
@@ -84,7 +99,11 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        {errors.admin_name && <span role="alert">{errors.admin_name.message}</span>}
+        {errors.admin_name && (
+          <span id="admin_name-error" role="alert">
+            {errors.admin_name.message}
+          </span>
+        )}
       </div>
 
       <div>
@@ -98,9 +117,13 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
         />
       </div>
 
-      {error && <div role="alert" style={{ color: 'red' }}>{(error as Error).message}</div>}
+      {error && (
+        <div role="alert" aria-live="polite" style={{ color: 'red' }}>
+          {(error as Error).message}
+        </div>
+      )}
 
-      <button type="submit" disabled={isPending}>
+      <button type="submit" disabled={isPending} aria-busy={isPending}>
         {isPending ? 'Creating...' : 'Create'}
       </button>
     </form>
