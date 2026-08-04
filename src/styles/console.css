@@ -1,0 +1,348 @@
+@import './tokens.css';
+
+/* Layout */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+main {
+  padding: var(--space-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Typography */
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-h1);
+  margin: var(--space-lg) 0 var(--space-md);
+  color: var(--color-text);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-h2);
+  margin: var(--space-md) 0 var(--space-sm);
+  color: var(--color-text);
+}
+
+p {
+  margin: var(--space-sm) 0;
+  line-height: 1.6;
+}
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+form > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+label {
+  font-weight: 500;
+  font-size: var(--font-size-body);
+  color: var(--color-text);
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: var(--font-size-body);
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+textarea:disabled {
+  background: #f5f5f5;
+  color: #999;
+}
+
+small {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
+
+/* Buttons */
+button {
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  border-radius: 4px;
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button[type="submit"],
+button:not([style]) {
+  background: var(--color-primary);
+  color: white;
+}
+
+button[type="submit"]:hover:not(:disabled),
+button:not([style]):hover:not(:disabled) {
+  background: #0051d5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alert/Status messages */
+[role="alert"],
+[role="status"] {
+  padding: var(--space-md);
+  border-radius: 4px;
+  margin: var(--space-md) 0;
+  border-top: 2px solid;
+}
+
+[role="alert"] {
+  background: #fee;
+  color: #c00;
+  border-top-color: var(--color-danger);
+}
+
+[role="status"] {
+  background: #efe;
+  color: #060;
+  border-top-color: var(--color-success);
+}
+
+/* Breadcrumb */
+nav {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  font-size: 14px;
+}
+
+nav a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+nav a:hover {
+  opacity: 0.7;
+}
+
+/* Sections */
+section {
+  background: white;
+  padding: var(--space-lg);
+  border-radius: 8px;
+  margin-bottom: var(--space-lg);
+  border: 1px solid #eee;
+}
+
+section h2 {
+  margin-top: 0;
+}
+
+/* Lists */
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: var(--space-md);
+  border-bottom: 1px solid #eee;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+/* Tables (if needed for list display) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-md) 0;
+}
+
+th, td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: var(--color-background);
+  font-weight: 600;
+}
+
+/* Modal/Dialog */
+[role="alertdialog"] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: var(--space-lg);
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-width: 500px;
+  width: 90%;
+}
+
+[role="alertdialog"]::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+/* Loading state */
+[role="status"] {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text-secondary);
+}
+
+.empty-state p {
+  margin: var(--space-md) 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  main {
+    padding: var(--space-md);
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  form > div {
+    gap: var(--space-sm);
+  }
+
+  button {
+    padding: var(--space-md) var(--space-lg);
+    width: 100%;
+  }
+
+  section {
+    padding: var(--space-md);
+  }
+
+  [role="alertdialog"] {
+    width: 95%;
+    max-width: 100%;
+  }
+}
+
+/* Toast notifications */
+.toast-stack {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  z-index: 2000;
+  max-width: 400px;
+}
+
+.toast-item {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 4px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  margin: var(--space-lg) 0;
+}
+
+.pagination button {
+  padding: var(--space-sm) var(--space-md);
+  min-width: 40px;
+}
+
+.pagination .current {
+  background: var(--color-background);
+  color: var(--color-text);
+  cursor: default;
+}
+
+/* Utility classes */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--color-text-secondary);
+}
+
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }

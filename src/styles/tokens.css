@@ -1,0 +1,28 @@
+/* src/styles/tokens.css */
+:root {
+  --color-primary: #007aff;
+  --color-danger: #ff3b30;
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-neutral: #8e8e93;
+  --color-background: #f2f2f7;
+  --color-text: #000000;
+  --color-text-secondary: #8e8e93;
+
+  --font-size-h1: 28px;
+  --font-weight-h1: 700;
+  --font-size-h2: 22px;
+  --font-weight-h2: 600;
+  --font-size-body: 16px;
+  --font-weight-body: 400;
+  --font-size-caption: 13px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+}
