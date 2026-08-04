@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { ConsoleLayout } from '@/components/ConsoleLayout'
 import { useMetrics } from '../api/useMetrics'
 import { MetricsGrid } from '../components/MetricsGrid'
+import './dashboard.css'
 
 export function ConsoleDashboardPage() {
   const { data: metrics, isLoading } = useMetrics()
@@ -8,20 +10,21 @@ export function ConsoleDashboardPage() {
   const hasMetrics = metrics && Object.keys(metrics).length > 0
 
   return (
-    <main>
-      <h1>Nostos Operator Console</h1>
-      <nav>
-        <Link to="/console/dashboard">Dashboard</Link>
-        <Link to="/console/households">Households</Link>
-      </nav>
-      <Link to="/console/households/new" role="button">
-        New Household
-      </Link>
+    <ConsoleLayout>
+      <div className="dashboard-header">
+        <h2>Dashboard</h2>
+        <Link to="/console/households/new" role="button" className="dashboard-new-household-btn">
+          + New Household
+        </Link>
+      </div>
+
       {isLoading || !hasMetrics ? (
-        <p role="status">Loading metrics…</p>
+        <p role="status" style={{ textAlign: 'center', color: '#6b6375' }}>
+          Loading metrics…
+        </p>
       ) : (
         <MetricsGrid metrics={metrics} />
       )}
-    </main>
+    </ConsoleLayout>
   )
 }

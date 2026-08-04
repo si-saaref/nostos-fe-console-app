@@ -1,16 +1,19 @@
-import { createContext, useEffect, type ReactNode } from 'react'
+import { createContext, useEffect, useState, type ReactNode } from 'react'
 import { isAxiosError } from 'axios'
 import { apiClient } from '@/api/client'
 import { useToast } from '@/components/ToastProvider'
 
 export interface AuthContextValue {
   isAuthenticated: boolean
+  logout: () => void
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const toast = useToast()
+  const [isAuthenticated, setIsAuthenticated] = useState(true)
 
   useEffect(() => {
     const interceptorId = apiClient.interceptors.response.use(
@@ -25,9 +28,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => apiClient.interceptors.response.eject(interceptorId)
   }, [toast])
 
+  const logout = () => {
+    setIsAuthenticated(false)
+  }
+
   const value: AuthContextValue = {
-    // Authentication is cookie-based; the 401 interceptor in apiClient handles invalid sessions
-    isAuthenticated: true,
+    isAuthenticated,
+    logout,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

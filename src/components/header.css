@@ -1,0 +1,145 @@
+.console-header {
+  background: white;
+  border-bottom: 1px solid #e5e4e7;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.console-header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.console-header-logo {
+  flex-shrink: 0;
+}
+
+.console-logo-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #08060d;
+  letter-spacing: -0.5px;
+}
+
+.console-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+}
+
+.console-nav-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b6375;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.console-nav-link:hover {
+  color: #08060d;
+  background: #f3f4f6;
+}
+
+.console-nav-link.active {
+  color: #aa3bff;
+  font-weight: 600;
+}
+
+.console-nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: #aa3bff;
+  border-radius: 1px;
+}
+
+.console-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.console-logout-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #f8f7fa;
+  border: 1px solid #e5e4e7;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b6375;
+  transition: all 0.2s ease;
+}
+
+.console-logout-button:hover {
+  background: #f3f4f6;
+  color: #08060d;
+  border-color: #d1cfe4;
+}
+
+.console-logout-button:active {
+  transform: scale(0.98);
+}
+
+.console-logout-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.console-logout-icon {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.console-logout-text {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .console-header-content {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .console-nav {
+    gap: 12px;
+  }
+
+  .console-nav-link {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .console-nav-link.active::after {
+    bottom: -6px;
+    left: 10px;
+    right: 10px;
+  }
+
+  .console-logout-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
