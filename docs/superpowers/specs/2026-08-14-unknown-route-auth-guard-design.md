@@ -66,10 +66,12 @@ interceptor in `src/api/client.ts` (hard-redirects to `/console/signin` on a
 
 ### Testing
 
-- `src/routes/__tests__/` — add a case (alongside the existing
-  `ProtectedRoute` tests, or a small addition to the route-table test if one
-  exists) exercising the catch-all path: unauthenticated → redirected to
-  `/console/signin`; authenticated → renders `NotFoundPage`.
+- `src/routes/__tests__/AppRoutes.test.tsx` *(new)* — no test exercises the
+  actual route table today (`ProtectedRoute.test.tsx` only tests the guard
+  component against a local, hand-built `<Routes>`). This new file renders
+  the real `AppRoutes` at an unknown path (e.g. `/console/asd`) and asserts:
+  unauthenticated → redirected to `/console/signin`; authenticated → renders
+  `NotFoundPage`'s content.
 - `src/pages/__tests__/NotFoundPage.test.tsx` *(new)* — renders the expected
   "not found" text and a working link to `/console/dashboard`.
 
