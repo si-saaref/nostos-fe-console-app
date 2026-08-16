@@ -34,16 +34,21 @@ Two additions, both in the console auth API.
 Cookie-authenticated, no request body. Standard response envelope.
 
 ```
-200 → { "success": true, "data": { "email": "operator@nostos.com", "id": "..." } }
+200 → { "success": true, "data": { "id": "uuid", "email": "operator@nostos.com", "role": "OPERATOR" } }
 401 → { "success": false, "error": { "code": "UNAUTHORIZED", ... } }
 ```
 
 Constraints:
 - No redirects. JSON only, like the other three console auth routes.
-- Must **not** extend or refresh the session. It is a read.
 - Returns the operator's identity, not just a liveness bit — the console
   header and logout UI need it, so `/me` doubles as the session bootstrap
-  query rather than being a bare ping.
+  query rather than being a bare ping. The three fields come from the
+  existing session payload (`prd-auth-console-be.md:88`).
+- Sliding expiry (`ActivityRefreshGuard`) applies or not at the backend's
+  discretion — it is applied to all authenticated endpoints today, and a page
+  load is genuine operator activity. Raised as a question in
+  `docs/console-auth-me-backend-request.md`; the frontend behaves identically
+  either way.
 
 ### 2. A readable companion cookie
 
@@ -62,6 +67,18 @@ nostos_console_recent_signin=true; Max-Age=2592000; Path=/; SameSite=Lax; Secure
 - Contains no secret and grants no access. Its worst case if forged is that
   an attacker makes their own browser paint a dashboard shell that `/me`
   then 401s out of a moment later.
+
+**Deployment risk:** if the API and the console are served from different
+hosts (e.g. `api.nostos.com` and `console.nostos.com`), a cookie set without
+an explicit `Domain` is scoped to the API host and the console's JavaScript
+cannot read it — it would need `Domain=.nostos.com`. This is a blocking
+question for the backend team. **Fallback if the answer is no:** the frontend
+writes the hint itself as a `document.cookie` with a 30-day `max-age`, set on
+successful signin and cleared on logout and on any 401. Behavior, status
+derivation, toast logic, and tests are unchanged — only the body of
+`authHint.ts` differs, gaining `setSessionHint()` / `clearSessionHint()`
+alongside the existing read. This is precisely why the mechanism sits behind
+that one module.
 
 ## Design
 
@@ -193,7 +210,7 @@ server is briefly not. A backend hiccup must not log out the console.
 
 | File | Responsibility |
 |---|---|
-| `src/utils/authHint.ts` | Reads the companion cookie. Exposes exactly one function, `hasSessionHint(): boolean`, so no call site touches the raw cookie string. Guarded against `document.cookie` being unavailable. Read-only — never writes or clears. |
+| `src/utils/authHint.ts` | Reads the companion cookie. Exposes `hasSessionHint(): boolean`, so no call site touches the raw cookie string. Guarded against `document.cookie` being unavailable. Read-only in the server-set design; gains `setSessionHint()` / `clearSessionHint()` if the cookie-domain fallback applies. |
 | `src/api/queries/useOperatorSession.ts` | The `/me` query: key, fetcher, and retry policy (401 fails fast; network/5xx retry twice). Creates the `api/queries/` directory already planned in `CLAUDE.md`. |
 
 ### Modified
