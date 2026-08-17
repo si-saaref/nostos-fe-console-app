@@ -2,8 +2,43 @@
 
 **From:** Console frontend
 **Date:** 2026-08-17
-**Status:** Awaiting backend review — frontend implementation is blocked on this
+**Status:** ✅ Both asks shipped and verified 2026-08-17 — thank you. Two small
+follow-ups remain, listed immediately below.
 **Related:** `docs/console-auth-api-contract.md`, `docs/prd/prd-auth-console-be.md`
+
+---
+
+## Verified
+
+Checked against the running service with a live operator session:
+
+- `GET /api/v1/console/auth/me` → `200` with
+  `{ "success": true, "data": { "id", "email", "role" } }` — exactly the
+  requested shape.
+- `GET /api/v1/console/auth/me` with no session → `401` with the standard
+  envelope and `code: "UNAUTHORIZED"`, JSON, no redirect.
+- `nostos_console_recent_signin` is set and readable from JS on the app
+  origin, confirming `HttpOnly` is correctly omitted.
+- CORS is correct: `Access-Control-Allow-Origin: http://localhost:5173` with
+  `Access-Control-Allow-Credentials: true`.
+
+## Remaining follow-ups (all minor, none blocking)
+
+1. **`x-household-id` is declared required on every console auth route** —
+   including `signin/:token`, which the frontend already calls successfully
+   without it. It appears to be a global header decorator leaking into the
+   OpenAPI spec rather than real enforcement. Please exclude console auth
+   routes from it so the published contract matches behavior.
+2. **No response schemas in the spec.** All three routes document `200` with
+   an empty body description, so `/docs-json` can't be used for contract
+   work. Adding response DTOs would help.
+3. **Confirm the hint cookie's `Max-Age` is 30 days**, not the session's 7.
+   We can't read it from `document.cookie`. If it's 7, everything still works
+   except that natural expiry redirects silently instead of explaining itself.
+4. **Confirm `logout` clears both cookies.** We didn't test this to avoid
+   destroying the session we were verifying with.
+5. **Production cookie domain (was Q1 below).** Still open. Readability is
+   confirmed in development only, where console and API share `localhost`.
 
 ---
 

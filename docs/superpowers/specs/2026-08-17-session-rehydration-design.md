@@ -27,6 +27,23 @@ This is the limitation recorded at lines 78–105 of
 
 ## Backend requirements
 
+**Status: both shipped and verified against a live session on 2026-08-17.**
+`GET /api/v1/console/auth/me` returns `{ success: true, data: { id, email,
+role } }` on 200 and the specified envelope with `code: "UNAUTHORIZED"` on 401,
+with no redirect. The `nostos_console_recent_signin` cookie is set and is
+readable from JS on the app origin. The frontend design below needs no
+adjustment.
+
+Two caveats remain open:
+
+- The cookie's `Max-Age` could not be verified from the browser
+  (`document.cookie` does not expose it). If it was set to 7 days rather than
+  30, natural expiry becomes silent — the redirect still works, but the
+  "session expired" toast never fires. Confirm from a `Set-Cookie` header when
+  convenient.
+- Readability is confirmed in development only, where the API and console
+  share a host. See "Deployment risk" below for production.
+
 Two additions, both in the console auth API.
 
 ### 1. `GET /api/v1/console/auth/me`
@@ -92,7 +109,10 @@ design does not alter it. Note also that `localStorage` would offer no
 security advantage: XSS reads it just as easily. The cookie was chosen for
 expiry semantics and desync resistance, not safety.
 
-**Deployment risk:** if the API and the console are served from different
+**Deployment risk (development verified, production open):** in development the
+console (`localhost:5173`) and API (`localhost:3000`) share a host — cookies
+ignore port — so the hint is readable and this is confirmed working. In
+production, if the API and the console are served from different
 hosts (e.g. `api.nostos.com` and `console.nostos.com`), a cookie set without
 an explicit `Domain` is scoped to the API host and the console's JavaScript
 cannot read it — it would need `Domain=.nostos.com`. This is a blocking
