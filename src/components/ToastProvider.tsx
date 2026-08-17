@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Toast, type ToastItem, type ToastType } from './Toast'
 
 interface ToastContextValue {
@@ -29,11 +29,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     [remove],
   )
 
-  const value: ToastContextValue = {
-    success: (message) => show('success', message),
-    error: (message) => show('error', message),
-    info: (message) => show('info', message),
-  }
+  const success = useCallback((message: string) => show('success', message), [show])
+  const error = useCallback((message: string) => show('error', message), [show])
+  const info = useCallback((message: string) => show('info', message), [show])
+
+  const value = useMemo<ToastContextValue>(
+    () => ({ success, error, info }),
+    [success, error, info],
+  )
 
   return (
     <ToastContext.Provider value={value}>

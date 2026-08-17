@@ -7,13 +7,15 @@ import { ConsoleSigninForm } from '../components/ConsoleSigninForm'
 import './signin.css'
 
 export function ConsoleSigninPage() {
-  const { isAuthenticated } = useAuth()
+  const { status } = useAuth()
   const toast = useToast()
   const { mutate, isPending, reset } = useSignin()
 
-  // If already authenticated (has valid session cookie), redirect to dashboard
-  if (isAuthenticated) {
-    return <Navigate to="/console/dashboard" replace />
+  // Only on a *confirmed* session, never on a provisional one: acting on a stale
+  // hint here would ricochet the operator signin -> dashboard -> signin. Briefly
+  // showing this form before a legitimate bounce is harmless by comparison.
+  if (status === 'authenticated') {
+    return <Navigate to="/console" replace />
   }
 
   const handleSubmit = (email: string) => {

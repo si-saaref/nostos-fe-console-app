@@ -10,11 +10,11 @@ import { HouseholdDetailPage } from '@/modules/households/pages/HouseholdDetailP
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/console/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/console" replace />} />
       <Route path="/console/signin" element={<ConsoleSigninPage />} />
       <Route path="/console/auth/signin/:token" element={<ConsoleSigninCallbackPage />} />
       <Route
-        path="/console/dashboard"
+        path="/console"
         element={
           <ProtectedRoute>
             <ConsoleDashboardPage />

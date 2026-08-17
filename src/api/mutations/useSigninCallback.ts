@@ -4,7 +4,6 @@ import { unwrapBackendResponse } from '@/utils/responseHandlers'
 
 export interface SigninCallbackResponse {
   email: string
-  message: string
 }
 
 export function useSigninCallback(token: string | undefined) {
@@ -14,9 +13,11 @@ export function useSigninCallback(token: string | undefined) {
       if (!token) {
         throw new Error('Invalid token')
       }
-      const response = await apiClient.get<{ success: boolean; data: SigninCallbackResponse }>(
-        `/api/v1/console/auth/signin/${token}`,
-      )
+      const response = await apiClient.get<{
+        success: boolean
+        data: SigninCallbackResponse
+        message: string
+      }>(`/api/v1/console/auth/signin/${token}`)
       return unwrapBackendResponse<SigninCallbackResponse>(response.data)
     },
     enabled: !!token,

@@ -33,8 +33,8 @@ export function Header() {
 
           <nav className="console-nav">
             <Link
-              to="/console/dashboard"
-              className={`console-nav-link ${isActive('/console/dashboard') ? 'active' : ''}`}
+              to="/console"
+              className={`console-nav-link ${isActive('/console') ? 'active' : ''}`}
             >
               Dashboard
             </Link>

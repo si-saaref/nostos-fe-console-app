@@ -171,8 +171,8 @@ type AuthStatus = 'checking' | 'provisional' | 'authenticated' | 'unauthenticate
 
 interface AuthContextValue {
   status: AuthStatus
-  operator: { email: string; id?: string } | null
-  login: (operator: Operator) => void
+  operator: Operator | null      // { id, email, role }
+  refreshSession: () => void     // call after a token exchange establishes a session
   logout: () => void
 }
 ```
@@ -212,7 +212,7 @@ all auth-response handling lives in one file.
 
 | Scenario | Behavior |
 |---|---|
-| Magic link clicked | Callback consumes the token, receives the operator email, seeds `['console','auth','me']` via `setQueryData`, navigates to the dashboard. **No `/me` request** — the token response already contains the operator. The backend has already set both cookies. |
+| Magic link clicked | Callback consumes the token, then calls `refreshSession()`, which resets the `/auth/me` query, and navigates to the dashboard. The backend has already set both cookies. **Corrected during implementation:** the exchange returns only `{ email }`, not `id` or `role`, so seeding the cache from it would leave a partial `Operator` and break anything reading `operator.role`. One extra `/me` request buys the full identity. `refreshSession` also marks the session optimistically, so the dashboard paints rather than flashing a splash. |
 | Refresh, valid session | Hint present → dashboard paints immediately → `/me` 200 confirms → operator populates. Visually a no-op. **This is the bug being fixed.** |
 | Refresh, expired or revoked session | Hint still present → dashboard paints provisionally → `/me` 401 → toast *"Your session has expired. Please sign in again."* → redirect to signin. |
 | Cold visit, no hint, no session | Splash → `/me` 401 → **silent** redirect. Nothing was lost, so no toast. |
@@ -265,8 +265,10 @@ server is briefly not. A backend hiccup must not log out the console.
 | `src/api/client.ts` | Delete the response interceptor. Becomes a plain configured instance. |
 | `src/App.tsx` | Reorder to `QueryClientProvider > BrowserRouter > ToastProvider > AuthProvider > AppRoutes`. |
 | `src/routes/ProtectedRoute.tsx` | Status-aware: splash on `checking`, redirect on `unauthenticated`, render on `provisional \| authenticated`. Remove the `console.log('KOCAK 1')` debug line at line 7. |
+| `src/routes/index.tsx` | The dashboard moved from `/console/dashboard` to `/console`; `/` still redirected to the old path, which matches no route and — with no catch-all — rendered a blank page. |
 | `src/modules/auth/pages/ConsoleSigninPage.tsx` | Line 14 guard becomes `status === 'authenticated'` only. |
-| `src/modules/auth/pages/ConsoleSigninCallbackPage.tsx` | `login(operator)` seeds the query cache; no redundant `/me` request. |
+| `src/modules/auth/pages/ConsoleSigninCallbackPage.tsx` | Calls `refreshSession()` after a successful exchange to fetch the full operator. |
+| `src/components/SessionSplash.tsx` *(new)* | The `checking` state's loading view, carrying `role="status"`. |
 | `src/contexts/useAuth.ts` | Type update for the new context value. |
 | `docs/console-auth-api-contract.md` | Document `GET /console/auth/me` and the companion cookie. |
 
@@ -278,7 +280,7 @@ Consumers of the removed `isAuthenticated` boolean must be updated to the
 Vitest + `@testing-library/react` + MSW, per `CLAUDE.md`.
 
 **The regression test that pins this bug:** mount the app at
-`/console/dashboard` with the hint cookie set and MSW returning 200 for `/me`;
+`/console` with the hint cookie set and MSW returning 200 for `/me`;
 assert the dashboard stays rendered and no redirect to signin occurs. This
 fails against the current code.
 
@@ -293,8 +295,8 @@ Beyond it:
 - The three interceptor exemptions, plus soft navigation (assert no
   `window.location.href` assignment) and the unchanged 403 toast.
 - `ProtectedRoute` across all four statuses.
-- The callback page issues **no** `/me` request after a successful token
-  exchange.
+- The callback page ends up authenticated with the **full** operator (id and
+  role, not just the email the exchange returned).
 
 Existing 401-redirect assertions in `src/api/__tests__/client.test.ts` move to
 the `AuthContext` suite along with the code.

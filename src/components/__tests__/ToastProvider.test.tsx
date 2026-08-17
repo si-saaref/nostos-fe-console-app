@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, renderHook } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ToastProvider, useToast } from '../ToastProvider'
 
@@ -31,4 +31,20 @@ describe('ToastProvider', () => {
       { timeout: 5000 },
     )
   }, 10000)
+
+  it('keeps the toast API referentially stable across unrelated re-renders', () => {
+    const { result, rerender } = renderHook(() => useToast(), {
+      wrapper: ({ children }) => <ToastProvider>{children}</ToastProvider>,
+    })
+
+    const firstError = result.current.error
+    rerender()
+
+    // A consumer effect with `toast` in its dependency array (e.g.
+    // ConsoleSigninCallbackPage) must not re-fire just because ToastProvider
+    // re-rendered for an unrelated reason - otherwise calling toast.error()
+    // triggers a setState -> re-render -> new toast reference -> effect fires
+    // again, looping forever ("Maximum update depth exceeded").
+    expect(result.current.error).toBe(firstError)
+  })
 })

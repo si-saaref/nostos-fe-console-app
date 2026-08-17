@@ -2,28 +2,31 @@ import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSigninCallback } from '@/api/mutations/useSigninCallback'
 import { useToast } from '@/components/ToastProvider'
+import { useAuth } from '@/contexts/useAuth'
+import { getErrorMessage } from '@/utils/apiErrorMessages'
 
 export function ConsoleSigninCallbackPage() {
   const { token } = useParams<{ token: string }>()
   const navigate = useNavigate()
   const toast = useToast()
+  const { refreshSession } = useAuth()
   const { isLoading, isError, error } = useSigninCallback(token)
 
   useEffect(() => {
     if (isError) {
-      const errorMessage = error instanceof Error ? error.message : 'Link invalid or expired'
-      toast.error(errorMessage)
+      toast.error(getErrorMessage(error))
       navigate('/console/signin', { replace: true })
     }
   }, [isError, error, toast, navigate])
 
   useEffect(() => {
     if (!isLoading && !isError && token) {
-      // On success, the session cookie is set by the server
-      // Redirect to dashboard
-      navigate('/console/dashboard', { replace: true })
+      // The server has set the session cookie on the exchange response. It only
+      // returned the email, so pull the full operator from /auth/me.
+      refreshSession()
+      navigate('/console', { replace: true })
     }
-  }, [isLoading, isError, token, navigate])
+  }, [isLoading, isError, token, refreshSession, navigate])
 
   return (
     <div
