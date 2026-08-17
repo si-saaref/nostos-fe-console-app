@@ -68,6 +68,30 @@ nostos_console_recent_signin=true; Max-Age=2592000; Path=/; SameSite=Lax; Secure
   an attacker makes their own browser paint a dashboard shell that `/me`
   then 401s out of a moment later.
 
+#### Security boundary — read this before using the hint anywhere new
+
+**The hint must never inform an authorization decision.** It is readable and
+writable by any script on the origin, so treating it as evidence of anything
+is a vulnerability. It is a rendering coin-flip during the first ~100ms and
+nothing else.
+
+Legitimate uses, exhaustively: choosing between a splash and an optimistic
+paint, and deciding whether a 401 deserves an "expired" toast. Both are
+overruled by `/me` moments later, and neither exposes data.
+
+Illegitimate uses, to reject in review: gating a route, showing or hiding a
+privileged control, skipping the `/me` query, or standing in for `status ===
+'authenticated'`. Anything that must be true before data is shown reads from
+the query, whose authority is the HttpOnly session cookie.
+
+`HttpOnly` is omitted because the hint is not a credential — the attribute
+exists to stop credential exfiltration, and applying it here would defeat the
+cookie's only purpose while protecting a value with nothing in it.
+`connect.sid` remains HttpOnly, Secure, and the sole authenticator; this
+design does not alter it. Note also that `localStorage` would offer no
+security advantage: XSS reads it just as easily. The cookie was chosen for
+expiry semantics and desync resistance, not safety.
+
 **Deployment risk:** if the API and the console are served from different
 hosts (e.g. `api.nostos.com` and `console.nostos.com`), a cookie set without
 an explicit `Domain` is scoped to the API host and the console's JavaScript

@@ -111,6 +111,34 @@ If someone forges it, the only effect is that *their own* browser paints a
 dashboard shell that `/me` 401s out of a moment later. No data is fetched
 without a valid `connect.sid`.
 
+### On omitting `HttpOnly`
+
+Worth addressing head-on, since a readable session-adjacent cookie is
+reasonably something you'd question in review.
+
+`HttpOnly` exists to stop XSS from exfiltrating credentials. This cookie is
+not a credential — it holds the string `true` and grants nothing. Applying
+`HttpOnly` would make it unreadable to the code that needs it while
+protecting a value with no secret in it.
+
+- **Read via XSS:** yields the boolean "this browser signed in recently." An
+  attacker with XSS can already make fully authenticated requests, because
+  `connect.sid` is attached automatically to any `fetch` they issue —
+  `HttpOnly` prevents stealing a session, not using one. The hint adds nothing
+  to their position.
+- **Forged via XSS:** produces an optimistic paint that `/me` immediately
+  401s. No data, no authorization.
+- **CSRF:** not applicable; the hint gates no authorization decision.
+
+On our side we're treating it as a hard rule that the hint never informs an
+authorization decision — it selects a loading state and decides whether a 401
+warrants an "expired" toast, and nothing else. Every gate that matters reads
+the `/me` response, whose authority is `connect.sid`.
+
+`connect.sid` keeps `HttpOnly`, `Secure`, and `SameSite=Lax` unchanged. If
+you'd still rather not have a readable cookie on the domain at all, say so —
+we'll drop Ask 2 and take the loading splash on every refresh instead.
+
 ### Why 30 days and not 7
 
 If the hint expired exactly with the session, an operator returning after their
