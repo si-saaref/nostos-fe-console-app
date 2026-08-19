@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { CloseMark } from './icons'
 import './logout-modal.css'
 
 export interface LogoutConfirmationModalProps {
@@ -13,13 +15,32 @@ export function LogoutConfirmationModal({
   onConfirm,
   onCancel,
 }: LogoutConfirmationModalProps) {
+  // Escape closes the slip. An operator who opened this by accident should not
+  // have to find the one button that gets them out.
+  useEffect(() => {
+    if (!isOpen || isLoading) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onCancel()
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [isOpen, isLoading, onCancel])
+
   if (!isOpen) return null
 
   return (
-    <div className="logout-modal-overlay" onClick={onCancel}>
+    <div
+      className="logout-modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="logout-modal-title"
+      onClick={onCancel}
+    >
       <div className="logout-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="logout-modal-header">
-          <h2>Sign out?</h2>
+          <h2 id="logout-modal-title">Sign out?</h2>
           <button
             type="button"
             className="logout-modal-close"
@@ -27,7 +48,7 @@ export function LogoutConfirmationModal({
             aria-label="Close"
             disabled={isLoading}
           >
-            ×
+            <CloseMark />
           </button>
         </div>
 

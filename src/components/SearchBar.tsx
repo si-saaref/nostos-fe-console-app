@@ -1,13 +1,22 @@
 import { useEffect, useState } from 'react'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import { SearchMark } from './icons'
 
 export interface SearchBarProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
+  label?: string
+  id?: string
 }
 
-export function SearchBar({ value, onChange, placeholder }: SearchBarProps) {
+export function SearchBar({
+  value,
+  onChange,
+  placeholder,
+  label = 'Search',
+  id = 'search',
+}: SearchBarProps) {
   const [draft, setDraft] = useState(value)
   const debounced = useDebouncedValue(draft, 300)
 
@@ -17,12 +26,20 @@ export function SearchBar({ value, onChange, placeholder }: SearchBarProps) {
   }, [debounced])
 
   return (
-    <input
-      type="search"
-      aria-label="Search"
-      value={draft}
-      onChange={(event) => setDraft(event.target.value)}
-      placeholder={placeholder}
-    />
+    <div className="search-field">
+      <label htmlFor={id} className="vh">
+        {label}
+      </label>
+      <span className="search-field-icon">
+        <SearchMark />
+      </span>
+      <input
+        id={id}
+        type="search"
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
+        placeholder={placeholder}
+      />
+    </div>
   )
 }

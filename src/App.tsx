@@ -8,13 +8,15 @@ import { AppRoutes } from '@/routes'
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <AuthProvider>
-          <BrowserRouter>
+      {/* Router outside AuthProvider: the provider's 401 handler navigates with
+          useNavigate, which needs router context. */}
+      <BrowserRouter>
+        <ToastProvider>
+          <AuthProvider>
             <AppRoutes />
-          </BrowserRouter>
-        </AuthProvider>
-      </ToastProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   )
 }

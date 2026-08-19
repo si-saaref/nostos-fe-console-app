@@ -21,6 +21,7 @@ export function useHouseholds(filters: HouseholdFilters) {
           createdAt: h.created_at,
           memberCount: h.member_count,
           status: h.status,
+          deletionScheduledFor: h.deletion_scheduled_for,
         })),
         page: backend.pagination.page,
         totalPages: backend.pagination.total_pages,

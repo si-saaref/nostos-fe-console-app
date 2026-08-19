@@ -12,6 +12,8 @@ export function getErrorMessage(error: unknown): string {
     return NETWORK_ERROR_MESSAGE
   }
 
-  const data = error.response.data as { message?: string } | undefined
-  return data?.message ?? GENERIC_ERROR_MESSAGE
+  const data = error.response.data as
+    | { message?: string; error?: { message?: string } }
+    | undefined
+  return data?.error?.message ?? data?.message ?? GENERIC_ERROR_MESSAGE
 }

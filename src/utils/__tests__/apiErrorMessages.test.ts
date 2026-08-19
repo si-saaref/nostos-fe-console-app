@@ -31,4 +31,18 @@ describe('getErrorMessage', () => {
   it('returns a generic fallback for non-axios errors', () => {
     expect(getErrorMessage(new Error('boom'))).toBe('Something went wrong. Please try again later.')
   })
+
+  it('returns the backend message from the console auth error envelope', () => {
+    const error = makeAxiosError(401, {
+      success: false,
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Email not authorized to access console',
+        statusCode: 401,
+        timestamp: '2026-08-04T00:00:00.000Z',
+        path: '/api/v1/console/auth/signin',
+      },
+    })
+    expect(getErrorMessage(error)).toBe('Email not authorized to access console')
+  })
 })

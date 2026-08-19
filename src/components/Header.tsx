@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useLogout } from '@/api/mutations/useLogout'
+import { useAuth } from '@/contexts/useAuth'
 import { LogoutConfirmationModal } from './LogoutConfirmationModal'
+import { SignOutMark } from './icons'
 import './header.css'
 
 export function Header() {
   const location = useLocation()
+  const { operator } = useAuth()
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
   const { mutate: logout, isPending: isLoggingOut } = useLogout()
 
@@ -25,37 +28,41 @@ export function Header() {
 
   return (
     <>
-      <header className="console-header">
-        <div className="console-header-content">
-          <div className="console-header-logo">
-            <h1 className="console-logo-text">Nostos Operator Console</h1>
-          </div>
+      <header className="registry-head">
+        <div className="registry-head-inner">
+          <h1 className="registry-head-mark">Nostos Operator Console</h1>
 
-          <nav className="console-nav">
+          <nav className="registry-head-nav" aria-label="Console sections">
             <Link
-              to="/console/dashboard"
-              className={`console-nav-link ${isActive('/console/dashboard') ? 'active' : ''}`}
+              to="/console"
+              className={`console-nav-link ${isActive('/console') ? 'active' : ''}`}
+              aria-current={isActive('/console') ? 'page' : undefined}
             >
               Dashboard
             </Link>
             <Link
               to="/console/households"
               className={`console-nav-link ${isActive('/console/households') ? 'active' : ''}`}
+              aria-current={isActive('/console/households') ? 'page' : undefined}
             >
               Households
             </Link>
           </nav>
 
-          <div className="console-header-actions">
+          <div className="registry-head-operator">
+            {operator?.email && (
+              <span className="registry-head-email" title={operator.email}>
+                {operator.email}
+              </span>
+            )}
             <button
               type="button"
-              className="console-logout-button"
+              className="registry-head-signout"
               onClick={handleLogoutClick}
               aria-label="Sign out"
-              title="Sign out"
             >
-              <span className="console-logout-icon">→</span>
-              <span className="console-logout-text">Sign Out</span>
+              <SignOutMark />
+              <span>Sign Out</span>
             </button>
           </div>
         </div>

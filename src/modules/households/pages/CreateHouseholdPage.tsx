@@ -19,7 +19,7 @@ export function CreateHouseholdPage() {
     <main>
       <Breadcrumb
         items={[
-          { label: 'Console', to: '/console/dashboard' },
+          { label: 'Console', to: '/console' },
           { label: 'Households', to: '/console/households' },
           { label: 'Create New' },
         ]}

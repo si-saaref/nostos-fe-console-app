@@ -7,13 +7,15 @@ import { ConsoleSigninForm } from '../components/ConsoleSigninForm'
 import './signin.css'
 
 export function ConsoleSigninPage() {
-  const { isAuthenticated } = useAuth()
+  const { status } = useAuth()
   const toast = useToast()
   const { mutate, isPending, reset } = useSignin()
 
-  // If already authenticated (has valid session cookie), redirect to dashboard
-  if (isAuthenticated) {
-    return <Navigate to="/console/dashboard" replace />
+  // Only on a *confirmed* session, never on a provisional one: acting on a stale
+  // hint here would ricochet the operator signin -> dashboard -> signin. Briefly
+  // showing this form before a legitimate bounce is harmless by comparison.
+  if (status === 'authenticated') {
+    return <Navigate to="/console" replace />
   }
 
   const handleSubmit = (email: string) => {
@@ -29,28 +31,31 @@ export function ConsoleSigninPage() {
   }
 
   return (
-    <div className="signin-container">
-      {/* Hero Panel */}
-      <div className="signin-hero">
-        <div className="signin-hero-content">
-          <h2>Operate with confidence</h2>
-          <p>Manage households and members from a unified, secure console built for operators.</p>
+    <div className="signin">
+      <header className="registry-head">
+        <div className="registry-head-inner">
+          <p className="registry-head-mark">Nostos Operator Console</p>
         </div>
-      </div>
+      </header>
 
-      {/* Form Panel */}
-      <div className="signin-form-container">
-        <div className="signin-form-wrapper">
-          <div className="signin-form-header">
-            <h1>Sign In</h1>
-            <p>to Nostos Operator Console</p>
-          </div>
+      <div className="signin-body">
+        <div className="signin-card card">
+          <div className="card-body">
+            <h1 className="signin-title">Sign In</h1>
+            <p className="signin-intro">
+              We'll email you a single-use link to sign in. No password required.
+            </p>
 
-          <ConsoleSigninForm onSubmit={handleSubmit} isLoading={isPending} />
+            <ConsoleSigninForm onSubmit={handleSubmit} isLoading={isPending} />
 
-          <div className="signin-support">
-            Don't have access?{' '}
-            <a href="mailto:support@nostos.com">Contact support@nostos.com</a>
+            <ul className="signin-notes">
+              <li>Only addresses already authorized for the console can sign in.</li>
+              <li>Five signin requests per address each hour.</li>
+            </ul>
+
+            <p className="signin-support">
+              Don't have access? <a href="mailto:support@nostos.com">Contact support@nostos.com</a>
+            </p>
           </div>
         </div>
       </div>
