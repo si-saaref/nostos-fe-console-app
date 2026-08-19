@@ -1,145 +1,126 @@
-.console-header {
-  background: white;
-  border-bottom: 1px solid #e5e4e7;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+/* The top bar. Kept as-is by request: navy field, white wordmark, underlined
+ * active tab, operator identity and sign-out on the right. */
+
+.registry-head {
+  background: var(--navy);
+  color: var(--text-inverse);
+  border-bottom: 1px solid var(--navy-edge);
 }
 
-.console-header-content {
-  max-width: 1400px;
+.registry-head-inner {
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: var(--s4) var(--s6);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  gap: var(--s8);
 }
 
-.console-header-logo {
-  flex-shrink: 0;
-}
-
-.console-logo-text {
+.registry-head-mark {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--t-sm);
   font-weight: 600;
-  color: #08060d;
-  letter-spacing: -0.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  white-space: nowrap;
 }
 
-.console-nav {
+.registry-head-nav {
   display: flex;
   align-items: center;
-  gap: 24px;
-  flex: 1;
+  gap: var(--s6);
+  margin-right: auto;
 }
 
-.console-nav-link {
-  font-size: 14px;
-  font-weight: 500;
-  color: #6b6375;
+.registry-head-nav .console-nav-link {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  position: relative;
+  color: var(--on-navy-dim);
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: color var(--fast), border-color var(--fast);
 }
 
-.console-nav-link:hover {
-  color: #08060d;
-  background: #f3f4f6;
+.registry-head-nav .console-nav-link:hover {
+  color: var(--text-inverse);
+  border-bottom-color: var(--on-navy-border-soft);
 }
 
-.console-nav-link.active {
-  color: #aa3bff;
-  font-weight: 600;
+.registry-head-nav .console-nav-link.active {
+  color: var(--text-inverse);
+  border-bottom-color: var(--text-inverse);
 }
 
-.console-nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -9px;
-  left: 12px;
-  right: 12px;
-  height: 2px;
-  background: #aa3bff;
-  border-radius: 1px;
-}
-
-.console-header-actions {
+.registry-head-operator {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--s4);
+  min-width: 0;
+}
+
+.registry-head-email {
+  font-size: var(--t-sm);
+  color: var(--on-navy-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 24ch;
+}
+
+.registry-head-signout {
+  color: var(--text-inverse);
+  background: transparent;
+  border-color: var(--on-navy-border);
+  box-shadow: none;
+  height: 32px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   flex-shrink: 0;
 }
 
-.console-logout-button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: #f8f7fa;
-  border: 1px solid #e5e4e7;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: #6b6375;
-  transition: all 0.2s ease;
+.registry-head-signout:hover:not(:disabled) {
+  background: var(--on-navy-fill);
+  border-color: var(--on-navy-border-strong);
+  color: var(--text-inverse);
 }
 
-.console-logout-button:hover {
-  background: #f3f4f6;
-  color: #08060d;
-  border-color: #d1cfe4;
+.registry-head-signout:focus-visible {
+  outline-color: var(--focus-on-navy);
 }
 
-.console-logout-button:active {
-  transform: scale(0.98);
-}
-
-.console-logout-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.console-logout-icon {
-  font-size: 16px;
-  opacity: 0.7;
-}
-
-.console-logout-text {
-  @media (max-width: 640px) {
-    display: none;
-  }
-}
-
-/* Mobile responsive */
 @media (max-width: 768px) {
-  .console-header-content {
-    padding: 12px 16px;
-    gap: 12px;
+  .registry-head-inner {
+    flex-wrap: wrap;
+    gap: var(--s3) var(--s4);
+    padding: var(--s3) var(--s4);
   }
 
-  .console-nav {
-    gap: 12px;
+  .registry-head-mark {
+    width: 100%;
+    font-size: var(--t-xs);
   }
 
-  .console-nav-link {
-    padding: 6px 10px;
-    font-size: 13px;
+  .registry-head-nav {
+    gap: var(--s4);
   }
 
-  .console-nav-link.active::after {
-    bottom: -6px;
-    left: 10px;
-    right: 10px;
+  .registry-head-email {
+    max-width: 16ch;
   }
 
-  .console-logout-button {
-    padding: 6px 12px;
-    font-size: 13px;
+  .registry-head-signout span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

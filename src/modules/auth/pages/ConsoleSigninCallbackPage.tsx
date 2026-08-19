@@ -29,34 +29,14 @@ export function ConsoleSigninCallbackPage() {
   }, [isLoading, isError, token, refreshSession, navigate])
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        flexDirection: 'column',
-        gap: '1rem',
-      }}
-    >
-      <div role="status" aria-live="polite">
-        Validating signin link...
+    <div className="validating">
+      <div className="validating-sheet">
+        <div role="status" aria-live="polite">
+          Validating signin link...
+        </div>
+        {/* A rule being drawn across the sheet, not a spinning circle. */}
+        <div className="validating-rule" aria-hidden="true" />
       </div>
-      <div
-        style={{
-          width: '40px',
-          height: '40px',
-          border: '4px solid #e0e0e0',
-          borderTop: '4px solid #007aff',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-        }}
-      />
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   )
 }

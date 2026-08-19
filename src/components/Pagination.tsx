@@ -7,11 +7,11 @@ export interface PaginationProps {
 
 export function Pagination({ page, totalPages, onPreviousPage, onNextPage }: PaginationProps) {
   return (
-    <nav aria-label="Pagination">
+    <nav aria-label="Pagination" className="pagination">
       <button type="button" onClick={onPreviousPage} disabled={page <= 1}>
         Previous
       </button>
-      <span>
+      <span className="vh">
         Page {page} of {totalPages}
       </span>
       <button type="button" onClick={onNextPage} disabled={page >= totalPages}>

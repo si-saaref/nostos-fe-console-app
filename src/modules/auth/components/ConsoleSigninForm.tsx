@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { CheckCircleMark } from '@/components/icons'
 
 interface SigninFormValues {
   email: string
@@ -18,10 +19,7 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<SigninFormValues>({ mode: 'onBlur' })
-
-  const email = watch('email')
 
   const handleFormSubmit = (values: SigninFormValues) => {
     setSuccessEmail(values.email)
@@ -38,12 +36,13 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
   if (isSuccess) {
     return (
       <div className="signin-success-state">
-        <div className="signin-success-icon">✓</div>
+        <div className="signin-success-icon">
+          <CheckCircleMark />
+        </div>
         <div className="signin-success-message">
           <h2>Check your email</h2>
-          <p>We've sent a signin link to <strong>{successEmail}</strong></p>
-          <p style={{ fontSize: '13px', marginTop: '8px', opacity: 0.7 }}>
-            The link will expire in 24 hours.
+          <p>
+            We've sent a signin link to <strong>{successEmail}</strong>
           </p>
         </div>
         <button
@@ -59,7 +58,6 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="signin-form">
-      {/* Email Input */}
       <div className="signin-form-group">
         <label htmlFor="signin-email">Enter your email</label>
         <input
@@ -83,23 +81,14 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
         )}
       </div>
 
-      {/* Sign In Button */}
-      <button
-        type="submit"
-        disabled={isLoading || !email}
-        className="signin-button"
-        aria-busy={isLoading}
-      >
+      <button type="submit" disabled={isLoading} className="signin-button" aria-busy={isLoading}>
         {isLoading ? (
           <span className="signin-button-loading">
             <span className="signin-button-spinner" />
             Signing in...
           </span>
         ) : (
-          <>
-            <span>Sign In</span>
-            <span>→</span>
-          </>
+          'Sign In'
         )}
       </button>
     </form>

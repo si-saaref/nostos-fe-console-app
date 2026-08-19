@@ -1,32 +1,64 @@
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { ConsoleLayout } from '@/components/ConsoleLayout'
+import { PageHeader } from '@/components/PageHeader'
 import { SearchBar } from '@/components/SearchBar'
 import { Pagination } from '@/components/Pagination'
+import { PlusMark } from '@/components/icons'
 import { useHouseholdFilters } from '../hooks/useHouseholdFilters'
 import { useHouseholds } from '../api/useHouseholds'
 import { HouseholdTable } from '../components/HouseholdTable'
+import './households.css'
 
 export function HouseholdsPage() {
   const navigate = useNavigate()
   const { filters, setSearch, setPage } = useHouseholdFilters()
   const { data, isLoading } = useHouseholds(filters)
 
+  const count = data
+    ? `${data.total} ${data.total === 1 ? 'household' : 'households'}`
+    : undefined
+
   return (
-    <main>
-      <h1>Households</h1>
-      <SearchBar value={filters.search} onChange={setSearch} placeholder="Search by name or email..." />
-      <HouseholdTable
-        households={data?.data ?? []}
-        isLoading={isLoading}
-        onRowClick={(id) => navigate(`/console/households/${id}`)}
-      />
-      {data && data.totalPages > 1 && (
-        <Pagination
-          page={data.page}
-          totalPages={data.totalPages}
-          onPreviousPage={() => setPage(Math.max(1, filters.page - 1))}
-          onNextPage={() => setPage(filters.page + 1)}
+    <ConsoleLayout>
+      <PageHeader title="Households" description={count}>
+        <Link to="/console/households/new" role="button">
+          <PlusMark />
+          New household
+        </Link>
+      </PageHeader>
+
+      <section className="card">
+        <div className="card-header">
+          <SearchBar
+            id="household-search"
+            label="Search households"
+            value={filters.search}
+            onChange={setSearch}
+            placeholder="Search by name or email..."
+          />
+        </div>
+
+        <HouseholdTable
+          households={data?.data ?? []}
+          isLoading={isLoading}
+          search={filters.search}
+          onRowClick={(id) => navigate(`/console/households/${id}`)}
         />
-      )}
-    </main>
+
+        {data && data.totalPages > 1 && (
+          <div className="card-footer">
+            <span className="pagination-range">
+              Page {data.page} of {data.totalPages}
+            </span>
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              onPreviousPage={() => setPage(Math.max(1, filters.page - 1))}
+              onNextPage={() => setPage(filters.page + 1)}
+            />
+          </div>
+        )}
+      </section>
+    </ConsoleLayout>
   )
 }

@@ -5,17 +5,13 @@
  */
 export function SessionSplash() {
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-      }}
-    >
-      Checking your session...
+    <div className="validating">
+      <div className="validating-sheet">
+        <div role="status" aria-live="polite">
+          Checking your session...
+        </div>
+        <div className="validating-rule" aria-hidden="true" />
+      </div>
     </div>
   )
 }

@@ -9,6 +9,13 @@ export interface HouseholdSummary {
   createdAt: string
   memberCount: number
   status: HouseholdStatus
+  /**
+   * When a deletion-pending household actually gets deleted. The list endpoint
+   * already returns it as `deletion_scheduled_for`; the register needs it to
+   * draw the remaining grace period to scale rather than describing it in prose.
+   * Absent on active households, and optional so existing fixtures still type.
+   */
+  deletionScheduledFor?: string | null
 }
 
 export interface HouseholdMember {
