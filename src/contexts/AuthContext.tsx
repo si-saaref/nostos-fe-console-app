@@ -1,6 +1,6 @@
 import { createContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { isAxiosError } from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useMatch, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
 import {
@@ -75,7 +75,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // hint, it only buys an optimistic paint while /auth/me is in flight.
   const [justSignedIn, setJustSignedIn] = useState(false)
 
-  const session = useOperatorSession({ enabled: !signedOut })
+  // The magic-link callback route cannot have a session yet — establishing one
+  // is what it exists to do. Asking there is a guaranteed 401, so wait until the
+  // exchange has run and refreshSession() asks on our behalf.
+  const onTokenExchange = useMatch('/console/auth/signin/:token') !== null
+
+  const session = useOperatorSession({ enabled: !signedOut && !onTokenExchange })
   const optimistic = hadHint || justSignedIn
 
   const status = useMemo<AuthStatus>(() => {

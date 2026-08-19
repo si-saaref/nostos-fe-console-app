@@ -31,6 +31,7 @@ describe('ConsoleSigninCallbackPage', () => {
     // The exchange returns only the email, so the id and role have to come from
     // /auth/me — which the callback is responsible for triggering.
     let sessionExists = false
+    let meRequests = 0
     server.use(
       http.get('*/console/auth/signin/:token', () => {
         sessionExists = true
@@ -40,8 +41,9 @@ describe('ConsoleSigninCallbackPage', () => {
           message: 'Signed in successfully',
         })
       }),
-      http.get('*/api/v1/console/auth/me', () =>
-        sessionExists
+      http.get('*/api/v1/console/auth/me', () => {
+        meRequests += 1
+        return sessionExists
           ? HttpResponse.json({
               success: true,
               data: {
@@ -53,8 +55,8 @@ describe('ConsoleSigninCallbackPage', () => {
           : HttpResponse.json(
               { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
               { status: 401 },
-            ),
-      ),
+            )
+      }),
     )
 
     renderCallback('valid-token')
@@ -64,6 +66,11 @@ describe('ConsoleSigninCallbackPage', () => {
         screen.getByText('dashboard: authenticated operator@household.test'),
       ).toBeInTheDocument(),
     )
+
+    // The callback route cannot have a session by definition, so asking before
+    // the exchange is a guaranteed 401. Exactly one /auth/me, after the session
+    // exists.
+    expect(meRequests).toBe(1)
   })
 
   it('shows the backend error message and redirects to signin on an unknown/expired token', async () => {
