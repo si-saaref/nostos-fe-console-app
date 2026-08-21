@@ -1,344 +1,584 @@
 {
-  "schemaVersion": 2,
-  "generatedAt": "2026-08-17T00:00:00.000Z",
-  "title": "Design System: Nostos Operator Console",
-  "extensions": {
-    "colorMeta": {
-      "paper": {
-        "role": "neutral",
-        "displayName": "Ledger Bone",
-        "canonical": "#f2efe6",
-        "purpose": "The folio itself, and the text colour on any blue-gray field.",
-        "tonalRamp": ["#1f1c15", "#3a352a", "#57503f", "#766e59", "#979076", "#b8b09a", "#d7d1bf", "#f7f4ec"]
-      },
-      "paper-band": {
-        "role": "neutral",
-        "displayName": "Band Stock",
-        "canonical": "#ebe6d9",
-        "purpose": "The marginal endorsement column, ruled text areas and selects, scrollbar track.",
-        "tonalRamp": ["#1d1a13", "#373226", "#534c3b", "#726a55", "#938b72", "#b4ac95", "#d3ccba", "#f4f0e6"]
-      },
-      "paper-deep": {
-        "role": "neutral",
-        "displayName": "Deep Stock",
-        "canonical": "#e3ddcd",
-        "purpose": "Inset wells, and the margin cell under row hover.",
-        "tonalRamp": ["#1b1811", "#332f23", "#4e4837", "#6b6450", "#8b836b", "#aca48a", "#cdc5ae", "#eeead9"]
-      },
-      "ink": {
-        "role": "neutral",
-        "displayName": "Iron-Gall Ink",
-        "canonical": "#1a1712",
-        "purpose": "All content: headings, entry names, figures. Measured 15.54:1 on ledger bone.",
-        "tonalRamp": ["#0d0b08", "#1a1712", "#2c2820", "#453f33", "#625b4a", "#837c6c", "#aaa393", "#d5cfc1"]
-      },
-      "ink-2": {
-        "role": "neutral",
-        "displayName": "Secondary Ink",
-        "canonical": "#5c564c",
-        "purpose": "Captions, meta lines, dates, placeholders. Warm, tinted from ink, never a neutral gray. Measured 6.32:1.",
-        "tonalRamp": ["#14120f", "#262320", "#3b3733", "#524c45", "#6b655c", "#8c8579", "#b3ac9f", "#dcd6c9"]
-      },
-      "ink-3": {
-        "role": "neutral",
-        "displayName": "Faded Ink",
-        "canonical": "#837c6c",
-        "purpose": "Disabled controls, and the drawn hairline meaning 'nothing endorsed against this entry'. Never running text.",
-        "tonalRamp": ["#1a1814", "#302d26", "#494439", "#635c4e", "#837c6c", "#a29b8b", "#c2bcae", "#e2ded2"]
-      },
-      "rule": {
-        "role": "primary",
-        "displayName": "Engraved Registry Blue-Gray",
-        "canonical": "#40566b",
-        "purpose": "Every division, column rule, column head, label, stamp and icon. Structure and interaction. Measured 6.61:1 on ledger bone.",
-        "tonalRamp": ["#0f171f", "#1b2833", "#263847", "#31485c", "#40566b", "#5c7793", "#8ba4bb", "#c3d3e0"]
-      },
-      "rule-strong": {
-        "role": "primary",
-        "displayName": "Deep Engraved Blue-Gray",
-        "canonical": "#2b3d4e",
-        "purpose": "Heavy 2px division rules, the registry head band, filled primary actions, selection, caret, the focus bracket. Paper on this field measures 9.71:1.",
-        "tonalRamp": ["#0b1218", "#131f28", "#1d2f3c", "#2b3d4e", "#3c5568", "#587a92", "#8aa5bb", "#c2d4e2"]
-      },
-      "rule-hair": {
-        "role": "primary",
-        "displayName": "Hairline",
-        "canonical": "rgba(43, 61, 78, 0.26)",
-        "purpose": "Column and row divisions, feint ruling on a waiting folio. An alpha derivation of rule-strong; no tonal ramp — it is a transparency, not a step.",
-        "tonalRamp": []
-      },
-      "rule-wash": {
-        "role": "primary",
-        "displayName": "Wash",
-        "canonical": "rgba(43, 61, 78, 0.06)",
-        "purpose": "Hover on an entry or a ruled button. An alpha derivation of rule-strong.",
-        "tonalRamp": []
-      },
-      "vermilion": {
-        "role": "secondary",
-        "displayName": "Vermilion",
-        "canonical": "#b7291d",
-        "purpose": "Struck, cancelled, or in error. Nothing else, ever. Measured 5.45:1 on ledger bone and 5.01:1 on the struck row band.",
-        "tonalRamp": ["#2b0906", "#47100b", "#661810", "#8a1f16", "#b7291d", "#d9503f", "#e88a7d", "#f4c4bc"]
-      },
-      "vermilion-band": {
-        "role": "secondary",
-        "displayName": "Vermilion Band",
-        "canonical": "rgba(183, 41, 29, 0.055)",
-        "purpose": "The wash under a struck row and behind a danger button on hover. An alpha derivation of vermilion.",
-        "tonalRamp": []
-      }
-    },
-    "typographyMeta": {
-      "figure": { "displayName": "Figure", "purpose": "The ramp's top step: page h1, return values, the standing-obligation count." },
-      "title": { "displayName": "Title", "purpose": "The folio head's title block." },
-      "head": { "displayName": "Head", "purpose": "A division head (h2) and a slip's own title. h3 drops to body size." },
-      "entry": { "displayName": "Entry", "purpose": "The proprietor's name on a register entry, and every text input — you write at entry size." },
-      "body": { "displayName": "Body", "purpose": "Running prose, capped at 68ch (60ch on the standing line)." },
-      "caption": { "displayName": "Caption", "purpose": "Notices, terms, in-row dates, toast copy." },
-      "micro": { "displayName": "Micro", "purpose": "Endorsement dates, folio meta, admin email, operator email in the head." },
-      "stamp": { "displayName": "Stamp", "purpose": "Tracked caps in the rule colour: column heads, field labels, buttons, nav links, badges, section heads. The most-used role in the system." }
-    },
-    "fonts": [
-      {
-        "family": "Libre Franklin",
-        "role": "the only face",
-        "source": "self-hosted variable woff2, weights 400-700, two subsets (latin, latin-ext), declared in src/styles/tokens.css",
-        "license": "SIL OFL",
-        "note": "There is no display face by design. Hierarchy comes from size, weight, tracking and case.",
-        "ramp": ["--f-figure 21px", "--f-title 19px", "--f-head 17px", "--f-entry 15.5px", "--f-body 14.5px", "--f-caption 12.5px", "--f-micro 11.5px", "--f-stamp 10.5px"],
-        "rampNote": "Eight steps, closed. Every font-size in all nine stylesheets resolves through a --f-* token; grep finds no pixel literal outside var(--f…). The former --f-return 32px step was deleted rather than kept as reserved, because no surface rendered it."
-      }
-    ],
-    "shadows": [
-      {
-        "name": "slip-lift",
-        "value": "0 6px 18px -6px rgba(26, 23, 18, 0.4)",
-        "purpose": "The endorsement slip (toast), and nothing else in the system. It floats over the folio rather than belonging to it, so it is allowed an offset with soft blur. Structural shadow is refused everywhere else."
-      },
-      {
-        "name": "dialog-scrim",
-        "value": "background: rgba(26, 23, 18, 0.42)",
-        "purpose": "Not a shadow. The dialog slip deliberately has no shadow: an ink overlay plus a 1px frame and a 3px head rule do the separating."
-      },
-      {
-        "name": "struck-entry-inset",
-        "value": "inset 1px 0 0 0 #b7291d",
-        "purpose": "A drawn rule inside the first cell of a cancelled entry, binding the margin endorsement to its row. box-shadow used as an instrument, not as depth."
-      }
-    ],
-    "focus": {
-      "name": "bracket",
-      "value": "box-shadow: -4px 0 0 0 var(--rule-strong), 4px 0 0 0 var(--rule-strong); outline: none",
-      "purpose": "Focus is a bracket, not an outline — two rules flanking the element, drawn behind it with box-shadow so nothing shifts.",
-      "fieldVariant": "box-shadow: -4px 0 0 0 var(--rule-strong), 4px 0 0 0 var(--rule-strong), inset 0 -2px 0 0 var(--rule-strong) — fields already carry a frame, so they are bracketed outside it and get an inset bottom rule inside it.",
-      "invertedVariant": "box-shadow: -4px 0 0 0 var(--paper), 4px 0 0 0 var(--paper), -5px 0 0 0 var(--rule-strong), 5px 0 0 0 var(--rule-strong)",
-      "invertedRequiredFor": ["button[type=submit]", "a[role=button]", ".logout-modal-button-primary", "any new filled or dark-field control"],
-      "mandatory": "A rule-strong bracket is invisible on a rule-strong fill. Filled actions must invert theirs to paper inside dark, or focus vanishes into their own fill. This is the protected floor: keyboard first.",
-      "compositeVariant": "A ruled composite field (the search rule) brackets the whole field on :focus-within and suppresses the inner input's own bracket.",
-      "forcedColors": "outline: 2px solid; outline-offset: 2px"
-    },
-    "motion": [
-      { "name": "stamp", "value": "90ms linear", "purpose": "A press. Buttons translateY(1px) on :active; background and colour changes. A stamp is pressed, it does not glow." },
-      { "name": "draw", "value": "320ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "A rule being drawn: the toast slip-in, and the strike fading its decoration colour onto a cancelled entry." },
-      { "name": "rule-sweep", "value": "1100ms ease-in-out infinite alternate", "purpose": "The waiting state: a 38%-wide rule swept across a 3px track. Loading is a rule being drawn, never a spinning circle." },
-      { "name": "rule-pulse", "value": "900ms ease-in-out infinite alternate", "purpose": "In-button loading: a 2px rule scaling on X from 0.2 to 1 from its left origin." },
-      { "name": "reduced-motion", "value": "animation-duration: 1ms; animation-iteration-count: 1; transition-duration: 1ms", "purpose": "Under prefers-reduced-motion the world snaps. Nothing is left mid-draw." }
-    ],
-    "motionGrammar": "Stamping and ruling only: discrete, damped, single-axis, one authored moment per surface. No spinners, pulses, bounces, glows or multi-axis transitions.",
-    "breakpoints": [
-      { "name": "narrow", "value": "768px", "purpose": "Folio padding tightens, table cells tighten, the register drops to 720px min-width with a 112px margin column, the off-screen-columns hint appears, the grace bar narrows to 96px, the sign-out label goes visually hidden." },
-      { "name": "sheet", "value": "860px", "purpose": "The dashboard returns and the signin counter sheet collapse from two columns to one; the counter notice's left hairline becomes a top hairline." }
-    ],
-    "grid": {
-      "division": "6px",
-      "steps": ["6px", "12px", "18px", "24px", "36px", "48px", "72px"],
-      "folio": "main, max-width 1240px, padding 36px 24px 72px (24px 18px 48px under 768px)",
-      "note": "Nothing on the page is placed off the division grid. The legacy --space-* aliases survive only to feed the .mt-/.mb-/.gap- utilities."
-    },
-    "ruleWeights": [
-      { "name": "hairline", "value": "1px rgba(43, 61, 78, 0.26)", "purpose": "Column and row divisions." },
-      { "name": "rule", "value": "1px #40566b", "purpose": "Under a table head." },
-      { "name": "division", "value": "2px #2b3d4e", "purpose": "A section division, and a table's outer bracket." },
-      { "name": "sheet-head", "value": "3px #2b3d4e", "purpose": "The head rule of a sheet or slip. Vermilion when the slip cancels something." }
-    ],
-    "hatch": [
-      { "name": "hatch", "value": "repeating-linear-gradient(45deg, #40566b 0 1px, transparent 1px 4px)", "purpose": "Elapsing or remaining time, drawn to scale." },
-      { "name": "hatch-vermilion", "value": "repeating-linear-gradient(45deg, #b7291d 0 1px, transparent 1px 4px)", "purpose": "A lapse. Fills the track rather than emptying it." }
-    ],
-    "declined": [
-      {
-        "name": "Visible leader",
-        "description": "A drawn leader tying a margin endorsement to its entry. Declined, not missing. The binding that ships is the shared row band plus the inset vermilion rule on the first cell.",
-        "status": "declined"
-      },
-      {
-        "name": "Blind emboss for attested",
-        "description": "A blind-emboss mark for attested status. Removed because the households list endpoint returns no claim status; booked to return with the household detail page, which has claimStatus.",
-        "status": "declined, booked"
-      }
-    ],
-    "measuredContrast": {
-      "note": "Measured on the shipped build and recorded as fact. No accessibility standard has been adopted for this product; these are measurements, not a compliance claim.",
-      "values": [
-        { "pair": "ink on ledger bone", "ratio": "15.54:1" },
-        { "pair": "ink-2 on ledger bone", "ratio": "6.32:1" },
-        { "pair": "rule on ledger bone", "ratio": "6.61:1" },
-        { "pair": "vermilion on ledger bone", "ratio": "5.45:1" },
-        { "pair": "vermilion on the struck row band", "ratio": "5.01:1" },
-        { "pair": "paper on the head band", "ratio": "9.71:1" },
-        { "pair": "placeholder ink on ledger bone", "ratio": "6.32:1" }
-      ]
-    },
-    "scope": {
-      "composed": ["/console/signin — the counter", "/console — the returns and the standing obligation", "/console/households — the register"],
-      "inheritedOnly": ["the magic-link callback", "create household", "household detail"],
-      "note": "The inherited surfaces get this world through element selectors in src/styles/console.css. Their current appearance is base setting, not designed layout."
-    }
-  },
-  "components": [
-    {
-      "name": "Primary Action",
-      "kind": "button",
-      "refersTo": "button-primary",
-      "description": "A filled stamp: the one primary act on a folio, which sits in the folio head. Focus inverts to paper inside dark or it disappears into the fill.",
-      "html": "<button class=\"ds-btn-primary\" type=\"submit\">Create household</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--paper, #f2efe6); background: var(--rule-strong, #2b3d4e); border: 1px solid var(--rule-strong, #2b3d4e); border-radius: 0; padding: 12px 18px; min-height: 34px; cursor: pointer; transition: background 90ms linear, color 90ms linear, transform 90ms linear; } .ds-btn-primary:hover { background: var(--rule, #40566b); border-color: var(--rule, #40566b); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: none; box-shadow: -4px 0 0 0 var(--paper, #f2efe6), 4px 0 0 0 var(--paper, #f2efe6), -5px 0 0 0 var(--rule-strong, #2b3d4e), 5px 0 0 0 var(--rule-strong, #2b3d4e); }"
-    },
-    {
-      "name": "Ruled Action",
-      "kind": "button",
-      "refersTo": "button-default",
-      "description": "The default control: a stamp outlined in the registry rule, filled only by a hover wash. Disabled swaps the solid rule for a dashed one.",
-      "html": "<button class=\"ds-btn-ruled\" type=\"button\">Previous</button>\n<button class=\"ds-btn-ruled\" type=\"button\" disabled>Next</button>",
-      "css": ".ds-btn-ruled { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rule-strong, #2b3d4e); background: transparent; border: 1px solid var(--rule, #40566b); border-radius: 0; padding: 12px 18px; min-height: 34px; cursor: pointer; transition: background 90ms linear, color 90ms linear, transform 90ms linear; } .ds-btn-ruled:hover:not(:disabled) { background: var(--rule-wash, rgba(43, 61, 78, 0.06)); } .ds-btn-ruled:active:not(:disabled) { transform: translateY(1px); } .ds-btn-ruled:focus-visible { outline: none; box-shadow: -4px 0 0 0 var(--rule-strong, #2b3d4e), 4px 0 0 0 var(--rule-strong, #2b3d4e); } .ds-btn-ruled:disabled { color: var(--ink-3, #837c6c); border-color: var(--rule-hair, rgba(43, 61, 78, 0.26)); border-style: dashed; cursor: not-allowed; }"
-    },
-    {
-      "name": "Cancelling Action",
-      "kind": "button",
-      "refersTo": "button-danger",
-      "description": "An act that cancels something, struck in vermilion because that is what it does. Never used for mere emphasis.",
-      "html": "<button class=\"ds-btn-danger\" type=\"button\" data-tone=\"danger\">Delete household</button>",
-      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--vermilion, #b7291d); background: transparent; border: 1px solid var(--vermilion, #b7291d); border-radius: 0; padding: 12px 18px; min-height: 34px; cursor: pointer; transition: background 90ms linear, transform 90ms linear; } .ds-btn-danger:hover:not(:disabled) { background: var(--vermilion-band, rgba(183, 41, 29, 0.055)); } .ds-btn-danger:active:not(:disabled) { transform: translateY(1px); } .ds-btn-danger:focus-visible { outline: none; box-shadow: -4px 0 0 0 var(--rule-strong, #2b3d4e), 4px 0 0 0 var(--rule-strong, #2b3d4e); }"
-    },
-    {
-      "name": "Ruled Field",
-      "kind": "input",
-      "refersTo": "input-line",
-      "description": "You write on the rule: a stamp label above, no box, a 2px registry rule beneath. Invalid turns the rule vermilion; focus brackets outside it and adds an inset rule inside.",
-      "html": "<div class=\"ds-field\">\n  <label class=\"ds-field-label\" for=\"ds-email\">Operator email</label>\n  <input class=\"ds-field-input\" id=\"ds-email\" type=\"email\" placeholder=\"name@nostos.app\" />\n</div>\n<div class=\"ds-field\">\n  <label class=\"ds-field-label\" for=\"ds-email-bad\">Operator email</label>\n  <input class=\"ds-field-input\" id=\"ds-email-bad\" type=\"email\" aria-invalid=\"true\" value=\"not-an-email\" />\n  <span class=\"ds-field-error\">Enter a valid email address.</span>\n</div>",
-      "css": ".ds-field { margin-bottom: 24px; } .ds-field-label { display: block; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rule, #40566b); margin-bottom: 6px; } .ds-field-input { width: 100%; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 15.5px; font-variant-numeric: tabular-nums; color: var(--ink, #1a1712); background: transparent; border: none; border-bottom: 2px solid var(--rule, #40566b); border-radius: 0; padding: 12px 0; appearance: none; caret-color: var(--rule-strong, #2b3d4e); } .ds-field-input::placeholder { color: var(--ink-2, #5c564c); opacity: 1; } .ds-field-input:focus-visible { outline: none; box-shadow: -4px 0 0 0 var(--rule-strong, #2b3d4e), 4px 0 0 0 var(--rule-strong, #2b3d4e), inset 0 -2px 0 0 var(--rule-strong, #2b3d4e); } .ds-field-input[aria-invalid='true'] { border-bottom-color: var(--vermilion, #b7291d); } .ds-field-input:disabled { color: var(--ink-3, #837c6c); border-bottom-style: dashed; cursor: not-allowed; } .ds-field-error { display: block; margin-top: 6px; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 12.5px; color: var(--vermilion, #b7291d); }"
-    },
-    {
-      "name": "Search Rule",
-      "kind": "input",
-      "refersTo": "input-line",
-      "description": "A composite ruled field: a drawn 16-grid search mark on the rule beside the input. The whole field is bracketed on :focus-within and the inner input's own bracket is suppressed.",
-      "html": "<div class=\"ds-search\">\n  <label class=\"ds-search-label\" for=\"ds-search-input\">Search</label>\n  <div class=\"ds-search-rule\">\n    <span class=\"ds-search-mark\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"7\" cy=\"7\" r=\"4.25\"></circle><path d=\"M10.25 10.25 13.5 13.5\"></path></svg></span>\n    <input class=\"ds-search-input\" id=\"ds-search-input\" type=\"search\" placeholder=\"Household name or admin email\" />\n  </div>\n</div>",
-      "css": ".ds-search { width: 100%; max-width: 420px; } .ds-search-label { display: block; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rule, #40566b); margin-bottom: 6px; } .ds-search-rule { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid var(--rule, #40566b); } .ds-search-rule:focus-within { box-shadow: -4px 0 0 0 var(--rule-strong, #2b3d4e), 4px 0 0 0 var(--rule-strong, #2b3d4e); } .ds-search-mark { display: flex; flex: none; color: var(--rule, #40566b); } .ds-search-input { width: 100%; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 15.5px; color: var(--ink, #1a1712); background: transparent; border: none; border-radius: 0; padding: 6px 0; appearance: none; } .ds-search-input::placeholder { color: var(--ink-2, #5c564c); opacity: 1; } .ds-search-input:focus-visible { outline: none; box-shadow: none; }"
-    },
-    {
-      "name": "Register Entry",
-      "kind": "custom",
-      "refersTo": "table-entry-struck",
-      "description": "The signature component: a ruled register with a marginal endorsement column. An entry in good standing leaves the margin blank but for a drawn hairline; a cancelled entry is banded in the vermilion wash, carries an inset vermilion rule on its first cell, and its name is struck with a text-decoration line-through so a wrapping name is struck on every line — and stays completely readable.",
-      "html": "<table class=\"ds-register\">\n  <thead>\n    <tr><th scope=\"col\" class=\"ds-register-margin-head\">Status</th><th scope=\"col\">Name</th><th scope=\"col\">Admin</th><th scope=\"col\" class=\"ds-register-figure\">Members</th></tr>\n  </thead>\n  <tbody>\n    <tr class=\"ds-register-entry\">\n      <td class=\"ds-register-margin\"><span class=\"ds-register-clear\" aria-hidden=\"true\"></span></td>\n      <td><button type=\"button\" class=\"ds-register-name\">Alvarez Household</button></td>\n      <td><span class=\"ds-register-admin\">Rosa Alvarez</span><span class=\"ds-register-email\">rosa@example.com</span></td>\n      <td class=\"ds-register-figure\">4</td>\n    </tr>\n    <tr class=\"ds-register-entry ds-register-entry--struck\">\n      <td class=\"ds-register-margin\">\n        <span class=\"ds-register-endorsement\">\n          <span class=\"ds-badge ds-badge--warning\">Deletion Pending</span>\n          <span class=\"ds-endorsement-date\">Requested 2 Aug 2026</span>\n          <span class=\"ds-endorsement-date\">Deletes 1 Sep 2026</span>\n          <span class=\"ds-grace\" role=\"img\" aria-label=\"15 of 30 days of grace period remaining\"><span class=\"ds-grace-run\" style=\"inline-size: 50%\"></span></span>\n        </span>\n      </td>\n      <td><button type=\"button\" class=\"ds-register-name\">Okafor Household</button></td>\n      <td><span class=\"ds-register-admin\">Chi Okafor</span><span class=\"ds-register-email\">chi@example.com</span></td>\n      <td class=\"ds-register-figure\">2</td>\n    </tr>\n  </tbody>\n</table>",
-      "css": ".ds-register { width: 100%; border-collapse: collapse; table-layout: fixed; border-top: 2px solid var(--rule-strong, #2b3d4e); border-bottom: 2px solid var(--rule-strong, #2b3d4e); font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-variant-numeric: tabular-nums; color: var(--ink, #1a1712); background: var(--paper, #f2efe6); } .ds-register th { font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rule, #40566b); text-align: left; padding: 12px 12px 6px; border-bottom: 1px solid var(--rule, #40566b); white-space: nowrap; } .ds-register td { padding: 12px; border-bottom: 1px solid var(--rule-hair, rgba(43, 61, 78, 0.26)); vertical-align: baseline; } .ds-register tbody tr:last-child td { border-bottom: none; } .ds-register th + th, .ds-register td + td { border-left: 1px solid var(--rule-hair, rgba(43, 61, 78, 0.26)); } .ds-register-margin-head { width: 212px; } .ds-register-figure { width: 96px; text-align: right; } .ds-register-margin { background: var(--paper-band, #ebe6d9); vertical-align: top; } .ds-register-clear { display: block; width: 14px; height: 1px; background: var(--ink-3, #837c6c); margin-top: 0.7em; } .ds-register-endorsement { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; } .ds-endorsement-date { font-size: 11.5px; letter-spacing: 0.02em; color: var(--vermilion, #b7291d); white-space: nowrap; } .ds-register-entry { cursor: pointer; } .ds-register-entry:hover { background: var(--rule-wash, rgba(43, 61, 78, 0.06)); } .ds-register-entry:hover .ds-register-margin { background: var(--paper-deep, #e3ddcd); } .ds-register-name { display: inline-block; max-width: 100%; font-family: inherit; font-size: 15.5px; font-weight: 500; letter-spacing: -0.004em; text-align: left; color: var(--ink, #1a1712); background: transparent; border: none; border-radius: 0; padding: 0; cursor: pointer; } .ds-register-entry:hover .ds-register-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.22em; } .ds-register-name:focus-visible { outline: none; box-shadow: -4px 0 0 0 var(--rule-strong, #2b3d4e), 4px 0 0 0 var(--rule-strong, #2b3d4e); } .ds-register-admin { display: block; } .ds-register-email { display: block; font-size: 11.5px; letter-spacing: 0.01em; color: var(--ink-2, #5c564c); overflow-wrap: anywhere; } .ds-register-entry--struck, .ds-register-entry--struck .ds-register-margin { background: var(--vermilion-band, rgba(183, 41, 29, 0.055)); } .ds-register-entry--struck:hover, .ds-register-entry--struck:hover .ds-register-margin { background: rgba(183, 41, 29, 0.1); } .ds-register-entry--struck td:first-child { box-shadow: inset 1px 0 0 0 var(--vermilion, #b7291d); } .ds-register-entry--struck .ds-register-name { text-decoration-line: line-through; text-decoration-color: var(--vermilion, #b7291d); text-decoration-thickness: 1.5px; animation: ds-strike-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-register-entry--struck:hover .ds-register-name { text-decoration-line: underline line-through; } @keyframes ds-strike-in { from { text-decoration-color: transparent; } to { text-decoration-color: var(--vermilion, #b7291d); } } .ds-badge { display: inline-block; font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; padding: 2px 6px; border: 1px solid currentColor; white-space: nowrap; } .ds-badge--warning { color: var(--vermilion, #b7291d); } .ds-grace { display: block; width: 150px; height: 9px; background: var(--paper, #f2efe6); border: 1px solid var(--rule-hair, rgba(43, 61, 78, 0.26)); } .ds-grace-run { display: block; height: 100%; background-image: repeating-linear-gradient(45deg, var(--rule, #40566b) 0 1px, transparent 1px 4px); }"
-    },
-    {
-      "name": "Grace Track",
-      "kind": "custom",
-      "refersTo": "table-margin-cell",
-      "description": "Duration drawn to scale: the hatched run is as long as the grace actually remaining. A lapsed grace fills the whole track with the vermilion hatch and outlines it in vermilion, because an empty box reads as a failed render and a full one reads as a verdict. The numbers live in the accessible label, not in prose beside it.",
-      "html": "<span class=\"ds-grace\" role=\"img\" aria-label=\"22 of 30 days of grace period remaining\"><span class=\"ds-grace-run\" style=\"inline-size: 73%\"></span></span>\n<span class=\"ds-grace ds-grace--lapsed\" role=\"img\" aria-label=\"Grace period has ended; this household can no longer be restored\"><span class=\"ds-grace-run\" style=\"inline-size: 100%\"></span></span>\n<span class=\"ds-grace-lapsed-stamp\" aria-hidden=\"true\">Grace ended</span>",
-      "css": ".ds-grace { display: block; width: 150px; height: 9px; margin-bottom: 6px; background: var(--paper, #f2efe6); border: 1px solid var(--rule-hair, rgba(43, 61, 78, 0.26)); } .ds-grace-run { display: block; height: 100%; background-image: repeating-linear-gradient(45deg, var(--rule, #40566b) 0 1px, transparent 1px 4px); } .ds-grace--lapsed { border-color: var(--vermilion, #b7291d); } .ds-grace--lapsed .ds-grace-run { background-image: repeating-linear-gradient(45deg, var(--vermilion, #b7291d) 0 1px, transparent 1px 4px); } .ds-grace-lapsed-stamp { display: inline-block; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--vermilion, #b7291d); }"
-    },
-    {
-      "name": "Notation Key",
-      "kind": "custom",
-      "refersTo": "badge-stamp",
-      "description": "The register publishes its own law: every mark the folio can draw, named, with the actual geometry drawn at sample size — never a glyph standing in for a mark. Only list marks the surface really renders.",
-      "html": "<ul class=\"ds-notation\">\n  <li class=\"ds-notation-title\">Notation</li>\n  <li><span class=\"ds-notation-mark ds-notation-mark--clear\" aria-hidden=\"true\"></span>Nothing pending</li>\n  <li><span class=\"ds-notation-mark ds-notation-mark--strike\" aria-hidden=\"true\"></span>Struck: deletion pending</li>\n  <li><span class=\"ds-notation-mark ds-notation-mark--hatch\" aria-hidden=\"true\"></span>Grace remaining</li>\n  <li><span class=\"ds-notation-mark ds-notation-mark--lapsed\" aria-hidden=\"true\"></span>Grace ended</li>\n</ul>",
-      "css": ".ds-notation { display: flex; flex-wrap: wrap; gap: 6px 24px; align-items: center; margin: 18px 0 0; padding: 6px 0; border-top: 1px solid var(--rule-hair, rgba(43, 61, 78, 0.26)); border-bottom: 1px solid var(--rule-hair, rgba(43, 61, 78, 0.26)); list-style: none; } .ds-notation li { display: flex; align-items: center; gap: 6px; font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 10.5px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-2, #5c564c); } .ds-notation-title { color: var(--rule, #40566b); letter-spacing: 0.15em; } .ds-notation-mark { display: block; flex: none; } .ds-notation-mark--clear { width: 14px; height: 1px; background: var(--ink-3, #837c6c); } .ds-notation-mark--strike { width: 18px; height: 2px; background: var(--vermilion, #b7291d); } .ds-notation-mark--hatch { width: 18px; height: 9px; background-image: repeating-linear-gradient(45deg, var(--rule, #40566b) 0 1px, transparent 1px 4px); } .ds-notation-mark--lapsed { width: 18px; height: 9px; background-image: repeating-linear-gradient(45deg, var(--vermilion, #b7291d) 0 1px, transparent 1px 4px); outline: 1px solid var(--vermilion, #b7291d); outline-offset: -1px; }"
-    },
-    {
-      "name": "Registry Head",
-      "kind": "nav",
-      "refersTo": "registry-head",
-      "description": "One full-strength blue-gray band across the top of every folio, closed by a 2px ink rule. The current section is the tab that extends — a full paper rule under the label, never a filled pill. The sign-out control's focus bracket is inverted to paper because it sits on a dark field.",
-      "html": "<header class=\"ds-head\">\n  <div class=\"ds-head-inner\">\n    <p class=\"ds-head-mark\">Nostos Operator Console</p>\n    <nav class=\"ds-head-nav\"><a class=\"ds-head-link ds-head-link--active\" href=\"#\">Dashboard</a><a class=\"ds-head-link\" href=\"#\">Households</a></nav>\n    <span class=\"ds-head-email\">operator@nostos.app</span>\n    <button class=\"ds-head-signout\" type=\"button\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6.25 2.5H3.25v11h3\"></path><path d=\"M9 5.25 11.75 8 9 10.75\"></path><path d=\"M11.75 8H6.5\"></path></svg><span>Sign out</span></button>\n  </div>\n</header>",
-      "css": ".ds-head { background: var(--rule-strong, #2b3d4e); color: var(--paper, #f2efe6); border-bottom: 2px solid var(--ink, #1a1712); font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); } .ds-head-inner { max-width: 1240px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; gap: 36px; } .ds-head-mark { margin: 0; font-size: 12.5px; font-weight: 600; letter-spacing: 0.17em; text-transform: uppercase; color: var(--paper, #f2efe6); white-space: nowrap; } .ds-head-nav { display: flex; align-items: center; gap: 24px; margin-right: auto; } .ds-head-link { font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: rgba(242, 239, 230, 0.72); border-bottom: 2px solid transparent; padding-bottom: 3px; } .ds-head-link:hover { color: var(--paper, #f2efe6); border-bottom-color: rgba(242, 239, 230, 0.4); } .ds-head-link--active { color: var(--paper, #f2efe6); border-bottom-color: var(--paper, #f2efe6); } .ds-head-email { font-size: 11.5px; letter-spacing: 0.04em; color: rgba(242, 239, 230, 0.78); max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-head-signout { display: inline-flex; align-items: center; gap: 6px; font-family: inherit; font-size: 10.5px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--paper, #f2efe6); background: transparent; border: 1px solid rgba(242, 239, 230, 0.45); border-radius: 0; padding: 6px 12px; min-height: 28px; cursor: pointer; transition: background 90ms linear; } .ds-head-signout:hover { background: rgba(242, 239, 230, 0.12); border-color: var(--paper, #f2efe6); } .ds-head-signout:focus-visible { outline: none; box-shadow: -4px 0 0 0 var(--paper, #f2efe6), 4px 0 0 0 var(--paper, #f2efe6); }"
-    },
-    {
-      "name": "Endorsement Slip",
-      "kind": "card",
-      "refersTo": "toast",
-      "description": "The act recorded in the margin: a paper slip over the folio, with a 36px lead rule above the copy. The only shadowed element in the system, because it is the only thing that is not part of the folio. The error variant switches the frame and lead rule to vermilion; the copy stays in ink.",
-      "html": "<div class=\"ds-slip\">Household created. Invite sent to rosa@example.com.</div>\n<div class=\"ds-slip ds-slip--error\">Could not send the invite. Try again, or check the address.</div>",
-      "css": ".ds-slip { font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); font-size: 12.5px; line-height: 1.45; color: var(--ink, #1a1712); background: var(--paper, #f2efe6); border: 1px solid var(--rule-strong, #2b3d4e); border-radius: 0; padding: 12px 18px; max-width: 400px; margin-bottom: 12px; box-shadow: 0 6px 18px -6px rgba(26, 23, 18, 0.4); animation: ds-slip-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both; } .ds-slip::before { content: ''; display: block; width: 36px; height: 2px; background: var(--rule, #40566b); margin-bottom: 6px; } .ds-slip--error { border-color: var(--vermilion, #b7291d); } .ds-slip--error::before { background: var(--vermilion, #b7291d); } @keyframes ds-slip-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }"
-    },
-    {
-      "name": "Ruled-But-Unwritten Folio",
-      "kind": "custom",
-      "refersTo": "table-head-cell",
-      "description": "Waiting: the folio is already ruled, the entries are still coming. A 48px-pitch feint ruling between the register's two division rules, with a status line beneath. Loading is never a spinning circle; where a control must show progress, it shows a 2px rule scaling from its left origin.",
-      "html": "<div class=\"ds-pending\">\n  <div class=\"ds-pending-rules\" aria-hidden=\"true\"></div>\n  <p class=\"ds-pending-status\" role=\"status\">Loading households…</p>\n</div>\n<span class=\"ds-drawing-rule\" aria-hidden=\"true\"></span>",
-      "css": ".ds-pending { border-top: 2px solid var(--rule-strong, #2b3d4e); border-bottom: 2px solid var(--rule-strong, #2b3d4e); background: var(--paper, #f2efe6); font-family: var(--face, 'Libre Franklin', system-ui, sans-serif); } .ds-pending-rules { height: 192px; background-image: repeating-linear-gradient(to bottom, transparent 0 47px, var(--rule-hair, rgba(43, 61, 78, 0.26)) 47px 48px); } .ds-pending-status { margin: 0; padding: 12px 0; text-align: center; font-size: 12.5px; color: var(--ink-2, #5c564c); border-top: 1px solid var(--rule-hair, rgba(43, 61, 78, 0.26)); } .ds-drawing-rule { display: block; width: 24px; height: 2px; margin: 18px auto 0; background: var(--rule, #40566b); transform-origin: left center; animation: ds-rule-pulse 900ms ease-in-out infinite alternate; } @keyframes ds-rule-pulse { from { transform: scaleX(0.2); } to { transform: scaleX(1); } }"
-    }
-  ],
-  "narrative": {
-    "northStar": "The Register",
-    "overview": "A household is a registered title, and this console is the only hand allowed to write on the register. So the page is ruled, not composed. Structure is carried by engraved blue-gray hairlines and full-strength division rules on ledger-bone stock; there are no cards, no status pills, no rounded corners, and no shadow anywhere in the page's own structure. The one authored motion per surface is a stamp being pressed or a rule being drawn.\n\nDensity is high and unapologetically clerical: a 6px division governs every measure, numerals are tabular everywhere on the page, and labels are tracked caps set in the rule colour so they read as printed stamps rather than UI chrome. Type is a single face — Libre Franklin, self-hosted variable woff2, weights 400–700, two Latin subsets, SIL OFL — with no display face by design. Hierarchy comes from size, weight, tracking and case, never from a second voice.\n\nState is a mark before it is a hue. A cancelled entry is ruled through in vermilion and stays fully legible; remaining grace is a hatched bar whose length is the actual time left; an entry in good standing leaves the margin blank on purpose, so scanning the margin alone finds every household that needs an operator. The register also prints its own law: the notation key on the households folio draws each mark exactly as the entries draw it.",
-    "keyCharacteristics": [
-      "Ruled, never boxed: divisions are 1px hairlines and 2px full-strength rules, never containers.",
-      "One face, tabular figures, tracked-caps stamps for every label and column head.",
-      "A closed three-meaning colour law; vermilion means cancellation and nothing else.",
-      "Every state readable in grayscale, because geometry carries it and colour only confirms.",
-      "Duration drawn to scale rather than restated as prose.",
-      "Flat by structure: exactly one shadowed element in the whole system, and it is not page structure."
-    ],
-    "rules": [
-      { "name": "The Closed Law Rule", "body": "The palette has exactly three meanings: blue-gray = structure and interaction (including focus), iron-gall ink = content, vermilion = struck, cancelled, or in error. There is no fourth. Introducing a hue with a new meaning breaks the system, not just the palette — and the notation key on the register will start lying.", "section": "colors" },
-      { "name": "The Reserved Red Rule", "body": "Vermilion is never decoration, never emphasis, never \"important\". If the thing is not cancelled, expired, or an error, it is drawn in rule or ink.", "section": "colors" },
-      { "name": "The Mark-Before-Hue Rule", "body": "Every state is carried by geometry first — strike-through, hatch length, vermilion hatch fill, stamp border, margin hairline, focus bracket — so it survives grayscale and colour blindness. Colour only confirms what the mark already said. Audit test: screenshot in grayscale; if a state disappears, it was never designed.", "section": "colors" },
-      { "name": "The One Face Rule", "body": "There is no display face and no second family. If a heading needs more presence, it gets size, weight, or tracking — not a different typeface.", "section": "typography" },
-      { "name": "The Tabular Figures Rule", "body": "Numerals are tabular everywhere, set once on body. Never introduce proportional figures into a column, a count, or a date.", "section": "typography" },
-      { "name": "The Closed Ramp Rule", "body": "Eight steps, and nothing lives outside them: figure 21 / title 19 / head 17 / entry 15.5 / body 14.5 / caption 12.5 / micro 11.5 / stamp 10.5. Every font-size in every stylesheet resolves through a --f-* token; a literal pixel size is a defect, and a step no surface renders is deleted rather than kept as \"reserved\" (the former 32px return step went that way). A new size is a deliberate addition to the ramp, never a local override.", "section": "typography" },
-      { "name": "The Stamp Rule", "body": "Anything that labels rather than states — column head, field label, action, badge, section head — is tracked caps at stamp size in the rule colour. Sentence-case labels in ink read as content and break the register.", "section": "typography" },
-      { "name": "The Division Rule", "body": "Every measure is a multiple of 6px, taken from the division tokens. A hand-typed spacing value is a defect.", "section": "layout" },
-      { "name": "The Blank Margin Rule", "body": "The margin column notes exceptions only. An entry in good standing shows a 14px hairline and nothing else, so the margin can be scanned on its own to find every household that needs an operator. Never fill the margin with an \"OK\" state.", "section": "layout" },
-      { "name": "The One Shadow Rule", "body": "The toast is the only shadowed thing, because it is the only thing that is not part of the folio. Everything else earns separation from rules, weight and stock.", "section": "elevation" },
-      { "name": "The Bracket Focus Rule", "body": "Focus is a bracket, not an outline: two rule-strong rules flanking the element, drawn with box-shadow so nothing shifts. Fields keep their own frame and add an inset underline. Filled actions must invert the bracket to paper (paper bracket inside a wider rule-strong bracket), because a rule-strong bracket vanishes into a rule-strong fill. Any new filled or dark-field control inherits this obligation. A ruled composite field (the search rule) brackets the whole field on :focus-within and suppresses the inner input's own bracket. forced-colors falls back to a 2px system outline.", "section": "elevation" },
-      { "name": "The No Radius Rule", "body": "Nothing in this system is rounded. A radius, however small, reads as a card and cards are refused.", "section": "shapes" },
-      { "name": "The Drawn Duration Rule", "body": "Time is drawn to scale: the grace bar's length is the real remaining fraction, and a lapsed grace fills the track with the vermilion hatch rather than emptying it — an empty box reads as a failed render, a full one reads as a verdict. Never restate a duration in prose where it can be drawn (the accessible label carries the numbers).", "section": "shapes" }
-    ],
-    "dos": [
-      "Do draw structure with rules and stock: 1px hairline for column and row divisions, 1px full rule under a table head, 2px rule-strong for a division or a table's outer bracket, 3px for a sheet's head.",
-      "Do place every measure on the 6px division scale.",
-      "Do label with stamps: tracked caps (0.15em) at 10.5px in the rule colour, for column heads, field labels, buttons, badges and section heads.",
-      "Do carry state as a mark first — strike, hatch, border, hairline — and let colour merely confirm it.",
-      "Do draw duration to scale, and fill a lapsed track with the vermilion hatch instead of emptying it.",
-      "Do bracket focus with box-shadow, and invert the bracket to paper on any filled or dark-field control.",
-      "Do keep motion to stamping and ruling: 90ms linear for a press, 320ms cubic-bezier(0.16, 1, 0.3, 1) for a draw, one authored moment per surface, single-axis and damped, snapping under prefers-reduced-motion.",
-      "Do show waiting as a rule being drawn or a ruled-but-unwritten folio.",
-      "Do keep a cancelled entry fully legible while it is struck."
-    ],
-    "donts": [
-      "Don't add a fourth colour meaning. Blue-gray, ink, vermilion — that is the whole law, and the notation key prints it.",
-      "Don't use vermilion for anything but struck, cancelled, or in error. Not for emphasis, not for a primary action, not for a warning that isn't a cancellation.",
-      "Don't introduce a radius, a card, a status pill, or a metric tile. A badge is a bordered stamp; a division is a rule.",
-      "Don't shadow page structure. The toast is the only shadowed element in the system.",
-      "Don't add a second typeface or a display face, and don't let proportional numerals into a figure column.",
-      "Don't write a pixel font-size literal; take a step from the eight-step ramp, or add a step to it deliberately.",
-      "Don't use an outline for focus, or a bracket in rule-strong on a rule-strong fill — focus disappears.",
-      "Don't ship a spinning circle, a pulse, a bounce, or a multi-axis transition.",
-      "Don't fill the margin column for entries in good standing; a blank margin is the reading.",
-      "Don't restate in prose a duration the page can draw, and don't empty a track to signal a lapse.",
-      "Don't reflow the register into cards at narrow widths; scroll the ledger and announce the off-screen columns."
-    ],
-    "declined": [
-      "The visible leader tying a margin endorsement to its entry was declined; the shared row band plus the inset vermilion rule on the first cell is the binding that ships.",
-      "The blind emboss for attested was removed because the households list endpoint returns no claim status; it is booked to return with the household detail page, which has claimStatus."
+ "schemaVersion": 2,
+ "generatedAt": "2026-08-20T00:00:00.000Z",
+ "title": "Design System: Nostos Operator Console",
+ "extensions": {
+  "colorMeta": {
+   "bg": {
+    "role": "neutral",
+    "displayName": "Page Ground",
+    "canonical": "#f6f7f9",
+    "purpose": "The page itself. Nothing content-bearing is allowed to sit directly on it — it exists to make white cards read as objects.",
+    "tonalRamp": [
+     "#2c2c2d",
+     "#5d5e5f",
+     "#949495",
+     "#cacbcc",
+     "#f6f7f9",
+     "#f9f9fb",
+     "#fbfcfd",
+     "#fdfefe"
     ]
+   },
+   "surface": {
+    "role": "neutral",
+    "displayName": "Card Surface",
+    "canonical": "#ffffff",
+    "purpose": "Cards, dialogs, inputs, toasts. The working surface for all content.",
+    "tonalRamp": [
+     "#2e2e2e",
+     "#616161",
+     "#999999",
+     "#d1d1d1",
+     "#ffffff",
+     "#ffffff",
+     "#ffffff",
+     "#ffffff"
+    ]
+   },
+   "surface-2": {
+    "role": "neutral",
+    "displayName": "Recessed Surface",
+    "canonical": "#f9fafb",
+    "purpose": "Table heads, row hover, card footers, inset wells and disabled fields. A recess, never a raise.",
+    "tonalRamp": [
+     "#2d2d2d",
+     "#5f5f5f",
+     "#959697",
+     "#cccdce",
+     "#f9fafb",
+     "#fbfcfc",
+     "#fdfdfd",
+     "#fefefe"
+    ]
+   },
+   "border": {
+    "role": "neutral",
+    "displayName": "Rule",
+    "canonical": "#e5e7eb",
+    "purpose": "The default 1px division between everything. Depth is carried by borders first, shadow second.",
+    "tonalRamp": [
+     "#292a2a",
+     "#575859",
+     "#898b8d",
+     "#bcbdc1",
+     "#e5e7eb",
+     "#edeef1",
+     "#f5f5f7",
+     "#fafbfb"
+    ]
+   },
+   "border-strong": {
+    "role": "neutral",
+    "displayName": "Control Edge",
+    "canonical": "#d3d8de",
+    "purpose": "The edge of anything interactive at rest — inputs and buttons. Stronger than a division rule so controls read as touchable.",
+    "tonalRamp": [
+     "#262728",
+     "#505254",
+     "#7f8285",
+     "#adb1b6",
+     "#d3d8de",
+     "#e0e4e8",
+     "#edeff2",
+     "#f7f8f9"
+    ]
+   },
+   "text": {
+    "role": "neutral",
+    "displayName": "Ink",
+    "canonical": "#111827",
+    "purpose": "All primary content: headings, cell values, button labels. Measured 17.74:1 on card surface.",
+    "tonalRamp": [
+     "#030407",
+     "#06090f",
+     "#0a0e17",
+     "#0e1420",
+     "#111827",
+     "#585d68",
+     "#a0a3a9",
+     "#d4d5d8"
+    ]
+   },
+   "text-2": {
+    "role": "neutral",
+    "displayName": "Secondary Ink",
+    "canonical": "#4b5563",
+    "purpose": "Captions, meta lines, table head labels, ghost buttons. Measured 7.56:1 on card surface.",
+    "tonalRamp": [
+     "#0e0f12",
+     "#1c2026",
+     "#2d333b",
+     "#3e4651",
+     "#4b5563",
+     "#818892",
+     "#b7bbc1",
+     "#dfe0e3"
+    ]
+   },
+   "text-3": {
+    "role": "neutral",
+    "displayName": "Muted Ink",
+    "canonical": "#6b7280",
+    "purpose": "Field hints, placeholders and disabled labels. The tightest pair in the system at 4.63:1 on the recessed surface — do not push it lighter.",
+    "tonalRamp": [
+     "#131517",
+     "#292b31",
+     "#40444d",
+     "#585d69",
+     "#6b7280",
+     "#979ca6",
+     "#c4c7cc",
+     "#e4e6e8"
+    ]
+   },
+   "navy": {
+    "role": "primary",
+    "displayName": "Console Navy",
+    "canonical": "#2b3d4e",
+    "purpose": "The single brand accent, and deliberately scarce: the top bar, the primary button, and the loading sweep. Nothing else. Kept from the earlier build by the operator's explicit request.",
+    "tonalRamp": [
+     "#080b0e",
+     "#10171e",
+     "#1a252f",
+     "#233240",
+     "#2b3d4e",
+     "#6b7783",
+     "#aab1b8",
+     "#d9dcdf"
+    ]
+   },
+   "focus": {
+    "role": "primary",
+    "displayName": "Focus Blue",
+    "canonical": "#3b82f6",
+    "purpose": "The focus border plus a 3px rgba(59,130,246,0.18) ring. Distinct from navy so focus never reads as brand decoration. 3.68:1 against white, clearing the 3:1 non-text requirement.",
+    "tonalRamp": [
+     "#0b172c",
+     "#16315d",
+     "#234e94",
+     "#306bca",
+     "#3b82f6",
+     "#76a8f9",
+     "#b1cdfb",
+     "#dce8fd"
+    ]
+   },
+   "success": {
+    "role": "secondary",
+    "displayName": "Success Green",
+    "canonical": "#047857",
+    "purpose": "Active households, claimed invites, completed acts. Always paired with #ecfdf5 and a #a7f3d0 border.",
+    "tonalRamp": [
+     "#011610",
+     "#022e21",
+     "#024834",
+     "#036247",
+     "#047857",
+     "#4fa089",
+     "#9bc9bc",
+     "#d2e7e1"
+    ]
+   },
+   "danger": {
+    "role": "secondary",
+    "displayName": "Danger Red",
+    "canonical": "#b42318",
+    "purpose": "Destructive acts, deletion-pending state, and failures. Nothing else, ever. Never used for mere emphasis.",
+    "tonalRamp": [
+     "#200604",
+     "#440d09",
+     "#6c150e",
+     "#941d14",
+     "#b42318",
+     "#ca655d",
+     "#e1a7a3",
+     "#f2d7d5"
+    ]
+   },
+   "warning": {
+    "role": "secondary",
+    "displayName": "Warning Amber",
+    "canonical": "#b45309",
+    "purpose": "Awaiting action — chiefly a pending admin invite. Paired with #fffbeb and a #fde68a border.",
+    "tonalRamp": [
+     "#200f02",
+     "#442003",
+     "#6c3205",
+     "#944407",
+     "#b45309",
+     "#ca8753",
+     "#e1ba9d",
+     "#f2e0d3"
+    ]
+   },
+   "info": {
+    "role": "secondary",
+    "displayName": "Info Blue",
+    "canonical": "#1d4ed8",
+    "purpose": "Neutral notices in toasts. Paired with #eff6ff and a #bfdbfe border.",
+    "tonalRamp": [
+     "#050e27",
+     "#0b1e52",
+     "#112f82",
+     "#1840b1",
+     "#1d4ed8",
+     "#6183e4",
+     "#a5b8ef",
+     "#d6dff8"
+    ]
+   }
+  },
+  "typographyMeta": {
+   "page-title": {
+    "displayName": "Page Title",
+    "purpose": "The h1 on every folio. 24px/600, tightened -0.011em."
+   },
+   "section": {
+    "displayName": "Section",
+    "purpose": "An h2 dividing a page into named regions."
+   },
+   "card-title": {
+    "displayName": "Card Title",
+    "purpose": "An h3, and the title inside a card header or dialog panel."
+   },
+   "body": {
+    "displayName": "Body",
+    "purpose": "Prose, table cells, inputs and button labels. The default at 14px."
+   },
+   "label": {
+    "displayName": "Label",
+    "purpose": "Form labels and field hints at 13px, weight 500."
+   },
+   "caption": {
+    "displayName": "Caption",
+    "purpose": "`small`, inline status and alert text, pagination range."
+   },
+   "micro": {
+    "displayName": "Micro",
+    "purpose": "Table heads and badges at 12px, and the top bar's uppercase tracked wordmark and nav links. Tracked caps are a chrome treatment only — never page content."
+   }
+  },
+  "fonts": [
+   {
+    "family": "Libre Franklin",
+    "role": "the only face",
+    "source": "self-hosted variable woff2, weights 400-700, two subsets (latin, latin-ext), declared in src/styles/tokens.css with font-display: swap and explicit unicode-range",
+    "license": "SIL OFL",
+    "note": "There is no display face and no second family by design. Hierarchy comes from size, weight, tracking and case. There is no weight 700 in use — 600 is the top step.",
+    "ramp": [
+     "--t-xs 12px",
+     "--t-sm 13px",
+     "--t-md 14px",
+     "--t-lg 16px",
+     "--t-xl 20px",
+     "--t-2xl 24px",
+     "--t-3xl 30px"
+    ],
+    "rampNote": "Seven steps. --t-3xl is declared but no shipped surface renders it; it is reserved rather than deleted because the metrics grid is the obvious future consumer."
+   }
+  ],
+  "shadows": [
+   {
+    "name": "shadow-sm",
+    "value": "0 1px 2px rgba(16, 24, 40, 0.06)",
+    "purpose": "The resting elevation: cards, inputs, buttons. Barely there — it lifts an already-bordered object off the ground rather than doing the separating itself."
+   },
+   {
+    "name": "shadow",
+    "value": "0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06)",
+    "purpose": "The loading sheet, which stands alone on the page with no sibling to be measured against."
+   },
+   {
+    "name": "shadow-lg",
+    "value": "0 12px 24px -8px rgba(16, 24, 40, 0.18), 0 4px 8px -4px rgba(16, 24, 40, 0.08)",
+    "purpose": "Overlay elevation: dialog panels and toasts. Every shadow in the system is offset plus blur, tinted rgba(16,24,40,...) — never pure black, never a glow."
+   }
+  ],
+  "focus": {
+   "name": "ring",
+   "value": "border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18); outline: none",
+   "purpose": "The conventional ring, executed properly. The border recolours and a 3px translucent ring is added outside it, so nothing shifts and the control keeps its shape.",
+   "fieldVariant": "Identical for inputs, textareas and selects. An invalid field (aria-invalid=\"true\", or an aria-describedby ending in -error) swaps the ring to rgba(180, 35, 24, 0.15) and the border to --danger.",
+   "invertedVariant": "Not defined. The navy top bar declares --focus-on-navy #93c5fd for controls placed on the navy field.",
+   "invertedRequiredFor": [
+    "the sign-out control in the top bar",
+    "any new control placed on the navy field"
+   ],
+   "mandatory": "Validation state is keyed off the ARIA attribute, not a class, so the accessible state and the visual state cannot drift apart. Style new invalid states the same way."
+  },
+  "motion": [
+   {
+    "name": "fast",
+    "value": "120ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "purpose": "State changes: hover, border-colour, colour. Applied to named properties only — never to `all`."
+   },
+   {
+    "name": "base",
+    "value": "200ms cubic-bezier(0.16, 1, 0.3, 1)",
+    "purpose": "Entrances. Currently only the toast."
+   },
+   {
+    "name": "toast-in",
+    "value": "200ms, opacity 0 to 1 with translateY(8px) to none",
+    "purpose": "A toast arriving. A single damped rise, one axis."
+   },
+   {
+    "name": "rule-sweep",
+    "value": "1100ms ease-in-out infinite alternate",
+    "purpose": "The waiting state, kept from the earlier build by request: a 38%-wide navy segment swept across a 4px round track. Loading is a rule being drawn, never a spinning circle."
+   }
+  ],
+  "motionGrammar": "Motion confirms, it never entertains. Single-axis, damped, and caused by the operator — with the sole exception of the loading sweep. No spinners, bounces, glows, parallax or multi-axis transitions. Transitions always name their properties.",
+  "breakpoints": [
+   {
+    "name": "narrow",
+    "value": "768px",
+    "purpose": "The only breakpoint in the system. Page padding drops from 32px 24px 48px to 24px 16px 40px, table cells tighten to 12px, and card header/body/footer horizontal padding drops from 20px to 16px. Tables scroll rather than reflow."
+   }
+  ],
+  "grid": {
+   "division": "4px",
+   "steps": [
+    "4px",
+    "8px",
+    "12px",
+    "16px",
+    "20px",
+    "24px",
+    "32px",
+    "40px",
+    "48px"
+   ],
+   "folio": "main, max-width 1280px, padding 32px 24px 48px (24px 16px 40px under 768px). The top bar's inner content shares the same 1280px measure so the wordmark aligns with the page title beneath it.",
+   "note": "Every measure resolves through an --s* token. The legacy --space-* aliases survive only to feed the .mt-/.mb-/.gap- utilities kept from the previous system."
+  },
+  "radii": [
+   {
+    "name": "--r-sm",
+    "value": "4px",
+    "purpose": "Rarely used; the smallest step."
+   },
+   {
+    "name": "--r",
+    "value": "6px",
+    "purpose": "Controls — buttons, inputs, selects."
+   },
+   {
+    "name": "--r-lg",
+    "value": "8px",
+    "purpose": "Containers — cards, dialog panels, toasts."
+   },
+   {
+    "name": "--r-full",
+    "value": "999px",
+    "purpose": "Status badges, pagination pills, the loading rule. Fully round means status or progress, never a button."
+   }
+  ],
+  "declined": [
+   {
+    "name": "The Register",
+    "description": "A distinctive concept direction — ruled ledger-bone stock, engraved blue-gray hairlines, vermilion reserved for cancellation, hatched grace bars, no cards and no rounded corners (seed da764555). Built out in full and rejected by the operator in favour of the category standard. Do not reintroduce any part of it.",
+    "status": "declined"
+   },
+   {
+    "name": "Dark mode",
+    "description": "No dark palette exists. color-scheme: light is declared explicitly. Not attempted, not deferred — the console is a desk tool with one appearance.",
+    "status": "declined"
+   },
+   {
+    "name": "Tablet breakpoint",
+    "description": "Earlier documents described mobile/tablet/desktop tiers at 768px and 1024px. Only the 768px block was ever built. Desktop is the committed target, so the missing tier is a scope decision rather than an omission.",
+    "status": "declined"
+   }
+  ],
+  "measuredContrast": {
+   "note": "Measured against the shipped tokens on 2026-08-20 and recorded as fact. No accessibility standard has been formally adopted for this product; these are measurements, not a compliance claim. Every text pair clears WCAG AA (4.5:1).",
+   "values": [
+    {
+     "pair": "text on surface",
+     "ratio": "17.74:1"
+    },
+    {
+     "pair": "text on page ground",
+     "ratio": "16.55:1"
+    },
+    {
+     "pair": "text-inverse on navy",
+     "ratio": "10.67:1"
+    },
+    {
+     "pair": "text-2 on surface",
+     "ratio": "7.56:1"
+    },
+    {
+     "pair": "danger on surface",
+     "ratio": "6.57:1"
+    },
+    {
+     "pair": "text-inverse on danger fill",
+     "ratio": "6.28:1"
+    },
+    {
+     "pair": "info on info-bg",
+     "ratio": "6.16:1"
+    },
+    {
+     "pair": "danger on danger-bg",
+     "ratio": "6.01:1"
+    },
+    {
+     "pair": "success on success-bg",
+     "ratio": "5.21:1"
+    },
+    {
+     "pair": "warning on warning-bg",
+     "ratio": "4.84:1"
+    },
+    {
+     "pair": "text-3 on surface",
+     "ratio": "4.83:1"
+    },
+    {
+     "pair": "text-3 on surface-2",
+     "ratio": "4.63:1 — the tightest pair in the system"
+    },
+    {
+     "pair": "focus on surface (non-text, 3:1 requirement)",
+     "ratio": "3.68:1"
+    }
+   ]
+  },
+  "scope": {
+   "composed": [
+    "/console/signin — the signin page",
+    "/console — the metrics dashboard",
+    "/console/households — the household list"
+   ],
+   "inheritedOnly": [
+    "/console/auth/signin/:token — the magic-link callback",
+    "/console/households/new — create household",
+    "/console/households/:id — household detail"
+   ],
+   "note": "Composed surfaces have their own stylesheet (signin.css, dashboard.css, households.css) alongside the shared components in header.css, console-layout.css and logout-modal.css. Inherited surfaces get the system through element and ARIA-role selectors in src/styles/console.css; their current appearance is correct base setting, not designed layout."
+  },
+  "legacyNaming": {
+   "note": "Some class names survive from the rejected Register direction and are legacy names for conventional components, not a surviving metaphor. Rename freely; do not read intent into them.",
+   "names": [
+    {
+     "class": ".registry-head",
+     "is": "the navy top bar"
+    },
+    {
+     "class": ".registry-head-mark",
+     "is": "the wordmark"
+    },
+    {
+     "class": ".registry-head-nav / .console-nav-link",
+     "is": "the top-bar nav"
+    },
+    {
+     "class": ".validating / .validating-sheet / .validating-rule",
+     "is": "the full-page loading treatment"
+    }
+   ]
   }
+ },
+ "components": [
+  {
+   "name": "Primary Action",
+   "kind": "button",
+   "refersTo": "btn-primary",
+   "description": "The one primary act on a page, sitting in the page header opposite the title. Navy fill, white label. Applied automatically to button[type=submit] and a[role=button], so most primary actions need no class at all.",
+   "html": "<button class=\"ds-btn-primary\" type=\"submit\">Create household</button>",
+   "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 1; color: #f8fafc; background: #2b3d4e; border: 1px solid #2b3d4e; border-radius: 6px; padding: 0 16px; height: 36px; cursor: pointer; white-space: nowrap; box-shadow: 0 1px 2px rgba(16,24,40,.06); transition: background 120ms cubic-bezier(.4,0,.2,1), border-color 120ms cubic-bezier(.4,0,.2,1), color 120ms cubic-bezier(.4,0,.2,1); } .ds-btn-primary:hover:not(:disabled) { background: #22313f; border-color: #22313f; } .ds-btn-primary:focus-visible { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.18); } .ds-btn-primary:disabled { color: #6b7280; background: #f9fafb; border-color: #e5e7eb; box-shadow: none; cursor: not-allowed; }"
+  },
+  {
+   "name": "Destructive Action",
+   "kind": "button",
+   "refersTo": "btn-danger",
+   "description": "Delete and other irreversible acts. Danger fill, white label, 6.28:1. Always opens a confirmation dialog rather than acting immediately.",
+   "html": "<button class=\"ds-btn-danger\" data-tone=\"danger\">Delete household</button>",
+   "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Libre Franklin', system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 1; color: #f8fafc; background: #b42318; border: 1px solid #b42318; border-radius: 6px; padding: 0 16px; height: 36px; cursor: pointer; box-shadow: 0 1px 2px rgba(16,24,40,.06); transition: background 120ms cubic-bezier(.4,0,.2,1), border-color 120ms cubic-bezier(.4,0,.2,1); } .ds-btn-danger:hover:not(:disabled) { background: #99200f; border-color: #99200f; }"
+  },
+  {
+   "name": "Card",
+   "kind": "container",
+   "refersTo": "card",
+   "description": "The base container. Nothing content-bearing floats on the page ground — it goes in a card. Optional header (title left, action right, bottom rule) and footer (recessed fill, top rule).",
+   "html": "<section class=\"ds-card\"><header class=\"ds-card-header\"><h3>Members</h3></header><div class=\"ds-card-body\">…</div></section>",
+   "css": ".ds-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 2px rgba(16,24,40,.06); } .ds-card-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-bottom: 1px solid #e5e7eb; } .ds-card-header h3 { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.011em; color: #111827; } .ds-card-body { padding: 20px; } .ds-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 20px; border-top: 1px solid #e5e7eb; background: #f9fafb; border-radius: 0 0 8px 8px; }"
+  },
+  {
+   "name": "Status Badge",
+   "kind": "indicator",
+   "refersTo": "badge",
+   "description": "A round pill carrying a 6px currentColor dot. Three variants map to the status pairs. A status colour never appears without its background and border — a bare red word is not a status.",
+   "html": "<span class=\"ds-badge ds-badge--danger\">Deletion pending</span>",
+   "css": ".ds-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; line-height: 1; padding: 4px 9px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; } .ds-badge::before { content: ''; width: 6px; height: 6px; border-radius: 999px; background: currentColor; } .ds-badge--neutral { color: #047857; background: #ecfdf5; border-color: #a7f3d0; } .ds-badge--warning { color: #b45309; background: #fffbeb; border-color: #fde68a; } .ds-badge--danger { color: #b42318; background: #fef2f2; border-color: #fecaca; }"
+  },
+  {
+   "name": "Field",
+   "kind": "input",
+   "refersTo": "field",
+   "description": "A labelled input with an optional hint. Invalid state is driven by the ARIA attribute so the accessible name and the visual state cannot diverge.",
+   "html": "<div class=\"ds-field\"><label for=\"household-name\">Household name</label><input id=\"household-name\" type=\"text\" aria-describedby=\"household-name-hint\" /><p class=\"ds-field-hint\" id=\"household-name-hint\">Up to 100 characters.</p></div>",
+   "css": ".ds-field { margin-bottom: 20px; } .ds-field label { display: block; font-size: 13px; font-weight: 500; color: #111827; margin-bottom: 8px; } .ds-field input { width: 100%; font-family: 'Libre Franklin', system-ui, sans-serif; font-size: 14px; color: #111827; background: #ffffff; border: 1px solid #d3d8de; border-radius: 6px; padding: 9px 12px; box-shadow: 0 1px 2px rgba(16,24,40,.06); appearance: none; transition: border-color 120ms cubic-bezier(.4,0,.2,1), box-shadow 120ms cubic-bezier(.4,0,.2,1); } .ds-field input:hover:not(:disabled) { border-color: #b9c0c9; } .ds-field input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.18); } .ds-field input[aria-invalid='true'] { border-color: #b42318; } .ds-field input[aria-invalid='true']:focus { box-shadow: 0 0 0 3px rgba(180,35,24,.15); } .ds-field-hint { font-size: 13px; color: #6b7280; margin-top: 8px; }"
+  },
+  {
+   "name": "Toast",
+   "kind": "feedback",
+   "refersTo": "toast",
+   "description": "Bottom-right stack. Each toast is tinted with its status pair and carries an icon in the status foreground — success, error and info must never be mistaken for each other.",
+   "html": "<div class=\"ds-toast ds-toast--success\" role=\"status\"><span class=\"ds-toast-icon\">✓</span><p>Household created.</p></div>",
+   "css": ".ds-toast-stack { position: fixed; right: 24px; bottom: 24px; z-index: 60; display: flex; flex-direction: column; gap: 12px; max-width: min(400px, calc(100vw - 40px)); } .ds-toast { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; line-height: 1.45; color: #111827; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; box-shadow: 0 12px 24px -8px rgba(16,24,40,.18), 0 4px 8px -4px rgba(16,24,40,.08); animation: ds-toast-in 200ms cubic-bezier(.16,1,.3,1) both; } .ds-toast-icon { display: flex; flex: none; margin-top: 1px; } .ds-toast--success { background: #ecfdf5; border-color: #a7f3d0; } .ds-toast--success .ds-toast-icon { color: #047857; } .ds-toast--error { background: #fef2f2; border-color: #fecaca; } .ds-toast--error .ds-toast-icon { color: #b42318; } @keyframes ds-toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }"
+  },
+  {
+   "name": "Loading Sheet",
+   "kind": "feedback",
+   "refersTo": "validating",
+   "description": "Signature, kept by the operator's explicit request. A centred white sheet on the page ground carrying a status line and a swept navy rule. Used for the session splash and the magic-link exchange. Loading is a rule being drawn, never a spinning circle. Do not redesign without asking.",
+   "html": "<div class=\"ds-validating\"><div class=\"ds-validating-sheet\"><p role=\"status\">Checking your session…</p><div class=\"ds-validating-rule\"></div></div></div>",
+   "css": ".ds-validating { min-height: 100svh; display: grid; place-items: center; padding: 24px; background: #f6f7f9; } .ds-validating-sheet { width: min(400px, 100%); background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 3px rgba(16,24,40,.1), 0 1px 2px rgba(16,24,40,.06); padding: 24px; } .ds-validating-sheet [role='status'] { margin: 0 0 16px; font-size: 14px; color: #111827; } .ds-validating-rule { position: relative; height: 4px; background: #f9fafb; border-radius: 999px; overflow: hidden; } .ds-validating-rule::after { content: ''; position: absolute; inset: 0 auto 0 0; width: 38%; border-radius: 999px; background: #2b3d4e; animation: ds-rule-sweep 1100ms ease-in-out infinite alternate; } @keyframes ds-rule-sweep { from { transform: translateX(-100%); } to { transform: translateX(263%); } }"
+  },
+  {
+   "name": "Top Bar",
+   "kind": "navigation",
+   "refersTo": "registry-head",
+   "description": "Signature, kept by the operator's explicit request. Navy field, uppercase tracked wordmark, uppercase nav links with a 2px underline on the active tab, operator identity and sign-out pushed right. Inner content shares the page's 1280px measure. Do not redesign without asking.",
+   "html": "<header class=\"ds-topbar\"><div class=\"ds-topbar-inner\"><h1 class=\"ds-topbar-mark\">Nostos Operator Console</h1><nav class=\"ds-topbar-nav\" aria-label=\"Console sections\"><a class=\"active\" href=\"/console\">Dashboard</a><a href=\"/console/households\">Households</a></nav></div></header>",
+   "css": ".ds-topbar { background: #2b3d4e; color: #f8fafc; border-bottom: 1px solid rgba(0,0,0,.2); } .ds-topbar-inner { width: 100%; max-width: 1280px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 32px; } .ds-topbar-mark { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #f8fafc; white-space: nowrap; } .ds-topbar-nav { display: flex; align-items: center; gap: 24px; margin-right: auto; } .ds-topbar-nav a { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: rgba(248,250,252,.72); padding-bottom: 4px; border-bottom: 2px solid transparent; transition: color 120ms cubic-bezier(.4,0,.2,1), border-color 120ms cubic-bezier(.4,0,.2,1); } .ds-topbar-nav a:hover { color: #f8fafc; border-bottom-color: rgba(248,250,252,.4); } .ds-topbar-nav a.active { color: #f8fafc; border-bottom-color: #f8fafc; }"
+  },
+  {
+   "name": "Dialog",
+   "kind": "overlay",
+   "refersTo": "dialog",
+   "description": "The role attribute is the overlay itself; its single child is the panel. Used for logout, delete and restore confirmations. Escape closes the logout modal only — the delete and restore dialogs have no Escape handler and none of the three trap focus. Both are known gaps, recorded in docs/FRONTEND.md §13.",
+   "html": "<div role=\"alertdialog\" aria-modal=\"true\" aria-labelledby=\"t\" aria-describedby=\"d\"><div><h3 id=\"t\">Delete this household?</h3><p id=\"d\">It can be restored for 30 days.</p></div></div>",
+   "css": "[role='dialog'], [role='alertdialog'] { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 24px; background: rgba(17,24,39,.5); } [role='dialog'] > *, [role='alertdialog'] > * { width: 100%; max-width: 440px; background: #ffffff; border-radius: 8px; box-shadow: 0 12px 24px -8px rgba(16,24,40,.18), 0 4px 8px -4px rgba(16,24,40,.08); padding: 24px; }"
+  },
+  {
+   "name": "Data Table",
+   "kind": "container",
+   "refersTo": "table",
+   "description": "Lives inside a card, wrapped in an overflow-x container. Tables scroll on narrow viewports — they are never restacked into cards and columns are never dropped.",
+   "html": "<div class=\"ds-table-wrap\"><table><thead><tr><th>Household</th></tr></thead><tbody><tr><td>Adios Family</td></tr></tbody></table></div>",
+   "css": ".ds-table-wrap { overflow-x: auto; } .ds-table-wrap table { width: 100%; border-collapse: collapse; font-size: 14px; } .ds-table-wrap th { text-align: left; font-size: 12px; font-weight: 600; color: #4b5563; background: #f9fafb; padding: 12px 20px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; } .ds-table-wrap td { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; color: #111827; } .ds-table-wrap tbody tr:last-child td { border-bottom: none; } .ds-table-wrap tbody tr:hover { background: #f9fafb; }"
+  },
+  {
+   "name": "Empty State",
+   "kind": "feedback",
+   "refersTo": "empty-state",
+   "description": "Centred, generously padded, secondary ink. Says what is absent and what to do about it.",
+   "html": "<div class=\"ds-empty-state\"><p>No households match that search.</p></div>",
+   "css": ".ds-empty-state { padding: 48px 24px; text-align: center; } .ds-empty-state p { margin-left: auto; margin-right: auto; color: #4b5563; max-width: 70ch; }"
+  }
+ ],
+ "narrative": {
+  "northStar": "The category standard, executed properly",
+  "overview": "The conventional operator console, executed properly. It refuses metaphor, ornament and invention: an operator who has used any admin tool should need nothing explained. Familiarity is the commitment, not a retreat, and the craft bar is Linear and Vercel.\n\nThis is a chosen position, not a default. A distinctive direction — The Register, a ruled ledger in bone stock and vermilion — was designed and built out in full, then rejected by the operator in favour of the standard. Two elements were carried over from that build by explicit request and are not open for redesign: the navy top bar and the loading treatment.\n\nStructure is carried by borders first and shadow second. Every surface is a white card with a real 1px rule, a small radius, and a shadow that only lifts it off the light neutral ground. Nothing content-bearing floats on the page. Navy is the single brand accent and is spent almost entirely on the top bar, so its scarcity is what makes it read as brand at all.\n\nState is a pair, never a lone hue. Each status carries a foreground, a background and a border, and each means exactly one thing — red is destructive or failed, never merely emphatic. Type is a single face, Libre Franklin, self-hosted, with hierarchy coming from size, weight and tracking rather than a second voice. Motion confirms and never entertains: one authored moment per surface, single-axis and damped, with the loading sweep the only thing that moves without the operator causing it.",
+  "story": "The operator arrives on an errand, scans cards or a table, acts, and gets a confirmation that cannot be mistaken for its opposite.",
+  "firstViewport": "Navy top bar; page title with the primary action opposite; a four-up row of metric cards; two cards below carrying what needs action.",
+  "finish": "Contrast is measured rather than assumed — every text pair clears AA, with text-3 on the recessed surface the tightest at 4.63:1. The remaining unfinished work is behavioural rather than visual: dialogs do not trap focus, only the logout modal closes on Escape, and focus is not restored to the trigger. Those are recorded as open items in docs/FRONTEND.md §13 rather than papered over here."
+ }
 }

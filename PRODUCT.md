@@ -116,8 +116,9 @@ claim, deletion pending, grace period.
   scope was ever defined for it.
 - Metrics drill-down was deferred; there are no detail views behind the numbers.
 - Production cookie domain is still open (localhost-verified only).
-- `README.md` is still the Vite template, and `CLAUDE.md` describes this repo as
-  an unmodified scaffold. Both are stale — the app is fully implemented.
+- Whether an unknown URL should 404, redirect, or land on the dashboard. A design
+  exists (`docs/superpowers/specs/2026-08-14-unknown-route-auth-guard-design.md`)
+  and was never built; today such a URL renders a blank page.
 
 ## Brand Commitments
 
@@ -131,21 +132,24 @@ claim, deletion pending, grace period.
   Two elements were explicitly kept from the earlier build and should not be
   redesigned without asking: the **navy top bar** and the **loading treatment**.
 - **Everything else visual is open.** There is no Nostos brand for this console to
-  match. The `#007AFF / #F2F2F7` palette and type scale in
-  `docs/prd/prd-auth-console-fe.md` §5.2 and `src/styles/tokens.css` were
-  scaffolding copied from the PRD, not a design commitment. Future design work
-  may replace them outright.
+  match. The PRD's original `#007AFF / #F2F2F7` scaffolding palette is gone; what
+  ships now is a navy-and-neutral system recorded in `DESIGN.md` and
+  `src/styles/tokens.css`. That system is a considered result, not a commitment —
+  future design work may replace it outright, provided the two kept elements above
+  survive and contrast is re-measured.
 - `support@nostos.com` is shipped as the no-access contact on the signin page.
   Keep the escalation path, but its deliverability was never confirmed here —
   verify before launch rather than assuming or silently swapping it.
 
 ## Evidence on Hand
 
-- **Authoritative specs:** `docs/prd/prd-auth-console-fe.md` (and its root
-  duplicate `prd-auth-console-fe.md`) for flows, copy, and field rules;
-  `docs/prd/prd-auth-console-be.md`; `docs/console-auth-api-contract.md` for the
-  verified API contract; `FE-Architecture-REVISED.md` for architecture (it
-  supersedes `FE-Architecture.md`).
+- **The shipped state of the code:** `docs/FRONTEND.md` is the authoritative
+  technical record and wins over every spec below where they disagree.
+- **Source specs:** `notes/FE/prd-auth-console-fe.md` for flows, copy, and field
+  rules; `notes/FE/prd-auth-console-be.md` as a backend contract reference;
+  `notes/FE/FE-Architecture.md` for the state-ownership model. All three predate
+  the build and carry banners listing what they get wrong.
+- **The verified API contract:** `docs/console-auth-api-contract.md`.
 - **Exact user-facing copy already specified** for all documented error and
   success states (PRD §3.1). Reuse it rather than rewriting it.
 - **A live backend** verified 2026-08-17 for the auth routes, and an MSW-backed
@@ -154,7 +158,7 @@ claim, deletion pending, grace period.
   household or operator names beyond the PRD's illustrative "Adios Family /
   Javier" examples, no customers, testimonials, benchmarks, uptime numbers, or
   pricing. No real imagery — `src/assets/hero.png` is an unreferenced leftover
-  from the scaffold. The `index.html` title is still `fe-console-app-react`.
+  from the scaffold.
 
 ## Product Principles
 
@@ -175,6 +179,11 @@ claim, deletion pending, grace period.
 No standard has been established and no specific user need has been identified —
 recorded as undecided rather than claimed. Factually: operators are
 keyboard-heavy desk users, so keyboard operability is worth protecting on its
-own merits, and `ACCESSIBILITY_AUDIT.md` lists real unmet items (dialog
-Escape/focus trap, focus restoration after dialogs, unverified contrast on the
-danger color). Treat that file as a to-do list, not as a compliance claim.
+own merits, and `docs/FRONTEND.md` §13 lists the real unmet items: no focus trap
+in any dialog, Escape-to-close only on the logout modal, no focus restoration
+after a dialog closes, no `aria-sort` on sortable columns, and no screen-reader
+testing. Treat that list as a to-do, not as a compliance claim.
+
+One thing that *was* verified: colour contrast. Every text pair in the shipped
+palette clears WCAG AA, measured 2026-08-20. An earlier audit guessed the danger
+colour would fail; it does not (6.28:1). Re-measure after any token change.

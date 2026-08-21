@@ -1,3 +1,11 @@
+> **Status: implemented.** Shipped in commit `91d8c84`.
+>
+> This is the design behind `AuthContext`'s four-status model and the
+> `nostos_console_recent_signin` hint cookie. It matches the code. The condensed version, plus
+> the security boundary on the hint cookie, is in `docs/FRONTEND.md` §8.
+
+---
+
 # Session Rehydration on Page Load — Design
 
 **Date:** 2026-08-17

@@ -92,6 +92,6 @@ Keyboard operability is protected on its own merits — these are keyboard-heavy
 
 **Deliberately left to the build:** exact type faces (character is specified — a workhorse text face for records, tracked caps for labels, tabular figures throughout, and no display serif), final colour values, and whether long emails truncate or wrap.
 
-**A builder must not invent:** a permission model (all operators are equal), a Settings page, metrics drill-down, trend or delta data, or any household, operator, or volume figure. Accessibility has no established standard — keyboard operability and the open items in `ACCESSIBILITY_AUDIT.md` are the working floor, and no compliance claim may be made.
+**A builder must not invent:** a permission model (all operators are equal), a Settings page, metrics drill-down, trend or delta data, or any household, operator, or volume figure. Accessibility has no established standard — keyboard operability and the open items in `docs/FRONTEND.md` §13 are the working floor, and no compliance claim may be made.
 
 **Deferred by design:** DESIGN.md is written at finish, from the built world, not now.

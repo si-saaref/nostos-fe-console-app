@@ -1,71 +1,87 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+**Read [`docs/FRONTEND.md`](docs/FRONTEND.md) before making any non-trivial change.** It is the
+single authoritative document for this repository — architecture, decisions, the gotchas that
+cost real debugging, known defects, and the open items. It is written to be read cold.
+Everything below is a summary of it, and it wins any disagreement.
 
-## Project Status
+Treat it as a living document: when a change invalidates something it claims, update it in the
+same commit, the way you would update a test.
 
-This repository is currently an **unmodified Vite + React + TypeScript scaffold** — `src/App.tsx` is still the default Vite starter page. There is no feature code, router, API client, or test runner installed yet. The real spec lives in the planning docs at the repo root and in `docs/`, described below. When asked to build features, treat those docs as the design to implement, not documentation of existing code.
+## What this is
 
-## What this app is
+**Nostos Operator Console** — an internal admin console for Nostos staff ("operators") to
+create and repair households without touching the database. Not the household-member app.
 
-**Nostos Operator Console** — an internal admin console for operators to manage households (not the household-member-facing app). Core scope per the PRD:
+React 19 / TypeScript strict / Vite 8 / React Router 7 / TanStack Query 5 / React Hook Form /
+Axios. Plain CSS with custom properties, no framework.
 
-- Operator signin via **magic link only** (email input, no password) at `/console/signin`
-- Dashboard with read-only metrics (households, members, active/failed signins), auto-refreshing every 5 min
-- Household list (search/sort/paginate), household detail (admin + members), create household form
-- Household soft-delete (30-day grace period) with restore, and admin invite resend
+**Shipped:** magic-link signin and callback, sign-out with confirmation, dashboard metrics,
+household list (search / sort / paginate), household detail, create household, soft-delete with
+a 30-day grace period, restore, resend admin invite.
 
-Route structure, wireframes, exact copy for every error toast, form field specs, and query/mutation shapes are all specified in **`prd-auth-console-fe.md`** (root) and **`docs/prd/prd-auth.md`** — these two files are identical duplicates of the same PRD; treat either as authoritative and keep them in sync if edited.
+**Not built:** permission model (the session carries a `role` that nothing consumes), metrics
+drill-down, a Settings page, a catch-all route, CI, error tracking.
 
 ## Commands
 
 ```bash
-npm run dev       # Start Vite dev server with HMR
-npm run build     # Type-check (tsc -b) then production build via Vite
-npm run lint      # ESLint over the whole repo (flat config, eslint.config.js)
-npm run preview   # Preview the production build locally
+npm run dev                                        # Vite dev server
+npm run build && npm run lint && npx vitest run    # the manual CI gate
+npx vitest run -t 'name of a test or describe'     # one test
 ```
 
-There is no test script configured yet. The architecture docs specify **Vitest + @testing-library/react + MSW** as the intended stack (see `prd-auth-console-fe.md` Section 12 and `FE-Architecture-REVISED.md` Section 10) — when adding tests for the first time, you'll need to install and wire up these deps and add a `test` script, not just write `*.test.ts` files.
+Currently green: 26 test files, 82 tests, clean build. **`npm run lint` is red** with 5
+pre-existing errors (unused test imports, one `any`) — see `docs/FRONTEND.md` §11.4.
 
-TypeScript project is split via references: `tsconfig.json` → `tsconfig.app.json` (src, DOM libs, bundler resolution) + `tsconfig.node.json` (vite.config.ts, node libs). No `@/` path alias is configured yet despite architecture docs using `@/...` imports throughout — add it to both `tsconfig.app.json` (`paths`) and `vite.config.ts` (`resolve.alias`) before relying on it.
+## Five things that bite
 
-## Architecture (planned — from FE-Architecture-REVISED.md)
+1. **Query-key singular/plural is a live bug.** Detail queries register under
+   `['console', 'households', id]`; `useResendInvite` and `HouseholdDetailPage` invalidate
+   `['console', 'household', id]`. Those invalidations match nothing. See `docs/FRONTEND.md` §11.
+2. **Every endpoint is `/api/v1/console/...`.** The PRDs in `notes/FE/` show bare
+   `/console/...` paths and are wrong.
+3. **The session endpoint is `GET /auth/me`**, not `/auth/session`. The latter never existed.
+4. **The dashboard is `/console`**, not `/console/dashboard` as the PRD specifies.
+5. **Auth policy is not in `src/api/client.ts`** — that file is transport only. The 401/403
+   interceptor is registered by `AuthProvider` inside the router so it can navigate softly
+   instead of reloading and discarding its own toast.
 
-Two architecture docs exist at the repo root: **`FE-Architecture-REVISED.md` is authoritative**; `FE-Architecture.md` is the original draft it explicitly supersedes (its own author calls the original's TanStack Query + Zustand + Context combo a mistake). The key decision the REVISED doc makes and the original doesn't: **no Zustand, no global client-state store of any kind.**
+## State ownership
 
-State is split strictly by kind, each with exactly one owner:
+One owner per kind, no exceptions, and deliberately **no global client-state store**:
 
-| State kind | Owner | Notes |
-|---|---|---|
-| Server state (expenses, users, households, etc.) | **TanStack Query** | Query cache is the only source of truth for API data — no copying query results into other state |
-| Filter/sort/pagination state | **URL search params** (React Router `useSearchParams`) | Makes filtered views bookmarkable/shareable; back button works |
-| Session (user, household/tenant id, role) | **React Context** (`HouseholdContext`) | Fetched once via a `staleTime: Infinity` query, rarely changes |
-| Form state | **React Hook Form** | Not `useState` |
-| Local UI state (modal open, expanded row, etc.) | `useState` | Component-local only, never lifted to global state |
+| Kind | Owner |
+|---|---|
+| Server data | TanStack Query — the cache is the only source of truth; never copy results elsewhere |
+| Filter / sort / pagination | URL search params (`useHouseholdFilters`) |
+| Session | `AuthContext` |
+| Forms | React Hook Form |
+| Local UI | `useState`, component-local |
 
-If you're ever about to reach for a new global store, that's a signal to re-read `FE-Architecture-REVISED.md` Section 2 — there is deliberately no category this app's state falls into where a store is the right call.
+## Conventions
 
-### Planned module layout
+- Components `PascalCase.tsx`, hooks `useCamelCase.ts`, directories kebab-case.
+- `@/` → `src/`, configured in **both** `vite.config.ts` and `tsconfig.app.json`.
+- Query keys are `['console', resource, ...]` so the domain can be invalidated in one call.
+- Tests live in `__tests__/` beside the code; use `renderWithProviders` from
+  `src/test/test-utils.tsx` rather than hand-rolling providers.
+- Auth is cookie-based. **Never** put a token in `localStorage` — there is no token to hold.
+- The `nostos_console_recent_signin` cookie is a *rendering hint only*. It is readable by any
+  script on the origin and must never inform an authorization decision.
 
-```
-src/
-├── api/                # TanStack Query hub: queries/, mutations/, client.ts (Axios + interceptors), queryClient.ts
-├── contexts/            # HouseholdContext only — session/tenant, not general state
-├── hooks/                # Cross-cutting hooks (useFilters, useDebounce, ...)
-├── modules/              # Feature/domain folders: auth/, financial/, household/, ... each with components/ pages/ types/ hooks/
-├── components/           # Shared, non-domain UI (Layout, Modal, PermissionGuard, ...)
-├── pages/                # Layout-level route components (AuthLayout, DashboardLayout, ...)
-├── routes/               # Route config + ProtectedRoute / PermissionRoute guards
-├── types/                # Shared cross-module types
-└── utils/                # formatters, validators, permissions, errors
-```
+## Things older docs got wrong — do not reinstate
 
-Conventions from the architecture doc: components are PascalCase (`ExpenseForm.tsx`), hooks are camelCase starting with `use`, directories are kebab-case, and query keys follow `[domain, resource, filters]` (e.g. `['console', 'households', { page, search, sort }]`) so cache invalidation can target a whole domain via `queryClient.invalidateQueries({ queryKey: [...] })`.
+- **Mutations are not optimistic.** Every one is invalidate-on-success; there is no `onMutate`,
+  snapshot, or rollback anywhere. Several superseded documents claimed otherwise.
+- There is no `staleTime` default on the `QueryClient` — only `refetchOnWindowFocus: false`.
+- Search is debounced **300 ms**, not 500 ms.
+- Only one media query exists (`max-width: 768px`), not a three-tier breakpoint system.
+- The gzipped bundle is ~119 kB, not "357 kB gzipped".
 
-### API/auth conventions to preserve when implementing
+## Documents
 
-- Auth is **cookie-based** (`withCredentials: true`), never store tokens in `localStorage` — see FE-Architecture-REVISED.md Section 12 / prd-auth-console-fe.md Section 3.
-- An Axios response interceptor handles `401` → redirect to signin, `403` → permission-denied toast.
-- Every household-scoped query key and request must carry the tenant/household id explicitly (`['expenses', householdId, filters]`) — a query key missing it is treated as a bug in the architecture doc, since it's the multi-tenant isolation mechanism.
-- Mutations use TanStack Query's optimistic-update pattern (`onMutate` snapshot → optimistic `setQueryData` → `onSuccess` invalidate → `onError` rollback), not manual refetch-after-write.
+`docs/FRONTEND.md` (authoritative technical record) · `PRODUCT.md` (intent, terminology,
+what is deliberately undecided) · `DESIGN.md` (design system as shipped) ·
+`docs/console-auth-api-contract.md` (verified contract) · `notes/FE/` (source PRDs and
+architecture, all predating the build).

@@ -1,3 +1,10 @@
+> **Status: NOT IMPLEMENTED.** This design was written and never built.
+>
+> The app still has no catch-all route — an unknown URL renders a blank page. This document
+> remains a valid proposal if that gap is picked up. See `docs/FRONTEND.md` §7 and §11.
+
+---
+
 # Unknown-Route Auth Guard — Design
 
 **Date:** 2026-08-14
@@ -34,7 +41,7 @@ The desired behavior, as specified by the user:
 ### Components
 
 - **`src/pages/NotFoundPage.tsx`** *(new)*. This establishes the `src/pages/`
-  directory already planned in `FE-Architecture-REVISED.md` for
+  directory already planned in `notes/FE/FE-Architecture.md` for
   layout-level route components; it doesn't exist yet because 404 is the
   first non-domain-specific page. Minimal, standalone content (no shared
   layout/navbar exists yet to match): a centered "404 — Page not found"
@@ -82,7 +89,7 @@ interceptor in `src/api/client.ts` (hard-redirects to `/console/signin` on a
 successful magic-link callback, and never rehydrated from the session
 cookie. There is no backend session-check endpoint today — the auth API
 contract (`docs/console-auth-api-contract.md`) and the backend PRD
-(`docs/prd/prd-auth-console-be.md`) only define `POST /console/auth/signin`,
+(`notes/FE/prd-auth-console-be.md`) only define `POST /console/auth/signin`,
 `GET /console/auth/signin/:token`, and `POST /console/auth/logout`.
 
 Consequence: a hard refresh or a brand-new tab pointed at an unknown URL will

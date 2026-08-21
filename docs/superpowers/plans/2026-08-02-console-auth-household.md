@@ -1,3 +1,18 @@
+> **Status: historical. This plan was executed and is complete.**
+>
+> Kept as a record of how the console was built, not as instructions. Do not work from it — its
+> task list is done, and several of its stated assumptions turned out wrong:
+> - It assumes the session endpoint is `GET /console/auth/session`. That endpoint never
+>   existed; the real one is `GET /api/v1/console/auth/me`.
+> - It assumes no logout endpoint exists. One does, and sign-out shipped.
+> - It cites `docs/prd/prd-auth.md`, a path that no longer exists. That PRD is now
+>   [`notes/FE/prd-auth-console-fe.md`](../../../notes/FE/prd-auth-console-fe.md).
+> - It routes the dashboard at `/console/dashboard`; it shipped at `/console`.
+>
+> Current state of the code: [`docs/FRONTEND.md`](../../FRONTEND.md).
+
+---
+
 # Console Auth & Household Management Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

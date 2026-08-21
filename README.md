@@ -1,75 +1,69 @@
-# React + TypeScript + Vite
+# Nostos Operator Console
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Internal admin console for Nostos staff to create and repair households — magic-link signin,
+service metrics, household search and inspection, household creation, reversible deletion, and
+admin-invite resend.
 
-Currently, two official plugins are available:
+This is the **operator** console. Household members never see it.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Setup
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+cp .env.example .env     # or create .env with the line below
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+```bash
+# .env
+VITE_API_URL=http://localhost:3000
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The console needs the Nostos backend running — it is the only source of data, and signin
+cannot be faked locally. Endpoints live under `{VITE_API_URL}/api/v1/console`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Commands
+
+| Command | Does |
+|---|---|
+| `npm run dev` | Vite dev server with HMR |
+| `npm test` | Vitest in watch mode |
+| `npx vitest run` | Full suite, one shot |
+| `npm run build` | `tsc -b` then production build |
+| `npm run lint` | ESLint over the repo |
+| `npm run preview` | Serve the production build |
+
+There is no CI workflow. The gate is `npm run build && npm run lint && npx vitest run`, run by
+hand. Build and tests are green; **lint currently reports 5 pre-existing errors** — see
+`docs/FRONTEND.md` §11.
+
+## Stack
+
+React 19 · TypeScript · Vite 8 · React Router 7 · TanStack Query 5 · React Hook Form · Axios ·
+Vitest + Testing Library + MSW. Plain CSS with custom properties — no CSS framework.
+
+State has exactly one owner per kind: server data in TanStack Query, filters in URL search
+params, session in one React Context, forms in React Hook Form, everything else in `useState`.
+There is deliberately no global client-state store.
+
+## Routes
 
 ```
+/console/signin                 magic-link signin        public
+/console/auth/signin/:token     token exchange           public
+/console                        dashboard metrics        protected
+/console/households             list                     protected
+/console/households/new         create                   protected
+/console/households/:id         detail                   protected
+```
+
+## Where to read next
+
+**[`docs/FRONTEND.md`](docs/FRONTEND.md) is the authoritative technical document** — read it
+before any non-trivial change. It covers the auth model, the API contract, data-fetching
+rules, known defects, and the open items.
+
+- [`PRODUCT.md`](PRODUCT.md) — who this is for, what the words mean, what is deliberately undecided
+- [`DESIGN.md`](DESIGN.md) — the design system as shipped
+- [`docs/console-auth-api-contract.md`](docs/console-auth-api-contract.md) — verified auth request/response shapes
+- [`notes/FE/`](notes/FE/) — source PRDs and architecture. They predate the build; `docs/FRONTEND.md` wins where they disagree.
