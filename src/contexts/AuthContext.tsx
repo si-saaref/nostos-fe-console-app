@@ -80,11 +80,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // exchange has run and refreshSession() asks on our behalf.
   const onTokenExchange = useMatch('/console/auth/signin/:token') !== null
 
-  const session = useOperatorSession({ enabled: !signedOut && !onTokenExchange })
+  // The signin page asks only to power its reverse guard (bounce an operator who
+  // already has a session to the dashboard). With no hint there is nothing to
+  // bounce, so skip the guaranteed 401 — every anonymous visit hits this path.
+  // Protected routes always ask, so an operator whose hint was cleared but whose
+  // session is live still gets rehydrated rather than ejected.
+  const onSigninPage = useMatch('/console/signin') !== null
+  const guardIsPointless = onSigninPage && !hadHint
+
+  const session = useOperatorSession({
+    enabled: !signedOut && !onTokenExchange && !guardIsPointless,
+  })
   const optimistic = hadHint || justSignedIn
 
   const status = useMemo<AuthStatus>(() => {
     if (signedOut) return 'unauthenticated'
+    // Deliberately not asking is an answer: there is no evidence of a session,
+    // and nothing is waiting on one. Reporting `checking` here would strand the
+    // signin page in a loading state forever.
+    if (guardIsPointless) return 'unauthenticated'
     if (session.isSuccess) return 'authenticated'
     if (session.isError) {
       // A 401 is definitive. Anything else (network, 5xx) says nothing about the
@@ -94,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return optimistic ? 'provisional' : 'unauthenticated'
     }
     return optimistic ? 'provisional' : 'checking'
-  }, [signedOut, session.isSuccess, session.isError, session.error, optimistic])
+  }, [signedOut, guardIsPointless, session.isSuccess, session.isError, session.error, optimistic])
 
   const operator = signedOut ? null : session.data ?? null
 

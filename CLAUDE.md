@@ -31,7 +31,7 @@ npm run build && npm run lint && npx vitest run    # the manual CI gate
 npx vitest run -t 'name of a test or describe'     # one test
 ```
 
-Currently green: 26 test files, 82 tests, clean build. **`npm run lint` is red** with 5
+Currently green: 26 test files, 85 tests, clean build. **`npm run lint` is red** with 5
 pre-existing errors (unused test imports, one `any`) — see `docs/FRONTEND.md` §11.4.
 
 ## Five things that bite

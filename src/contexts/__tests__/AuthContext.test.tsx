@@ -53,11 +53,12 @@ function Consumer() {
   )
 }
 
-function renderAuth() {
+function renderAuth(route?: string) {
   return renderWithProviders(
     <AuthProvider>
       <Consumer />
     </AuthProvider>,
+    route ? { route } : {},
   )
 }
 
@@ -193,5 +194,50 @@ describe('AuthProvider refreshSession and logout', () => {
 
     expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated')
     expect(screen.getByTestId('operator')).toHaveTextContent('none')
+  })
+})
+
+describe('AuthProvider on the signin page', () => {
+  afterEach(clearHint)
+
+  it('does not ask about a session an anonymous visitor cannot have', async () => {
+    let meRequests = 0
+    server.use(
+      http.get('*/api/v1/console/auth/me', () => {
+        meRequests += 1
+        return HttpResponse.json(
+          { success: false, error: { code: 'UNAUTHORIZED', message: 'Not authenticated' } },
+          { status: 401 },
+        )
+      }),
+    )
+
+    renderAuth('/console/signin')
+
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated'),
+    )
+    expect(meRequests).toBe(0)
+  })
+
+  it('still asks when a hint says this browser was signed in, so the reverse guard works', async () => {
+    setHint()
+    sessionValid()
+
+    renderAuth('/console/signin')
+
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('authenticated'),
+    )
+  })
+
+  it('still asks on a protected route with no hint, so a cleared-cookie operator is not ejected', async () => {
+    sessionValid()
+
+    renderAuth('/console')
+
+    await waitFor(() =>
+      expect(screen.getByTestId('status')).toHaveTextContent('authenticated'),
+    )
   })
 })
