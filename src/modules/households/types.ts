@@ -1,28 +1,68 @@
+/**
+ * Domain types for the households module — camelCase, and the only shapes
+ * components are allowed to see. The API speaks snake_case; the translation
+ * lives in `api/wire.ts`.
+ */
+
 export type HouseholdStatus = 'ACTIVE' | 'DELETION_PENDING'
-export type AdminClaimStatus = 'PENDING_INVITE' | 'CLAIMED'
+
+/**
+ * Derived by the backend, not stored: CLAIMED once the invite is used,
+ * PENDING_INVITE while it is live, INVITE_EXPIRED after it lapses, DELETED when
+ * the admin row is gone, NO_INVITE when none was ever issued.
+ */
+export type AdminClaimStatus =
+  | 'CLAIMED'
+  | 'PENDING_INVITE'
+  | 'INVITE_EXPIRED'
+  | 'DELETED'
+  | 'NO_INVITE'
+
+export type MemberRole = 'ADMIN' | 'MEMBER'
+
+export type HouseholdSortField =
+  | 'createdAt'
+  | 'name'
+  | 'adminName'
+  | 'adminEmail'
+  | 'memberCount'
 
 export interface HouseholdSummary {
   id: string
   name: string
-  adminName: string
-  adminEmail: string
-  createdAt: string
-  memberCount: number
   status: HouseholdStatus
-  /**
-   * When a deletion-pending household actually gets deleted. The list endpoint
-   * already returns it as `deletion_scheduled_for`; the register needs it to
-   * draw the remaining grace period to scale rather than describing it in prose.
-   * Absent on active households, and optional so existing fixtures still type.
-   */
-  deletionScheduledFor?: string | null
+  createdAt: string
+  /** Set only while status is DELETION_PENDING. */
+  deletionScheduledFor: string | null
+  /** Null when the household has no ADMIN member. */
+  adminName: string | null
+  /** Null when the household has no ADMIN member. */
+  adminEmail: string | null
+  /** Members of every role, admin included. */
+  memberCount: number
 }
 
-export interface HouseholdMember {
+export interface PaginationMeta {
+  page: number
+  limit: number
+  /** Rows matching the filters, across all pages. */
+  total: number
+  totalPages: number
+}
+
+export interface HouseholdsListResponse {
+  households: HouseholdSummary[]
+  pagination: PaginationMeta
+}
+
+export interface HouseholdCore {
   id: string
   name: string
-  email: string
-  joinedAt: string
+  status: HouseholdStatus
+  createdAt: string
+  deletionRequestedAt: string | null
+  /** Midnight UTC at the end of the 30-day grace period. */
+  scheduledDeletionDate: string | null
 }
 
 export interface HouseholdAdmin {
@@ -30,115 +70,67 @@ export interface HouseholdAdmin {
   name: string
   email: string
   claimStatus: AdminClaimStatus
+  inviteSentAt: string | null
+  inviteExpiresAt: string | null
   claimedAt: string | null
   lastLoginAt: string | null
 }
 
-export interface HouseholdDetail {
+export interface HouseholdMember {
   id: string
   name: string
-  status: HouseholdStatus
-  createdAt: string
-  scheduledDeletionDate: string | null
-  admin: HouseholdAdmin
+  email: string
+  role: MemberRole
+  joinedAt: string
+  lastLoginAt: string | null
+}
+
+export interface HouseholdDetail {
+  household: HouseholdCore
+  /** Null when the household has no ADMIN member. */
+  admin: HouseholdAdmin | null
   members: HouseholdMember[]
-}
-
-export interface HouseholdDetailBackendResponse {
-  success: boolean
-  household: {
-    id: string
-    name: string
-    status: HouseholdStatus
-    created_at: string
-    deletion_requested_at: string | null
-    scheduled_deletion_date: string | null
-  }
-  admin: {
-    id: string
-    name: string
-    email: string
-    claim_status: AdminClaimStatus
-    claimed_at: string | null
-    last_login_at: string | null
-  }
-  members: Array<{
-    id: string
-    name: string | null
-    email: string
-    role: string
-    joined_at: string
-    last_activity_at: string | null
-  }>
-}
-
-export interface HouseholdsListResponse {
-  data: HouseholdSummary[]
-  page: number
-  totalPages: number
-  total: number
-}
-
-export interface HouseholdsBackendResponse {
-  success: boolean
-  households: Array<{
-    id: string
-    name: string
-    admin_name: string
-    admin_email: string
-    created_at: string
-    member_count: number
-    status: HouseholdStatus
-    deletion_scheduled_for: string | null
-  }>
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    total_pages: number
-  }
-}
-
-export interface CreateHouseholdInput {
-  household_name: string
-  admin_email: string
-  admin_name: string
-  notes?: string
 }
 
 export interface HouseholdFilters {
   page: number
   search: string
-  sort_by?: string
-  sort_order?: 'ASC' | 'DESC'
+  sortBy: HouseholdSortField
+  sortOrder: 'ASC' | 'DESC'
 }
 
-export interface CreateHouseholdResponse {
-  success: boolean
-  household_id: string
-  admin_id: string
-  invite_sent_at: string
-  message: string
+export interface CreateHouseholdInput {
+  householdName: string
+  adminEmail: string
+  adminName: string
+  notes?: string
 }
 
-export interface DeleteHouseholdResponse {
-  success: boolean
-  household_id: string
+export interface CreatedHousehold {
+  householdId: string
+  adminId: string
+  adminEmail: string
+  /**
+   * When the admin claim email was sent, or null when delivery failed. The
+   * household is created either way.
+   */
+  inviteSentAt: string | null
+}
+
+export interface HouseholdDeletion {
+  householdId: string
   status: HouseholdStatus
-  deletion_requested_at: string
-  scheduled_deletion_date: string
-  message: string
+  deletionRequestedAt: string
+  scheduledDeletionDate: string
 }
 
-export interface RestoreHouseholdResponse {
-  success: boolean
-  household_id: string
+export interface HouseholdRestore {
+  householdId: string
   status: HouseholdStatus
-  message: string
 }
 
-export interface ResendInviteResponse {
-  success: boolean
-  message: string
-  new_expiry: string
+export interface ResendInvite {
+  adminEmail: string
+  /** When the newly issued claim link expires, 48 hours out. */
+  newExpiry: string
 }

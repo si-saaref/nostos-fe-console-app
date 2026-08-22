@@ -14,9 +14,9 @@ export function HouseholdsPage() {
   const { filters, setSearch, setPage } = useHouseholdFilters()
   const { data, isLoading } = useHouseholds(filters)
 
-  const count = data
-    ? `${data.total} ${data.total === 1 ? 'household' : 'households'}`
-    : undefined
+  const total = data?.pagination.total
+  const count =
+    total !== undefined ? `${total} ${total === 1 ? 'household' : 'households'}` : undefined
 
   return (
     <ConsoleLayout>
@@ -39,20 +39,20 @@ export function HouseholdsPage() {
         </div>
 
         <HouseholdTable
-          households={data?.data ?? []}
+          households={data?.households ?? []}
           isLoading={isLoading}
           search={filters.search}
           onRowClick={(id) => navigate(`/console/households/${id}`)}
         />
 
-        {data && data.totalPages > 1 && (
+        {data && data.pagination.totalPages > 1 && (
           <div className="card-footer">
             <span className="pagination-range">
-              Page {data.page} of {data.totalPages}
+              Page {data.pagination.page} of {data.pagination.totalPages}
             </span>
             <Pagination
-              page={data.page}
-              totalPages={data.totalPages}
+              page={data.pagination.page}
+              totalPages={data.pagination.totalPages}
               onPreviousPage={() => setPage(Math.max(1, filters.page - 1))}
               onNextPage={() => setPage(filters.page + 1)}
             />

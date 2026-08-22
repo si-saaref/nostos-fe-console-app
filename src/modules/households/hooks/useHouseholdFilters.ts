@@ -1,32 +1,39 @@
 import { useSearchParams } from 'react-router-dom'
-import type { HouseholdFilters } from '../types'
+import type { HouseholdFilters, HouseholdSortField } from '../types'
 
-const DEFAULT_SORT_BY = 'created_at'
-const DEFAULT_SORT_ORDER = 'DESC'
+const SORT_FIELDS: HouseholdSortField[] = [
+  'createdAt',
+  'name',
+  'adminName',
+  'adminEmail',
+  'memberCount',
+]
 
-// Map field names from camelCase (frontend) to snake_case (backend)
-const FIELD_MAPPING: Record<string, string> = {
-  createdAt: 'created_at',
-  name: 'name',
-  adminName: 'admin_name',
-  adminEmail: 'admin_email',
-  memberCount: 'member_count',
+const DEFAULT_SORT_BY: HouseholdSortField = 'createdAt'
+const DEFAULT_SORT_ORDER = 'DESC' as const
+
+function parseSortField(value: string | undefined): HouseholdSortField {
+  return SORT_FIELDS.includes(value as HouseholdSortField)
+    ? (value as HouseholdSortField)
+    : DEFAULT_SORT_BY
 }
 
 export function useHouseholdFilters() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // Parse sort from URL: stored as 'fieldName:order' in URL for bookmarkability
-  const sortParam = searchParams.get('sort') ?? `${DEFAULT_SORT_BY}:${DEFAULT_SORT_ORDER.toLowerCase()}`
+  // Stored in the URL as 'field:order' so a sorted view is bookmarkable. The
+  // field stays in domain casing; `toListQuery` translates it for the API.
+  const sortParam =
+    searchParams.get('sort') ?? `${DEFAULT_SORT_BY}:${DEFAULT_SORT_ORDER.toLowerCase()}`
   const [sortByRaw, sortOrderRaw] = sortParam.split(':')
-  const sortBy = FIELD_MAPPING[sortByRaw] || sortByRaw
-  const sortOrder = (sortOrderRaw?.toUpperCase() || DEFAULT_SORT_ORDER) as 'ASC' | 'DESC'
 
   const filters: HouseholdFilters = {
     page: Number(searchParams.get('page') ?? '1'),
     search: searchParams.get('search') ?? '',
-    sort_by: sortBy,
-    sort_order: sortOrder,
+    // An unrecognised ?sort= falls back rather than reaching the API as an
+    // invalid sort_by and earning a 400.
+    sortBy: parseSortField(sortByRaw),
+    sortOrder: sortOrderRaw?.toUpperCase() === 'ASC' ? 'ASC' : DEFAULT_SORT_ORDER,
   }
 
   const setSearch = (search: string) => {
@@ -39,11 +46,10 @@ export function useHouseholdFilters() {
     })
   }
 
-  const setSort = (sortByField: string, sortOrder: 'ASC' | 'DESC' = 'DESC') => {
+  const setSort = (sortBy: HouseholdSortField, sortOrder: 'ASC' | 'DESC' = 'DESC') => {
     setSearchParams((params) => {
       const next = new URLSearchParams(params)
-      // Store as 'fieldName:order' in URL for bookmarkability
-      next.set('sort', `${sortByField}:${sortOrder.toLowerCase()}`)
+      next.set('sort', `${sortBy}:${sortOrder.toLowerCase()}`)
       return next
     })
   }

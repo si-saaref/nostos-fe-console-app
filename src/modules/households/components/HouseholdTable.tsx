@@ -71,9 +71,15 @@ export function HouseholdTable({
                   </button>
                 </td>
 
-                <td title={household.adminEmail}>
-                  <span className="cell-primary">{household.adminName}</span>
-                  <span className="cell-secondary">{household.adminEmail}</span>
+                <td title={household.adminEmail ?? undefined}>
+                  {household.adminName || household.adminEmail ? (
+                    <>
+                      <span className="cell-primary">{household.adminName ?? '—'}</span>
+                      <span className="cell-secondary">{household.adminEmail ?? '—'}</span>
+                    </>
+                  ) : (
+                    <span className="cell-secondary">No admin</span>
+                  )}
                 </td>
 
                 <td className="col-num">{household.memberCount}</td>

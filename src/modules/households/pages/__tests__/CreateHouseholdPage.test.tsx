@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -25,15 +25,19 @@ describe('CreateHouseholdPage', () => {
 
     server.use(
       http.post('*/console/households', () =>
-        HttpResponse.json({
-          success: true,
-          data: {
-            household_id: 'hhd_new123',
-            admin_id: 'usr_456',
-            invite_sent_at: '2026-08-02T10:00:00Z',
+        HttpResponse.json(
+          {
+            success: true,
             message: 'Household created',
+            data: {
+              household_id: 'h-new',
+              admin_id: 'a-new',
+              admin_email: 'admin@newfamily.com',
+              invite_sent_at: '2026-08-02T10:00:00.000Z',
+            },
           },
-        }),
+          { status: 201 },
+        ),
       ),
     )
 

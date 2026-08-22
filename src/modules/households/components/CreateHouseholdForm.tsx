@@ -1,5 +1,8 @@
 import { useForm } from 'react-hook-form'
+import { getErrorMessage } from '@/utils/apiErrorMessages'
+import { toApiError } from '@/utils/responseHandlers'
 import { useCreateHousehold } from '../api/useCreateHousehold'
+import { toCreateFormField } from '../api/wire'
 import type { CreateHouseholdInput } from '../types'
 
 interface CreateHouseholdFormProps {
@@ -7,20 +10,34 @@ interface CreateHouseholdFormProps {
 }
 
 export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<CreateHouseholdInput>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setError,
+  } = useForm<CreateHouseholdInput>({
     mode: 'onBlur',
-    defaultValues: { household_name: '', admin_email: '', admin_name: '', notes: '' },
+    defaultValues: { householdName: '', adminEmail: '', adminName: '', notes: '' },
   })
   const { mutate, isPending, error } = useCreateHousehold()
 
-  const householdName = watch('household_name')
+  const householdName = watch('householdName')
   const nameLength = householdName?.length || 0
 
   const onSubmit = (data: CreateHouseholdInput) => {
     mutate(data, {
-      onSuccess: (response) => {
-        if (response) {
-          onSuccess(response.household_id)
+      onSuccess: (created) => {
+        onSuccess(created.householdId)
+      },
+      onError: (mutationError) => {
+        // A 400 from the validation pipe names the offending fields; put each
+        // message on its own input rather than only in the form-level alert.
+        const apiError = toApiError(mutationError)
+        if (!apiError) return
+        for (const fieldError of apiError.fieldErrors) {
+          const field = toCreateFormField(fieldError.field)
+          if (field) setError(field, { type: fieldError.code, message: fieldError.message })
         }
       },
     })
@@ -29,16 +46,16 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <label htmlFor="household_name">Household Name *</label>
+        <label htmlFor="householdName">Household Name *</label>
         <input
-          id="household_name"
+          id="householdName"
           type="text"
           placeholder="e.g., Adios Family"
           maxLength={100}
           disabled={isPending}
           aria-required="true"
-          aria-describedby={errors.household_name ? 'household_name-error' : 'household_name-hint'}
-          {...register('household_name', {
+          aria-describedby={errors.householdName ? 'householdName-error' : 'householdName-hint'}
+          {...register('householdName', {
             required: 'Household name is required',
             minLength: { value: 1, message: 'Household name is required' },
             maxLength: { value: 100, message: 'Max 100 characters' },
@@ -48,25 +65,25 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        <small id="household_name-hint">{nameLength}/100</small>
-        {errors.household_name && (
-          <span id="household_name-error" role="alert">
-            {errors.household_name.message}
+        <small id="householdName-hint">{nameLength}/100</small>
+        {errors.householdName && (
+          <span id="householdName-error" role="alert">
+            {errors.householdName.message}
           </span>
         )}
       </div>
 
       <div>
-        <label htmlFor="admin_email">Admin Email *</label>
+        <label htmlFor="adminEmail">Admin Email *</label>
         <input
-          id="admin_email"
+          id="adminEmail"
           type="email"
           placeholder="e.g., javier@adios.com"
           disabled={isPending}
           aria-required="true"
-          aria-describedby={errors.admin_email ? 'admin_email-error' : undefined}
+          aria-describedby={errors.adminEmail ? 'adminEmail-error' : undefined}
           autoComplete="email"
-          {...register('admin_email', {
+          {...register('adminEmail', {
             required: 'Admin email is required',
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -74,24 +91,24 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        {errors.admin_email && (
-          <span id="admin_email-error" role="alert">
-            {errors.admin_email.message}
+        {errors.adminEmail && (
+          <span id="adminEmail-error" role="alert">
+            {errors.adminEmail.message}
           </span>
         )}
       </div>
 
       <div>
-        <label htmlFor="admin_name">Admin Name *</label>
+        <label htmlFor="adminName">Admin Name *</label>
         <input
-          id="admin_name"
+          id="adminName"
           type="text"
           placeholder="e.g., Javier"
           maxLength={50}
           disabled={isPending}
           aria-required="true"
-          aria-describedby={errors.admin_name ? 'admin_name-error' : undefined}
-          {...register('admin_name', {
+          aria-describedby={errors.adminName ? 'adminName-error' : undefined}
+          {...register('adminName', {
             required: 'Admin name is required',
             minLength: { value: 1, message: 'Admin name is required' },
             maxLength: { value: 50, message: 'Max 50 characters' },
@@ -101,9 +118,9 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        {errors.admin_name && (
-          <span id="admin_name-error" role="alert">
-            {errors.admin_name.message}
+        {errors.adminName && (
+          <span id="adminName-error" role="alert">
+            {errors.adminName.message}
           </span>
         )}
       </div>
@@ -114,14 +131,20 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
           id="notes"
           type="text"
           placeholder="e.g., Early adopter"
+          maxLength={1000}
           disabled={isPending}
-          {...register('notes')}
+          {...register('notes', { maxLength: { value: 1000, message: 'Max 1000 characters' } })}
         />
+        {errors.notes && (
+          <span id="notes-error" role="alert">
+            {errors.notes.message}
+          </span>
+        )}
       </div>
 
       {error && (
         <div role="alert" aria-live="polite" style={{ color: 'red' }}>
-          {(error as Error).message}
+          {getErrorMessage(error)}
         </div>
       )}
 

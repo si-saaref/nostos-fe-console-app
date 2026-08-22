@@ -5,39 +5,58 @@ import { server } from '@/test/msw/server'
 import { createQueryClientWrapper } from '@/test/test-utils'
 import { useDeleteHousehold } from '../useDeleteHousehold'
 
+const ID = '3f1a7c4e-8b2d-4a19-9c33-2e5f7a0b1d64'
+
 describe('useDeleteHousehold', () => {
-  it('deletes household and invalidates queries', async () => {
+  it('sends the DELETE confirmation and maps the schedule', async () => {
+    let body: Record<string, unknown> | undefined
+
     server.use(
-      http.post('*/console/households/hhd_123/delete', () =>
-        HttpResponse.json({
+      http.post(`*/api/v1/console/households/${ID}/delete`, async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json({
           success: true,
-          household_id: 'hhd_123',
-          status: 'DELETION_PENDING',
-          deletion_requested_at: '2026-08-02T10:00:00Z',
-          scheduled_deletion_date: '2026-09-01',
           message: 'Household marked for deletion',
-        }),
-      ),
+          data: {
+            household_id: ID,
+            status: 'DELETION_PENDING',
+            deletion_requested_at: '2026-08-02T10:00:00.000Z',
+            scheduled_deletion_date: '2026-09-01T00:00:00.000Z',
+          },
+        })
+      }),
     )
 
     const { result } = renderHook(() => useDeleteHousehold(), {
       wrapper: createQueryClientWrapper(),
     })
 
-    result.current.mutate('hhd_123')
+    result.current.mutate(ID)
 
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true)
-      expect(result.current.data?.household_id).toBe('hhd_123')
-      expect(result.current.data?.status).toBe('DELETION_PENDING')
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(body).toEqual({ confirmation: 'DELETE' })
+    expect(result.current.data).toEqual({
+      householdId: ID,
+      status: 'DELETION_PENDING',
+      deletionRequestedAt: '2026-08-02T10:00:00.000Z',
+      scheduledDeletionDate: '2026-09-01T00:00:00.000Z',
     })
   })
 
-  it('handles error response', async () => {
+  it('errors with the backend message when the household is already pending', async () => {
     server.use(
-      http.post('*/console/households/hhd_invalid/delete', () =>
+      http.post(`*/api/v1/console/households/${ID}/delete`, () =>
         HttpResponse.json(
-          { error: 'Household is already marked for deletion' },
+          {
+            success: false,
+            error: {
+              code: 'INVALID_STATE',
+              message: 'Household is already marked for deletion',
+              status_code: 400,
+              timestamp: '2026-08-02T10:00:00.000Z',
+              path: `/api/v1/console/households/${ID}/delete`,
+            },
+          },
           { status: 400 },
         ),
       ),
@@ -47,11 +66,11 @@ describe('useDeleteHousehold', () => {
       wrapper: createQueryClientWrapper(),
     })
 
-    result.current.mutate('hhd_invalid')
+    result.current.mutate(ID)
 
-    await waitFor(() => {
-      expect(result.current.isError).toBe(true)
-      expect(result.current.error).toBeDefined()
-    })
+    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect((result.current.error as Error).message).toBe(
+      'Household is already marked for deletion',
+    )
   })
 })

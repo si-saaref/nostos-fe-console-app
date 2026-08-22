@@ -5,7 +5,10 @@
 
 All responses use the standard envelope:
 - Success: `{ "success": true, "data": <T>, "message"?: string }`
-- Error: `{ "success": false, "error": { "code", "message", "statusCode", "timestamp", "path", "details"? } }`
+- Error: `{ "success": false, "error": { "code", "message", "status_code", "timestamp", "path", "details"? } }`
+
+> **Corrected 2026-08-22:** this field is `status_code`, not `statusCode`. The API moved its
+> payloads to snake_case; verified against a live `401` from `GET /console/auth/me`.
 
 All three endpoints below are called via `fetch`/`axios` with `credentials: 'include'` /
 `withCredentials: true` — none of them are meant to be reached by a top-level browser

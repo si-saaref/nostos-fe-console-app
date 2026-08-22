@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getErrorMessage } from '@/utils/apiErrorMessages'
 import { useDeleteHousehold } from '../api/useDeleteHousehold'
 
 interface DeleteHouseholdButtonProps {
@@ -50,7 +51,7 @@ export function DeleteHouseholdButton({
           </p>
           {error && (
             <div role="alert" style={{ color: 'red' }} aria-live="polite">
-              {(error as Error).message}
+              {getErrorMessage(error)}
             </div>
           )}
           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/apiErrorMessages'
 import { useRestoreHousehold } from '../api/useRestoreHousehold'
 
 interface RestoreHouseholdButtonProps {
@@ -19,7 +20,7 @@ export function RestoreHouseholdButton({ householdId, onSuccess }: RestoreHouseh
       <button onClick={handleRestore} disabled={isPending} style={{ color: 'green' }}>
         {isPending ? 'Restoring...' : 'Restore'}
       </button>
-      {error && <div role="alert" style={{ color: 'red' }}>{(error as Error).message}</div>}
+      {error && <div role="alert" style={{ color: 'red' }}>{getErrorMessage(error)}</div>}
     </>
   )
 }

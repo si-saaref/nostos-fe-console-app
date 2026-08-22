@@ -1,9 +1,9 @@
 import { DeleteHouseholdButton } from './DeleteHouseholdButton'
 import { RestoreHouseholdButton } from './RestoreHouseholdButton'
-import type { HouseholdDetail } from '../types'
+import type { HouseholdCore } from '../types'
 
 interface HouseholdInfoProps {
-  household: HouseholdDetail
+  household: HouseholdCore
   onRefresh?: () => void
 }
 

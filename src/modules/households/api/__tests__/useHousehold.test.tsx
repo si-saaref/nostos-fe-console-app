@@ -7,65 +7,111 @@ import { server } from '@/test/msw/server'
 import { createTestQueryClient } from '@/test/test-utils'
 import { useHousehold } from '../useHousehold'
 
+const ID = '3f1a7c4e-8b2d-4a19-9c33-2e5f7a0b1d64'
+
+const detailPayload = {
+  household: {
+    id: ID,
+    name: 'Adios Family',
+    status: 'ACTIVE',
+    created_at: '2026-07-15T00:00:00.000Z',
+    deletion_requested_at: null,
+    scheduled_deletion_date: null,
+  },
+  admin: {
+    id: 'a1',
+    name: 'Javier',
+    email: 'javier@adios.com',
+    claim_status: 'PENDING_INVITE',
+    invite_sent_at: '2026-07-15T00:00:00.000Z',
+    invite_expires_at: '2026-07-17T00:00:00.000Z',
+    claimed_at: null,
+    last_login_at: null,
+  },
+  members: [
+    {
+      id: 'm1',
+      name: 'Sofia',
+      email: 'sofia@adios.com',
+      role: 'MEMBER',
+      joined_at: '2026-07-16T00:00:00.000Z',
+      last_login_at: null,
+    },
+  ],
+}
+
+const notFound = {
+  success: false,
+  error: {
+    code: 'NOT_FOUND',
+    message: 'Household not found',
+    status_code: 404,
+    timestamp: '2026-07-15T00:00:00.000Z',
+    path: `/api/v1/console/households/${ID}`,
+  },
+}
+
 function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={createTestQueryClient()}>{children}</QueryClientProvider>
 }
 
-const detail = {
-  id: '1',
-  name: 'Adios Family',
-  status: 'ACTIVE' as const,
-  createdAt: '2026-07-15T00:00:00.000Z',
-  scheduledDeletionDate: null,
-  admin: {
-    id: 'admin-1',
-    name: 'Javier',
-    email: 'javier@adios.com',
-    claimStatus: 'CLAIMED' as const,
-    claimedAt: '2026-07-15T01:00:00.000Z',
-    lastLoginAt: '2026-07-30T14:15:00.000Z',
-  },
-  members: [{ id: 'm1', name: 'Sofia', email: 'sofia@adios.com', joinedAt: '2026-07-16T00:00:00.000Z' }],
-}
-
 describe('useHousehold', () => {
-  it('fetches a household by id', async () => {
+  it('unwraps and maps the detail payload', async () => {
     server.use(
-      http.get('*/console/households/1', () =>
-        HttpResponse.json({
-          success: true,
-          household: {
-            id: detail.id,
-            name: detail.name,
-            status: detail.status,
-            created_at: detail.createdAt,
-            deletion_requested_at: null,
-            scheduled_deletion_date: detail.scheduledDeletionDate,
-          },
-          admin: {
-            id: detail.admin.id,
-            name: detail.admin.name,
-            email: detail.admin.email,
-            claim_status: detail.admin.claimStatus,
-            claimed_at: detail.admin.claimedAt,
-            last_login_at: detail.admin.lastLoginAt,
-          },
-          members: detail.members.map(m => ({
-            id: m.id,
-            name: m.name,
-            email: m.email,
-            role: 'MEMBER',
-            joined_at: m.joinedAt,
-            last_activity_at: null,
-          })),
-        }),
+      http.get(`*/api/v1/console/households/${ID}`, () =>
+        HttpResponse.json({ success: true, data: detailPayload }),
       ),
     )
 
-    const { result } = renderHook(() => useHousehold('1'), { wrapper })
+    const { result } = renderHook(() => useHousehold(ID), { wrapper })
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data?.name).toBe('Adios Family')
+    expect(result.current.data?.household.name).toBe('Adios Family')
+    expect(result.current.data?.admin?.claimStatus).toBe('PENDING_INVITE')
+    expect(result.current.data?.admin?.inviteExpiresAt).toBe('2026-07-17T00:00:00.000Z')
+    expect(result.current.data?.members[0].role).toBe('MEMBER')
+  })
+
+  it('tolerates a household with no admin', async () => {
+    server.use(
+      http.get(`*/api/v1/console/households/${ID}`, () =>
+        HttpResponse.json({ success: true, data: { ...detailPayload, admin: null, members: [] } }),
+      ),
+    )
+
+    const { result } = renderHook(() => useHousehold(ID), { wrapper })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data?.admin).toBeNull()
+  })
+
+  it('errors on a 404 instead of resolving with undefined', async () => {
+    server.use(
+      http.get(`*/api/v1/console/households/${ID}`, () =>
+        HttpResponse.json(notFound, { status: 404 }),
+      ),
+    )
+
+    const { result } = renderHook(() => useHousehold(ID), { wrapper })
+    await waitFor(() => expect(result.current.isError).toBe(true))
+  })
+
+  it('registers under the plural households key', async () => {
+    server.use(
+      http.get(`*/api/v1/console/households/${ID}`, () =>
+        HttpResponse.json({ success: true, data: detailPayload }),
+      ),
+    )
+
+    const queryClient = createTestQueryClient()
+    const { result } = renderHook(() => useHousehold(ID), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      ),
+    })
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(queryClient.getQueryData(['console', 'households', ID])).toBeDefined()
   })
 
   it('is disabled when id is empty', () => {
