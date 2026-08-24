@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
 import { ConsoleLayout } from '@/components/ConsoleLayout'
 import { PageHeader } from '@/components/PageHeader'
-import { InfoCircleMark, PlusMark } from '@/components/icons'
+import { Card, CardBody, CardHeader } from '@/components/Card'
+import { Notice } from '@/components/Notice'
+import { buttonClasses } from '@/components/buttonStyles'
+import { PlusMark } from '@/components/icons'
 import { useMetrics } from '../api/useMetrics'
 import { MetricsGrid } from '../components/MetricsGrid'
 import type { DashboardMetrics } from '../types'
-import './dashboard.css'
 
 /**
  * Shown only while `GET /console/dashboard/metrics` is unavailable — it is not
@@ -42,64 +44,77 @@ export function ConsoleDashboardPage() {
   return (
     <ConsoleLayout>
       <PageHeader title="Dashboard" description={description}>
-        <Link to="/console/households/new" role="button">
+        <Link to="/console/households/new" className={buttonClasses('primary')}>
           <PlusMark />
           New household
         </Link>
       </PageHeader>
 
       {isSample && (
-        <div className="notice notice--info" role="status">
-          <span className="notice-icon">
-            <InfoCircleMark />
-          </span>
-          <p>
-            <strong>These are sample figures.</strong> The console could not reach the metrics
-            service, so the numbers below are placeholders and do not reflect real households.
-          </p>
-        </div>
+        <Notice tone="info" className="mb-6">
+          <strong className="font-medium">These are sample figures.</strong> The console could not
+          reach the metrics service, so the numbers below are placeholders and do not reflect real
+          households.
+        </Notice>
       )}
 
       <MetricsGrid metrics={metrics} />
 
-      <div className="dashboard-cards">
-        <section className="card">
-          <div className="card-header">
+      <div className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
+        <Card className="flex flex-col">
+          <CardHeader>
             <h2>Awaiting action</h2>
-          </div>
-          <div className="card-body">
+          </CardHeader>
+          <CardBody className="grow">
             {metrics.pendingDeletion > 0 ? (
-              <p>
-                <strong>{metrics.pendingDeletion}</strong>{' '}
+              <p className="text-md text-ink">
+                <strong className="font-semibold tabular-nums">{metrics.pendingDeletion}</strong>{' '}
                 {metrics.pendingDeletion === 1 ? 'household is' : 'households are'} pending
                 deletion. Each one can be restored until its grace period ends.
               </p>
             ) : (
-              <p>Nothing is pending deletion right now.</p>
+              <p className="text-md text-ink">Nothing is pending deletion right now.</p>
             )}
-            <Link to="/console/households" className="card-action">
+            <Link
+              to="/console/households?status=DELETION_PENDING"
+              className="mt-4 inline-block text-md font-medium text-navy"
+            >
               Review in Households
             </Link>
-          </div>
-        </section>
+          </CardBody>
+        </Card>
 
-        <section className="card">
-          <div className="card-header">
+        <Card className="flex flex-col">
+          <CardHeader>
             <h2>Common tasks</h2>
-          </div>
-          <div className="card-body">
-            <ul className="task-list">
-              <li>
-                <Link to="/console/households/new">Register a new household</Link>
-                <span>Creates the household and emails its admin an invite.</span>
+          </CardHeader>
+          <CardBody className="grow">
+            <ul>
+              <li className="border-b border-line pb-3">
+                <Link
+                  to="/console/households/new"
+                  className="block font-medium text-navy no-underline hover:underline hover:underline-offset-2"
+                >
+                  Register a new household
+                </Link>
+                <span className="mt-0.5 block text-sm text-ink-2">
+                  Creates the household and emails its admin an invite.
+                </span>
               </li>
-              <li>
-                <Link to="/console/households">Find a household</Link>
-                <span>Search by household name or admin email.</span>
+              <li className="pt-3">
+                <Link
+                  to="/console/households"
+                  className="block font-medium text-navy no-underline hover:underline hover:underline-offset-2"
+                >
+                  Find a household
+                </Link>
+                <span className="mt-0.5 block text-sm text-ink-2">
+                  Search by household name or admin email.
+                </span>
               </li>
             </ul>
-          </div>
-        </section>
+          </CardBody>
+        </Card>
       </div>
     </ConsoleLayout>
   )

@@ -21,6 +21,11 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      {/* Create and detail are nested, not siblings: the register stays
+          mounted underneath and they render into its <Outlet /> as overlays.
+          The URLs are unchanged, so a link out of a support ticket still
+          addresses one household — it just no longer costs the operator their
+          scroll position, their search, or their page. */}
       <Route
         path="/console/households"
         element={
@@ -28,23 +33,10 @@ export function AppRoutes() {
             <HouseholdsPage />
           </ProtectedRoute>
         }
-      />
-      <Route
-        path="/console/households/new"
-        element={
-          <ProtectedRoute>
-            <CreateHouseholdPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/console/households/:id"
-        element={
-          <ProtectedRoute>
-            <HouseholdDetailPage />
-          </ProtectedRoute>
-        }
-      />
+      >
+        <Route path="new" element={<CreateHouseholdPage />} />
+        <Route path=":id" element={<HouseholdDetailPage />} />
+      </Route>
     </Routes>
   )
 }

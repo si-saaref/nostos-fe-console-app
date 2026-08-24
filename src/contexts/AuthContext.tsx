@@ -8,7 +8,7 @@ import {
   useOperatorSession,
   type Operator,
 } from '@/api/queries/useOperatorSession'
-import { useToast } from '@/components/ToastProvider'
+import { useToast } from '@/components/toastContext'
 import { hasSessionHint } from '@/utils/authHint'
 
 /**

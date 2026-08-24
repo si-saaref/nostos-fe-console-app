@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -5,6 +6,32 @@ import { http, HttpResponse } from 'msw'
 import { server } from '@/test/msw/server'
 import { renderWithProviders } from '@/test/test-utils'
 import { CreateHouseholdForm } from '../CreateHouseholdForm'
+import type { CreatedHousehold } from '../../types'
+
+const FORM_ID = 'create-household-form'
+
+/**
+ * The form no longer owns its submit button — it lives in the dialog footer and
+ * reaches the form through the HTML `form` attribute. This harness is that
+ * arrangement, so the tests exercise the same wiring CreateHouseholdPage uses
+ * rather than a shape that no longer ships.
+ */
+function Harness({ onSuccess }: { onSuccess: (created: CreatedHousehold) => void }) {
+  const [isPending, setIsPending] = useState(false)
+
+  return (
+    <>
+      <CreateHouseholdForm
+        formId={FORM_ID}
+        onSuccess={onSuccess}
+        onPendingChange={setIsPending}
+      />
+      <button type="submit" form={FORM_ID} disabled={isPending} aria-busy={isPending}>
+        {isPending ? 'Creating...' : 'Create'}
+      </button>
+    </>
+  )
+}
 
 const created = {
   success: true,
@@ -27,7 +54,7 @@ describe('CreateHouseholdForm', () => {
   it('renders form fields and validates input', async () => {
     const onSuccess = vi.fn()
 
-    renderWithProviders(<CreateHouseholdForm onSuccess={onSuccess} />)
+    renderWithProviders(<Harness onSuccess={onSuccess} />)
 
     expect(screen.getByLabelText(/Household Name/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Admin Email/)).toBeInTheDocument()
@@ -47,11 +74,15 @@ describe('CreateHouseholdForm', () => {
       }),
     )
 
-    renderWithProviders(<CreateHouseholdForm onSuccess={onSuccess} />)
+    renderWithProviders(<Harness onSuccess={onSuccess} />)
     await fillRequiredFields(user)
     await user.click(screen.getByText('Create'))
 
-    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith('h-new'))
+    await waitFor(() =>
+      expect(onSuccess).toHaveBeenCalledWith(
+        expect.objectContaining({ householdId: 'h-new', adminEmail: 'test@example.com' }),
+      ),
+    )
     expect(submitted).toEqual({
       household_name: 'Test Family',
       admin_email: 'test@example.com',
@@ -81,7 +112,7 @@ describe('CreateHouseholdForm', () => {
       ),
     )
 
-    renderWithProviders(<CreateHouseholdForm onSuccess={onSuccess} />)
+    renderWithProviders(<Harness onSuccess={onSuccess} />)
     await fillRequiredFields(user)
     await user.click(screen.getByText('Create'))
 
@@ -120,7 +151,7 @@ describe('CreateHouseholdForm', () => {
       ),
     )
 
-    renderWithProviders(<CreateHouseholdForm onSuccess={onSuccess} />)
+    renderWithProviders(<Harness onSuccess={onSuccess} />)
     await fillRequiredFields(user)
     await user.click(screen.getByText('Create'))
 
@@ -133,7 +164,7 @@ describe('CreateHouseholdForm', () => {
     const onSuccess = vi.fn()
     const user = userEvent.setup()
 
-    renderWithProviders(<CreateHouseholdForm onSuccess={onSuccess} />)
+    renderWithProviders(<Harness onSuccess={onSuccess} />)
 
     const emailInput = screen.getByLabelText(/Admin Email/)
     await user.type(emailInput, 'invalid-email')
@@ -148,7 +179,7 @@ describe('CreateHouseholdForm', () => {
     const onSuccess = vi.fn()
     const user = userEvent.setup()
 
-    renderWithProviders(<CreateHouseholdForm onSuccess={onSuccess} />)
+    renderWithProviders(<Harness onSuccess={onSuccess} />)
 
     const nameInput = screen.getByLabelText(/Household Name/)
     await user.type(nameInput, 'Test')
@@ -167,7 +198,7 @@ describe('CreateHouseholdForm', () => {
       }),
     )
 
-    renderWithProviders(<CreateHouseholdForm onSuccess={onSuccess} />)
+    renderWithProviders(<Harness onSuccess={onSuccess} />)
     await fillRequiredFields(user)
     await user.click(screen.getByText('Create'))
 

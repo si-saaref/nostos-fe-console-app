@@ -76,16 +76,52 @@ in bone paper and vermilion — was built out and **rejected** by the operator i
 category standard. Do not reintroduce it. Two elements were explicitly kept from that build and
 should not be redesigned without asking: **the navy top bar** and **the loading treatment**.
 
-Some class names still carry the old vocabulary (`.registry-head`, `.validating-sheet`). They
-are legacy names for conventional components, not a surviving metaphor. Rename freely; do not
-read intent into them.
+The old class vocabulary (`.registry-head`, `.validating-sheet`, `.households-table`) is **gone**.
+Those names were legacy labels for conventional components, not a surviving metaphor, and the
+Tailwind migration on 2026-08-23 removed them along with the stylesheets that held them.
 
-**Source of truth is the code**, in this order: `src/styles/tokens.css` (the palette, type
-scale, spacing, elevation, motion), `src/styles/console.css` (every base element and shared
-component), then the co-located page stylesheets (`header.css`, `console-layout.css`,
-`logout-modal.css`, `signin.css`, `dashboard.css`, `households.css`).
+**Source of truth is the code**, and there are now only two stylesheets:
+
+1. `src/styles/tokens.css` — the palette, type scale, spacing, elevation and motion, as raw
+   values on `:root`. Every design value in the system is defined here exactly once.
+2. `src/index.css` — three jobs and nothing else: it exposes those tokens to Tailwind through
+   `@theme inline`, themes the browser surfaces we did not draw (caret, selection, scrollbar,
+   focus ring, placeholder), and keeps the short list of globals that are styled **by tag or
+   ARIA role** rather than by class.
+
+Everything else is Tailwind utilities in the component that needs them, with the shared faces
+(`Button`, `Field`, `Card`, `Badge`, `Dialog`, `Notice`) built as React components under
+`src/components/`. There are no page-level or component-level `.css` files, and new ones should
+not appear: if a value is missing, add a token.
 
 Light only. `color-scheme: light` is declared and there is no dark palette.
+
+### Tokens to Tailwind
+
+`@theme inline` means a utility compiles to `var(--surface)` rather than copying the value, so
+`tokens.css` stays the single definition. The names differ where the raw token name would have
+produced an unreadable utility (`text-text-2`) or collided with a Tailwind namespace:
+
+| Token in `tokens.css` | Tailwind name | Example utility |
+|---|---|---|
+| `--bg` | `canvas` | `bg-canvas` |
+| `--surface`, `--surface-2` | `surface`, `surface-2` | `bg-surface-2` |
+| `--border`, `--border-strong`, `--border-hover` | `line`, `line-strong`, `line-hover` | `border-line` |
+| `--text`, `--text-2`, `--text-3`, `--text-inverse` | `ink`, `ink-2`, `ink-3`, `ink-inverse` | `text-ink-2` |
+| `--navy`, `--navy-hover`, `--on-navy-*` | same | `bg-navy`, `text-on-navy-muted` |
+| `--success-border` etc. | `success-line`, `danger-line`, `warning-line`, `info-line` | `border-warning-line` |
+| `--t-xs … --t-3xl` | `text-xs … text-3xl` (plus `text-md` = 14px) | `text-sm` = 13px |
+| `--r-sm`, `--r`, `--r-lg` | `radius-sm`, `radius-md`, `radius-lg` | `rounded-lg` |
+| `--shadow-sm`, `--shadow`, `--shadow-lg` | `shadow-rest`, `shadow-float`, `shadow-overlay` | `shadow-rest` |
+
+Two things to know about that table. **The type scale is not Tailwind's** — `text-sm` is 13px
+and `text-base`/`text-md` are 14px, because the console's ramp is 12/13/14/16/20/24/30. And the
+elevations are deliberately **not** called `shadow-sm`/`shadow-lg`: those names already exist in
+`tokens.css`, and aliasing a variable to itself recurses. `rest`/`float`/`overlay` are the three
+levels this system has anyway.
+
+Spacing needs no mapping: Tailwind's default 4px base already *is* the console's scale, so `p-5`
+is `--s5` (20px) and `gap-2` is `--s2` (8px).
 
 ---
 
@@ -201,15 +237,35 @@ Scale tokens: `--t-xs` 12 · `--t-sm` 13 · `--t-md` 14 · `--t-lg` 16 · `--t-x
   `--s6` 24 · `--s8` 32 · `--s10` 40 · `--s12` 48.
 - **Card internals:** header `16px 20px`, body `20px`, footer `12px 20px`. Below 768px the
   horizontal padding drops to 16px.
-- **One breakpoint:** `max-width: 768px`. Desktop is the committed target; the mobile block
-  reduces padding and lets tables scroll. There is no tablet tier.
+- **One breakpoint: 768px**, and it is now Tailwind's `md:` — so the rules read
+  mobile-first (bare utility below 768, `md:` at and above) rather than as a `max-width` override.
+  There is no tablet tier. The dashboard's metric grid carries one extra ad-hoc
+  `min-[1100px]:` step, which is where four metric cards stop fitting; it is a local fix, not a
+  system tier, and was inherited unchanged from the stylesheet it replaced.
+- **Mobile is a commitment as of 2026-08-23**, for the households surfaces. Desktop is still
+  where the work happens, but a phone has to be usable, not merely unbroken. Signin, the
+  dashboard and the top bar were migrated at their desktop appearance and made to degrade
+  honestly; only the top bar got a real mobile answer (a burger).
 
 ### Named Rules
 
 - **Everything shares the 1280px measure.** Top bar inner, page, and footers align to one edge.
 - **Spacing comes from the scale.** No arbitrary pixel values in new CSS.
-- **Tables scroll, they do not reflow.** `.table-wrap` is `overflow-x: auto`; columns are never
-  dropped or restacked into cards.
+- **The register is a table on a pointer and a list of cards on a phone.** This reverses the
+  previous rule, which said tables never reflow. That rule existed only because mobile was not a
+  commitment: five columns on a 390px screen means swiping sideways to find out whether a
+  household is being deleted, which is the one fact the errand is about. Above 768px it is a real
+  `<table>` with sortable headers; below, each row becomes a tappable card with name and status on
+  the first line.
+- **One presentation at a time, never both.** The table and the card list are switched by
+  `useIsDesktop()`, not by `md:hidden`. Rendering both and hiding one would put every household in
+  the DOM twice — two of every name for a screen reader, and two of every row for anything
+  querying the page.
+- **Rows scroll inside the card, not down the page.** The table body is capped at
+  `calc(100svh - 320px)` with a 360px floor, which is what makes the sticky header work at all
+  *and* keeps the toolbar and the pagination in view at 200+ households. Beware: a wrapper with
+  `overflow-x: auto` computes `overflow-y: auto` too, so an uncapped wrapper becomes a scroll
+  container the header sticks to and never scrolls — the header silently never sticks.
 
 ---
 
@@ -220,9 +276,9 @@ shadow only lifts it off the page.
 
 | Token | Value | Use |
 |---|---|---|
-| `--shadow-sm` | `0 1px 2px rgba(16,24,40,.06)` | Cards, inputs, buttons at rest |
-| `--shadow` | `0 1px 3px rgba(16,24,40,.1), 0 1px 2px rgba(16,24,40,.06)` | The loading sheet |
-| `--shadow-lg` | `0 12px 24px -8px rgba(16,24,40,.18), 0 4px 8px -4px rgba(16,24,40,.08)` | Dialogs, toasts |
+| `--shadow-sm` → `shadow-rest` | `0 1px 2px rgba(16,24,40,.06)` | Cards, inputs, buttons at rest |
+| `--shadow` → `shadow-float` | `0 1px 3px rgba(16,24,40,.1), 0 1px 2px rgba(16,24,40,.06)` | The loading sheet |
+| `--shadow-lg` → `shadow-overlay` | `0 12px 24px -8px rgba(16,24,40,.18), 0 4px 8px -4px rgba(16,24,40,.08)` | Dialogs, sheets, toasts |
 
 Z-index is a short, explicit ladder: dialogs `40`, toasts `60`. Nothing else stacks.
 
@@ -247,6 +303,9 @@ Z-index is a short, explicit ladder: dialogs `40`, toasts `60`. Nothing else sta
   fully-round pills.
 - **Fully round means "status or progress", never "button".** A pill-shaped button would read as
   a badge.
+- **The bottom sheet uses 8px on its top corners only** — `rounded-t-lg`. A larger radius was
+  considered and rejected: the grab handle is what signals "sheet", so there was no reason to
+  introduce a fourth radius for it.
 
 ---
 
@@ -255,88 +314,188 @@ Z-index is a short, explicit ladder: dialogs `40`, toasts `60`. Nothing else sta
 `--fast` `120ms cubic-bezier(.4,0,.2,1)` for state changes — hover, border, colour.
 `--base` `200ms cubic-bezier(.16,1,.3,1)` for entrances.
 
-Two animations exist: `toast-in` (8px rise plus fade) and `rule-sweep` (the loading bar,
-1100ms ease-in-out alternating).
+Five animations exist, all defined in `src/index.css` and reached through `animate-*`:
+
+| Animation | What it does |
+|---|---|
+| `toast-in` | 8px rise plus fade, 200ms |
+| `rule-sweep` | the loading bar, 1100ms ease-in-out alternating |
+| `overlay-in` | the dialog scrim fades, 200ms |
+| `modal-in` | the centred modal rises 6px and scales from .985, 200ms |
+| `sheet-in` | the bottom sheet translates up from off-screen, 260ms |
+
+Each has a matching `-out` that is the same keyframes played `reverse` at roughly half the
+duration, bound to Radix's `data-[state=closed]`.
 
 ### Named Rules
 
 - **Transition properties, never `all`.** Every rule names what it animates.
 - **Motion confirms, it never entertains.** Nothing moves that the operator did not cause,
   except the loading sweep.
+- **A keyframe on a centred element must never set the centring translate.** Tailwind v4 emits
+  `-translate-x-1/2 -translate-y-1/2` as the standalone `translate` property, not as `transform`.
+  The two **compose**. A `transform: translate(-50%, -50%)` in a keyframe therefore does not
+  replace the centring, it doubles it, and the panel lands a full width up and to the left of
+  centre. `modal-in` carries the entrance offset in `transform` and nothing else. This cost real
+  debugging; do not "fix" it back.
+- **The resting state is the CSS default, never a fill-mode artefact.** Every `-in` animation
+  ends at `transform: none`, so an animation that has not run yet (a backgrounded tab produces no
+  frames and freezes the clock at time 0) leaves the element only a few pixels out rather than
+  somewhere arbitrary.
 
 ---
 
 ## Components
 
-### Top bar (`.registry-head`) — signature, kept by request
+Every one of these is a React component under `src/components/` (or, for the register's own
+parts, `src/modules/households/components/`). Import the component; do not re-derive its
+utilities inline.
+
+### Top bar (`Header`) — signature, kept by request
 
 Navy field, white uppercase wordmark tracked at `0.16em`, uppercase nav links at `0.12em` with
 a 2px underline on the active tab, operator email and sign-out pushed right. The email
-truncates with an ellipsis and carries a `title`. **Do not redesign without asking.**
+truncates with an ellipsis and carries a `title`. **Do not redesign without asking** — the
+Tailwind rebuild reproduces the same measurements and is not a redesign.
 
-### Loading treatment (`.validating`) — signature, kept by request
+Below 768px none of that fits, so **the nav, the email and sign-out move into a panel behind a
+burger**, added 2026-08-23 at the operator's request. The panel stays on the navy field, so the
+bar reads as one object that grew rather than a second surface dropping over the page. It closes
+on navigation, and Escape closes it and returns focus to the burger. Open/closed state is derived
+from the pathname the menu was opened on — not a boolean plus an effect — so a menu can never
+survive a navigation.
+
+### Loading treatment (`LoadingSheet`) — signature, kept by request
 
 A centred 400px white sheet on `--bg` carrying a status line and a 4px round rule, inside which
-a navy segment at 38% width sweeps back and forth. Used for the full-page session splash and
-the magic-link token exchange. **Do not redesign without asking.**
+a navy segment at 38% width sweeps back and forth. Used for the full-page session splash
+(`SessionSplash`) and the magic-link token exchange. **Do not redesign without asking.**
 
 ### Card
 
-`--surface`, 1px `--border`, `--r-lg`, `--shadow-sm`. Optional header (title left, action
-right, bottom rule) and footer (`--surface-2`, top rule, bottom corners rounded).
+`Card` / `CardHeader` / `CardBody` / `CardFooter`. Surface, 1px line, `rounded-lg`,
+`shadow-rest`, `overflow-hidden`. Header is title left, action right, bottom rule; footer is
+`surface-2` with a top rule. Cards are never nested.
 
-### Table
+### Dialog — the responsive one
 
-Lives inside a card, inside `.table-wrap`. Head is `--surface-2` with 12px 600 `--text-2`
-labels; cells are 16px/20px with a bottom rule that is removed on the last row; rows hover to
-`--surface-2`.
+`Dialog` is **one component with two presentations**, built on Radix `Dialog`:
+
+- **≥768px:** a centred modal, `top/left: 50%` plus a -50% translate, `max-h: min(85svh, 720px)`,
+  `rounded-lg`. Widths by `size`: `sm` 440px, `md` 480px (create), `lg` 560px (detail).
+- **<768px:** a bottom sheet — `inset-x-0 bottom-0`, `max-h: 88svh`, `rounded-t-lg`, with a
+  36×4 grab handle. A centred box on a phone wastes the safe area and puts the primary action
+  mid-screen, away from the thumb that has to press it.
+
+Structure is header (title, optional description, optional `titleAside` badge, close button) /
+scrolling body / pinned footer. The footer clears the home indicator with
+`pb-[max(0.75rem,env(safe-area-inset-bottom))]`. `busy` blocks Escape and click-outside while a
+mutation is in flight.
+
+`ConfirmDialog` is the same presentation on `role="alertdialog"`: two answers, no close
+affordance, `tone="danger"` for destruction. Used for delete, restore and sign-out.
+
+**Radix owns what is easy to get wrong and invisible when you do:** the focus trap, Escape,
+focus restoration to whatever opened it, scroll lock, and marking the rest of the page inert.
+Do not hand-roll a dialog — the previous hand-rolled ones had Escape on one of three and a
+focus trap on none.
+
+### Detail and create are dialogs on the register, not pages
+
+`/console/households/:id` and `/console/households/new` are **nested routes** under
+`/console/households`, rendering into its `<Outlet />`. The register stays mounted behind them,
+so opening a household costs the operator neither their scroll position, their search, nor their
+page; Escape and Back both close. The URLs are unchanged, so a link out of a support ticket still
+addresses one household. Closing navigates back to the register **carrying the current search
+params**, which is what preserves the filters.
+
+### Table (the register, ≥768px)
+
+Lives inside a card, in a height-capped scroll area (see Layout). Head is `surface-2` with 12px
+600 `ink-2` labels and is `sticky top-0`. Cells are 16px/20px with a bottom rule; rows hover to
+`surface-2`. Sortable columns are buttons inside `<th>` carrying **`aria-sort`**; the direction
+arrow renders **only on the sorted column**, so the one arrow on screen always means something.
+Counts and dates are `tabular-nums`.
+
+### Card row (the register, <768px)
+
+Name and status badge on the first line, admin email on the second, and a third line that is
+either `N members · created <date>` or — when a deletion is pending — the grace phrase in its
+status colour. Everything the table shows stays on screen; nothing is behind a swipe.
+
+### Toolbar
+
+Search (300ms debounce), a status `<select>`, and a per-page `<select>` pushed right. It sits in
+the card header above the rows and does not need to be sticky, because the rows scroll inside the
+card rather than under it.
 
 ### Buttons
 
-36px tall, 6px radius, 14px/500, `--shadow-sm`, 8px icon gap.
+`Button`, 36px tall, `rounded-md`, 14px/500, `shadow-rest`, 8px icon gap. `size="sm"` is 32px and
+`size="icon"` is 32×32. `buttonClasses()` in `buttonStyles.ts` puts the same face on a router
+`Link`.
 
-- **Default:** white on `--border-strong`, hovering to `--surface-2`.
-- **Primary:** navy fill, white text — also applied automatically to `button[type="submit"]`
-  and `a[role="button"]`.
-- **Danger:** `--danger` fill, white text, via `.danger` or `data-tone="danger"`.
-- **Ghost:** transparent, no shadow, `--text-2`, hovering to a `--surface-2` fill.
-- **Disabled:** `--surface-2` fill, `--text-3`, no shadow, `not-allowed`.
+- **Default:** white on `line-strong`, hovering to `surface-2`.
+- **Primary:** navy fill, white text. **Explicit, never inferred** — the old stylesheet styled
+  every `button[type="submit"]` navy, which meant a form's secondary action had to fight the
+  selector to look secondary.
+- **Danger:** `danger` fill, white text.
+- **Ghost:** transparent, no shadow, `ink-2`, hovering to a `surface-2` fill.
+- **Disabled:** `surface-2` fill, `ink-3`, no shadow, `not-allowed`.
+
+Hover states use the **`not-disabled:` variant, not `enabled:`** — `:enabled` matches only form
+elements, so an `enabled:hover:` class on a `Link` silently never fires.
 
 ### Inputs
 
-Full width, 9px/12px padding, 6px radius, `--border-strong`, `--shadow-sm`. Focus swaps the
-border to `--focus` and adds a 3px ring. `aria-invalid="true"` or an `-error` `aria-describedby`
-turns the border and ring red — **validation state is driven by the ARIA attribute, not a class**,
-so the accessible name and the visual state cannot drift apart. `.field` gives 20px bottom
-spacing; `.field-hint` is 13px `--text-3`.
+`Input`, `Select` and `Field` in `Field.tsx`. Full width, 9px/12px padding, `rounded-md`,
+`line-strong`, `shadow-rest`. Focus swaps the border to `focus` and adds a 3px ring.
+`aria-invalid="true"` or an `-error` `aria-describedby` turns the border and ring red —
+**validation state is driven by the ARIA attribute, not a class**, so the accessible state and
+the visual state cannot drift apart. `Field` owns the label, the required asterisk, and the
+hint-or-error slot below the control.
+
+`Select` is a **native `<select>` on purpose**: keyboard-operable for free, and on a phone it
+opens the OS picker, which beats any listbox we could draw. The chevron is ours because
+`appearance: none` removes the platform one.
 
 ### Badge
 
-Round pill, 12px/500, `4px 9px`, with a 6px `currentColor` dot rendered via `::before`. Three
-variants map to the status pairs: `.badge--neutral` (success green), `.badge--warning`,
-`.badge--danger`.
+`Badge`. Round pill, 12px/500, with a 6px `currentColor` dot. Four tones map to the status
+triples: `neutral` (success green), `warning`, `danger`, `info`. The dot is `currentColor`, so a
+badge cannot end up green-on-amber.
+
+### Pagination
+
+`Pagination`. Numbered, with prev/next chevrons, the current page as a navy pill, and an ellipsis
+where numbers were skipped. The window is pinned to a constant width so the control does not
+jitter as the operator walks through pages. Prev/next alone was not enough at 200+ households:
+page 4 was a four-click journey with no sense of where it ended.
 
 ### Toast
 
-Bottom-right stack, 24px inset, 12px gap, `min(400px, 100vw - 40px)`. Each toast is a
-`--shadow-lg` card tinted with its status pair, an icon in the status foreground, entering with
-`toast-in`. Success, error and info must never be mistaken for each other — that is the whole
-job of the tint.
+Bottom-right stack, `z-60` — **above** the dialog layer, because an operator who just acted
+inside a modal has to see the result. Each toast is a `shadow-overlay` card tinted with its
+status triple and an icon in the status foreground, entering with `toast-in`. Success, error and
+info must never be mistaken for each other; that is the whole job of the tint.
 
-### Dialog
+### Notice
 
-`role="dialog"` / `role="alertdialog"` is the full-screen overlay itself (`position: fixed`,
-`inset: 0`, `--overlay`, grid-centred). Its single child is the panel: `max-width: 440px`,
-white, `--r-lg`, `--shadow-lg`, 24px padding.
+`Notice`. A standing statement about the page or the record, where a toast is what disappears.
+Tinted panel, status icon, `role="status"` or `role="alert"`. Used for the sample-metrics
+disclaimer and for the deletion-pending statement on a household.
 
 ### Inline messages
 
-`[role="alert"]` is 13px `--danger` with 8px top margin. `[role="status"]` is 13px `--text-2`.
-Both are styled globally by role — **give the element the right role and it is styled**.
+`[role="alert"]` is 13px `danger`. `[role="status"]` is 13px `ink-2`. Both are styled globally by
+role in `index.css` — **give the element the right role and it is styled.** Utilities still win
+over these, because Tailwind's utilities layer comes after base.
 
 ### Empty state
 
-Centred, `48px 24px`, `--text-2` prose. Says what is absent and what to do about it.
+Centred, `48px 24px`, `ink-2` prose. Says what is absent and what to do about it — and when a
+*filter* is what emptied the register, it says so and offers a Clear filters button, rather than
+implying there are no households.
 
 ---
 
@@ -345,8 +504,11 @@ Centred, `48px 24px`, `--text-2` prose. Says what is absent and what to do about
 ### Do
 
 - Put content in a card, on `--bg`, aligned to the 1280px measure.
-- Reach for `console.css` before writing new CSS — most elements are styled by tag or by ARIA
-  role already.
+- Reach for an existing component (`Button`, `Field`, `Card`, `Badge`, `Dialog`, `Notice`) before
+  writing utilities. If the face you need does not exist, add a variant to the component rather
+  than a one-off class list at the call site.
+- Take every value from a Tailwind token name that maps back to `tokens.css`. An arbitrary value
+  like `text-[15px]` means the ramp is being ignored — the design hook will say so.
 - Use the ARIA attribute as the styling hook for state (`aria-invalid`, `role="alert"`,
   `role="status"`). It keeps the visual and the accessible state in sync by construction.
 - Pair every status colour with its background and border.
@@ -362,5 +524,12 @@ Centred, `48px 24px`, `--text-2` prose. Says what is absent and what to do about
 - Don't use a status colour for emphasis.
 - Don't add a fourth elevation, a second typeface, or a radius above 8px.
 - Don't animate `all`, and don't move anything the operator did not cause.
-- Don't add a tablet breakpoint to match an old doc; one 768px block is the system.
-- Don't restack tables into cards on mobile — let them scroll.
+- Don't add a tablet breakpoint; 768px is the system, and the dashboard's `min-[1100px]:` metric
+  step is a local fix, not licence for more tiers.
+- Don't add a `.css` file. Two stylesheets exist and both are listed in the Overview; a third is
+  how the last system fragmented into seven.
+- Don't set the centring translate inside a keyframe (see Motion). It doubles, it does not
+  replace.
+- Don't hand-roll a dialog, a focus trap, or Escape handling. Use `Dialog` / `ConfirmDialog`.
+- Don't render both the table and the card list and hide one — pick with `useIsDesktop()`.
+- Don't reach for `enabled:` for a hover state; use `not-disabled:`, which also matches anchors.

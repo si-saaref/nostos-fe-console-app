@@ -1,6 +1,4 @@
-import { useEffect } from 'react'
-import { CloseMark } from './icons'
-import './logout-modal.css'
+import { ConfirmDialog } from './Dialog'
 
 export interface LogoutConfirmationModalProps {
   isOpen: boolean
@@ -9,74 +7,37 @@ export interface LogoutConfirmationModalProps {
   onCancel: () => void
 }
 
+/**
+ * Now an `alertdialog` on the shared confirm presentation, which is what it
+ * always was in substance: two answers, no third way out. The hand-rolled
+ * version had Escape but no focus trap and no focus restoration; Radix brings
+ * both, so those two items come off the open list in docs/FRONTEND.md §13.
+ */
 export function LogoutConfirmationModal({
   isOpen,
   isLoading,
   onConfirm,
   onCancel,
 }: LogoutConfirmationModalProps) {
-  // Escape closes the slip. An operator who opened this by accident should not
-  // have to find the one button that gets them out.
-  useEffect(() => {
-    if (!isOpen || isLoading) return
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onCancel()
-    }
-
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [isOpen, isLoading, onCancel])
-
-  if (!isOpen) return null
-
   return (
-    <div
-      className="logout-modal-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="logout-modal-title"
-      onClick={onCancel}
-    >
-      <div className="logout-modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="logout-modal-header">
-          <h2 id="logout-modal-title">Sign out?</h2>
-          <button
-            type="button"
-            className="logout-modal-close"
-            onClick={onCancel}
-            aria-label="Close"
-            disabled={isLoading}
-          >
-            <CloseMark />
-          </button>
-        </div>
-
-        <div className="logout-modal-body">
-          <p>You'll be signed out of the Nostos Operator Console.</p>
-          <p className="logout-modal-subtext">You can sign back in anytime with your email.</p>
-        </div>
-
-        <div className="logout-modal-footer">
-          <button
-            type="button"
-            className="logout-modal-button logout-modal-button-secondary"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="logout-modal-button logout-modal-button-primary"
-            onClick={onConfirm}
-            disabled={isLoading}
-            aria-busy={isLoading}
-          >
-            {isLoading ? 'Signing out...' : 'Sign Out'}
-          </button>
-        </div>
-      </div>
-    </div>
+    <ConfirmDialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onCancel()
+      }}
+      title="Sign out?"
+      description={
+        <>
+          You&apos;ll be signed out of the Nostos Operator Console.
+          <span className="mt-2 block text-sm text-ink-3">
+            You can sign back in anytime with your email.
+          </span>
+        </>
+      }
+      confirmLabel="Sign Out"
+      busyLabel="Signing out..."
+      busy={isLoading}
+      onConfirm={onConfirm}
+    />
   )
 }

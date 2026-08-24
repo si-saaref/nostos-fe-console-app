@@ -309,7 +309,10 @@ the wait), or the global request throttle.
   `src/modules/households/api/wire.ts`. That file is the only one in the module allowed to name a
   snake_case field; every component and page above it is camelCase. When the wire changes again,
   it is the one file that moves.
-- `limit` is never sent, so the API's default of 50 governs the page size.
+- `limit` **is** sent as of 2026-08-23: the console offers 25 / 50 / 100 through a per-page
+  control, and 50 (the API's own default) is what a URL without `?limit=` still means.
+- `status` is sent when the register is filtered to one status, and omitted — not sent empty — to
+  mean both.
 - The `status` query parameter is available but no UI exposes it yet.
 - Unwrapping is strict: `unwrapEnvelope` / `unwrapPaginated` in `src/utils/responseHandlers.ts`
   throw an `ApiError` carrying `error.code` rather than guessing at a missing `data`, so a shape

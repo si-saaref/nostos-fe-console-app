@@ -1,15 +1,24 @@
 import { useForm } from 'react-hook-form'
+import { Field, Input } from '@/components/Field'
+import { Notice } from '@/components/Notice'
 import { getErrorMessage } from '@/utils/apiErrorMessages'
 import { toApiError } from '@/utils/responseHandlers'
 import { useCreateHousehold } from '../api/useCreateHousehold'
 import { toCreateFormField } from '../api/wire'
-import type { CreateHouseholdInput } from '../types'
+import type { CreateHouseholdInput, CreatedHousehold } from '../types'
 
 interface CreateHouseholdFormProps {
-  onSuccess: (householdId: string) => void
+  /** The form's `id`, so a submit button outside it can drive it. */
+  formId: string
+  onSuccess: (created: CreatedHousehold) => void
+  onPendingChange?: (isPending: boolean) => void
 }
 
-export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
+export function CreateHouseholdForm({
+  formId,
+  onSuccess,
+  onPendingChange,
+}: CreateHouseholdFormProps) {
   const {
     register,
     handleSubmit,
@@ -22,15 +31,17 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
   })
   const { mutate, isPending, error } = useCreateHousehold()
 
-  const householdName = watch('householdName')
-  const nameLength = householdName?.length || 0
+  const nameLength = watch('householdName')?.length || 0
 
   const onSubmit = (data: CreateHouseholdInput) => {
+    onPendingChange?.(true)
     mutate(data, {
       onSuccess: (created) => {
-        onSuccess(created.householdId)
+        onPendingChange?.(false)
+        onSuccess(created)
       },
       onError: (mutationError) => {
+        onPendingChange?.(false)
         // A 400 from the validation pipe names the offending fields; put each
         // message on its own input rather than only in the form-level alert.
         const apiError = toApiError(mutationError)
@@ -44,10 +55,15 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor="householdName">Household Name *</label>
-        <input
+    <form id={formId} onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+      <Field
+        htmlFor="householdName"
+        label="Household Name"
+        required
+        hint={`${nameLength}/100`}
+        error={errors.householdName?.message}
+      >
+        <Input
           id="householdName"
           type="text"
           placeholder="e.g., Adios Family"
@@ -65,23 +81,22 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        <small id="householdName-hint">{nameLength}/100</small>
-        {errors.householdName && (
-          <span id="householdName-error" role="alert">
-            {errors.householdName.message}
-          </span>
-        )}
-      </div>
+      </Field>
 
-      <div>
-        <label htmlFor="adminEmail">Admin Email *</label>
-        <input
+      <Field
+        htmlFor="adminEmail"
+        label="Admin Email"
+        required
+        hint="The invite goes here. It expires in 48 hours."
+        error={errors.adminEmail?.message}
+      >
+        <Input
           id="adminEmail"
           type="email"
           placeholder="e.g., javier@adios.com"
           disabled={isPending}
           aria-required="true"
-          aria-describedby={errors.adminEmail ? 'adminEmail-error' : undefined}
+          aria-describedby={errors.adminEmail ? 'adminEmail-error' : 'adminEmail-hint'}
           autoComplete="email"
           {...register('adminEmail', {
             required: 'Admin email is required',
@@ -91,16 +106,15 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        {errors.adminEmail && (
-          <span id="adminEmail-error" role="alert">
-            {errors.adminEmail.message}
-          </span>
-        )}
-      </div>
+      </Field>
 
-      <div>
-        <label htmlFor="adminName">Admin Name *</label>
-        <input
+      <Field
+        htmlFor="adminName"
+        label="Admin Name"
+        required
+        error={errors.adminName?.message}
+      >
+        <Input
           id="adminName"
           type="text"
           placeholder="e.g., Javier"
@@ -118,39 +132,30 @@ export function CreateHouseholdForm({ onSuccess }: CreateHouseholdFormProps) {
             },
           })}
         />
-        {errors.adminName && (
-          <span id="adminName-error" role="alert">
-            {errors.adminName.message}
-          </span>
-        )}
-      </div>
+      </Field>
 
-      <div>
-        <label htmlFor="notes">Notes (optional)</label>
-        <input
+      <Field
+        htmlFor="notes"
+        label="Notes (optional)"
+        hint="Internal only. The household never sees this."
+        error={errors.notes?.message}
+      >
+        <Input
           id="notes"
           type="text"
           placeholder="e.g., Early adopter"
           maxLength={1000}
           disabled={isPending}
+          aria-describedby={errors.notes ? 'notes-error' : 'notes-hint'}
           {...register('notes', { maxLength: { value: 1000, message: 'Max 1000 characters' } })}
         />
-        {errors.notes && (
-          <span id="notes-error" role="alert">
-            {errors.notes.message}
-          </span>
-        )}
-      </div>
+      </Field>
 
       {error && (
-        <div role="alert" aria-live="polite" style={{ color: 'red' }}>
+        <Notice tone="danger" role="alert">
           {getErrorMessage(error)}
-        </div>
+        </Notice>
       )}
-
-      <button type="submit" disabled={isPending} aria-busy={isPending}>
-        {isPending ? 'Creating...' : 'Create'}
-      </button>
     </form>
   )
 }

@@ -106,9 +106,11 @@ export interface ResendInviteWire {
 
 export interface HouseholdListQueryWire {
   page: number
+  limit: number
   search?: string
   sort_by: string
   sort_order: 'ASC' | 'DESC'
+  status?: HouseholdStatus
 }
 
 const SORT_FIELD_TO_WIRE: Record<HouseholdSortField, string> = {
@@ -122,6 +124,7 @@ const SORT_FIELD_TO_WIRE: Record<HouseholdSortField, string> = {
 export function toListQuery(filters: HouseholdFilters): HouseholdListQueryWire {
   const query: HouseholdListQueryWire = {
     page: filters.page,
+    limit: filters.limit,
     sort_by: SORT_FIELD_TO_WIRE[filters.sortBy],
     sort_order: filters.sortOrder,
   }
@@ -129,6 +132,10 @@ export function toListQuery(filters: HouseholdFilters): HouseholdListQueryWire {
   // An empty `search` would go out as `search=`, which filters on the empty
   // string rather than meaning "no filter".
   if (filters.search) query.search = filters.search
+
+  // Likewise for status: the parameter has to be absent to mean "both", not
+  // present and empty.
+  if (filters.status) query.status = filters.status
 
   return query
 }

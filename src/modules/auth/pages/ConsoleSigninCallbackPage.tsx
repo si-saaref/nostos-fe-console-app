@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSigninCallback } from '@/api/mutations/useSigninCallback'
-import { useToast } from '@/components/ToastProvider'
+import { useToast } from '@/components/toastContext'
 import { useAuth } from '@/contexts/useAuth'
+import { LoadingSheet } from '@/components/LoadingSheet'
 import { getErrorMessage } from '@/utils/apiErrorMessages'
 
 export function ConsoleSigninCallbackPage() {
@@ -28,15 +29,5 @@ export function ConsoleSigninCallbackPage() {
     }
   }, [isLoading, isError, token, refreshSession, navigate])
 
-  return (
-    <div className="validating">
-      <div className="validating-sheet">
-        <div role="status" aria-live="polite">
-          Validating signin link...
-        </div>
-        {/* A rule being drawn across the sheet, not a spinning circle. */}
-        <div className="validating-rule" aria-hidden="true" />
-      </div>
-    </div>
-  )
+  return <LoadingSheet message="Validating signin link..." />
 }

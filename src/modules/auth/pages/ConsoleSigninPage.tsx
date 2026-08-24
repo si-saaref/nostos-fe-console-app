@@ -1,10 +1,9 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/useAuth'
-import { useToast } from '@/components/ToastProvider'
+import { useToast } from '@/components/toastContext'
 import { useSignin } from '@/api/mutations/useSignin'
 import { getErrorMessage } from '@/utils/apiErrorMessages'
 import { ConsoleSigninForm } from '../components/ConsoleSigninForm'
-import './signin.css'
 
 export function ConsoleSigninPage() {
   const { status } = useAuth()
@@ -31,32 +30,47 @@ export function ConsoleSigninPage() {
   }
 
   return (
-    <div className="signin">
-      <header className="registry-head">
-        <div className="registry-head-inner">
-          <p className="registry-head-mark">Nostos Operator Console</p>
+    <div className="flex min-h-svh flex-col bg-canvas">
+      {/* The same navy field as the console's top bar, carrying only the
+          wordmark: there is no session yet, so there is nothing to navigate. */}
+      <header className="border-b border-navy-edge bg-navy text-ink-inverse">
+        <div className="mx-auto w-full max-w-[1280px] px-4 py-3 md:px-6 md:py-4">
+          <p className="text-sm font-semibold tracking-[0.16em] whitespace-nowrap uppercase text-ink-inverse">
+            Nostos Operator Console
+          </p>
         </div>
       </header>
 
-      <div className="signin-body">
-        <div className="signin-card card">
-          <div className="card-body">
-            <h1 className="signin-title">Sign In</h1>
-            <p className="signin-intro">
-              We'll email you a single-use link to sign in. No password required.
-            </p>
+      <div className="flex grow items-center justify-center px-4 py-12">
+        <div className="w-full max-w-[400px] rounded-lg border border-line bg-surface p-6 shadow-rest md:p-8">
+          <h1>Sign In</h1>
+          <p className="mt-2 mb-6 text-md text-ink-2">
+            We'll email you a single-use link to sign in. No password required.
+          </p>
 
-            <ConsoleSigninForm onSubmit={handleSubmit} isLoading={isPending} />
+          <ConsoleSigninForm onSubmit={handleSubmit} isLoading={isPending} />
 
-            <ul className="signin-notes">
-              <li>Only addresses already authorized for the console can sign in.</li>
-              <li>Five signin requests per address each hour.</li>
-            </ul>
+          <ul className="mt-5 flex flex-col gap-2 border-t border-line pt-4">
+            {[
+              'Only addresses already authorized for the console can sign in.',
+              'Five signin requests per address each hour.',
+            ].map((note) => (
+              <li key={note} className="relative pl-4 text-sm text-ink-2">
+                <span
+                  aria-hidden="true"
+                  className="absolute top-2 left-0 h-1 w-1 rounded-full bg-ink-3"
+                />
+                {note}
+              </li>
+            ))}
+          </ul>
 
-            <p className="signin-support">
-              Don't have access? <a href="mailto:support@nostos.com">Contact support@nostos.com</a>
-            </p>
-          </div>
+          <p className="mt-6 border-t border-line pt-4 text-sm text-ink-2">
+            Don't have access?{' '}
+            <a href="mailto:support@nostos.com" className="text-navy">
+              Contact support@nostos.com
+            </a>
+          </p>
         </div>
       </div>
     </div>

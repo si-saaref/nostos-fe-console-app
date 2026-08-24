@@ -1,33 +1,59 @@
-import { DeleteHouseholdButton } from './DeleteHouseholdButton'
-import { RestoreHouseholdButton } from './RestoreHouseholdButton'
+import { Notice } from '@/components/Notice'
+import { formatEntryDate, graceRemaining } from '../grace'
+import { Fact, Facts, Section } from './Facts'
 import type { HouseholdCore } from '../types'
 
-interface HouseholdInfoProps {
-  household: HouseholdCore
-  onRefresh?: () => void
-}
+/**
+ * The household's own facts. The actions that change them live in the dialog
+ * footer, where a decision belongs — not scattered through the reading.
+ */
+export function HouseholdInfo({ household }: { household: HouseholdCore }) {
+  const isPending = household.status === 'DELETION_PENDING'
+  const grace = isPending ? graceRemaining(household.scheduledDeletionDate) : null
 
-export function HouseholdInfo({ household, onRefresh }: HouseholdInfoProps) {
   return (
-    <section>
-      <h1>{household.name}</h1>
-      <p>Status: {household.status === 'ACTIVE' ? 'Active' : 'Deletion Pending'}</p>
-      <p>Created: {new Date(household.createdAt).toLocaleDateString()}</p>
-      {household.status === 'DELETION_PENDING' && household.scheduledDeletionDate && (
-        <p>Will be deleted on {new Date(household.scheduledDeletionDate).toLocaleDateString()}</p>
+    <Section title="Household">
+      {isPending && (
+        <Notice tone={grace?.lapsed ? 'danger' : 'warning'} className="mb-4">
+          {grace?.lapsed ? (
+            <>
+              <strong>The grace period has ended.</strong> This household is queued for permanent
+              deletion and can no longer be restored here.
+            </>
+          ) : (
+            <>
+              <strong>Scheduled for deletion.</strong>{' '}
+              {household.scheduledDeletionDate && (
+                <>
+                  It will be permanently deleted on{' '}
+                  {formatEntryDate(household.scheduledDeletionDate)}
+                  {grace && (
+                    <>
+                      {' '}
+                      — {grace.daysRemaining} {grace.daysRemaining === 1 ? 'day' : 'days'} left
+                    </>
+                  )}
+                  .{' '}
+                </>
+              )}
+              Restoring it undoes this completely.
+            </>
+          )}
+        </Notice>
       )}
-      <div>
-        {household.status === 'ACTIVE' && (
-          <DeleteHouseholdButton
-            householdId={household.id}
-            householdName={household.name}
-            onSuccess={() => onRefresh?.()}
-          />
+
+      <Facts>
+        <Fact label="Status">{isPending ? 'Deletion pending' : 'Active'}</Fact>
+        <Fact label="Created">{formatEntryDate(household.createdAt)}</Fact>
+        {household.deletionRequestedAt && (
+          <Fact label="Deletion requested">{formatEntryDate(household.deletionRequestedAt)}</Fact>
         )}
-        {household.status === 'DELETION_PENDING' && (
-          <RestoreHouseholdButton householdId={household.id} onSuccess={() => onRefresh?.()} />
+        {household.scheduledDeletionDate && (
+          <Fact label="Deletes on" tone={grace?.lapsed ? 'danger' : 'warning'}>
+            {formatEntryDate(household.scheduledDeletionDate)}
+          </Fact>
         )}
-      </div>
-    </section>
+      </Facts>
+    </Section>
   )
 }

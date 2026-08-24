@@ -1,5 +1,10 @@
 import { useState } from 'react'
+import { Button } from '@/components/Button'
+import { ConfirmDialog } from '@/components/Dialog'
+import { TrashMark } from '@/components/icons'
+import { useToast } from '@/components/toastContext'
 import { getErrorMessage } from '@/utils/apiErrorMessages'
+import { GRACE_PERIOD_DAYS } from '../grace'
 import { useDeleteHousehold } from '../api/useDeleteHousehold'
 
 interface DeleteHouseholdButtonProps {
@@ -14,12 +19,14 @@ export function DeleteHouseholdButton({
   onSuccess,
 }: DeleteHouseholdButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const { mutate, isPending, error } = useDeleteHousehold()
+  const { mutate, isPending, error, reset } = useDeleteHousehold()
+  const toast = useToast()
 
   const handleDelete = () => {
     mutate(householdId, {
       onSuccess: () => {
         setIsOpen(false)
+        toast.success(`${householdName} is scheduled for deletion. You can restore it until then.`)
         onSuccess()
       },
     })
@@ -27,48 +34,37 @@ export function DeleteHouseholdButton({
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
+      <Button
+        variant="danger"
+        onClick={() => {
+          reset()
+          setIsOpen(true)
+        }}
         disabled={isPending}
-        style={{ color: 'red' }}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
       >
+        <TrashMark />
         Delete Household
-      </button>
+      </Button>
 
-      {isOpen && (
-        <div
-          role="alertdialog"
-          aria-labelledby="delete-dialog-title"
-          aria-describedby="delete-dialog-description"
-          aria-modal="true"
-        >
-          <h2 id="delete-dialog-title">Delete {householdName}?</h2>
-          <p id="delete-dialog-description">
-            This household will be marked for deletion. It will be permanently deleted in 30 days.
-            You can restore it during this period.
-          </p>
-          {error && (
-            <div role="alert" style={{ color: 'red' }} aria-live="polite">
-              {getErrorMessage(error)}
-            </div>
-          )}
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-            <button onClick={() => setIsOpen(false)} disabled={isPending}>
-              Cancel
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={isPending}
-              style={{ color: 'red' }}
-              aria-busy={isPending}
-            >
-              {isPending ? 'Deleting...' : 'Delete'}
-            </button>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        title={`Delete ${householdName}?`}
+        description={
+          <>
+            This household will be marked for deletion and permanently deleted in{' '}
+            {GRACE_PERIOD_DAYS} days. You can restore it at any point during that period.
+          </>
+        }
+        confirmLabel="Delete"
+        busyLabel="Deleting..."
+        tone="danger"
+        busy={isPending}
+        error={error && <div role="alert">{getErrorMessage(error)}</div>}
+        onConfirm={handleDelete}
+      />
     </>
   )
 }

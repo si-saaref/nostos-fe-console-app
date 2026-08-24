@@ -61,8 +61,13 @@ describe('HouseholdDetailPage', () => {
     await waitFor(() => expect(screen.getByText(/sofia@adios.com/)).toBeInTheDocument(), {
       timeout: 3000,
     })
-    expect(screen.getByRole('heading', { level: 1, name: 'Adios Family' })).toBeInTheDocument()
-    expect(screen.getByText('Status: Claimed')).toBeInTheDocument()
+    // The household name is now the dialog's title, so it is the h2 that names
+    // the dialog rather than the page's h1.
+    expect(screen.getByRole('heading', { level: 2, name: 'Adios Family' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Adios Family' })).toBeInTheDocument()
+    // The admin's claim status is a badge against the "Claim status" label.
+    expect(screen.getByText('Claim status')).toBeInTheDocument()
+    expect(screen.getByText('Claimed')).toBeInTheDocument()
   })
 
   it('says so when the household has no admin, instead of crashing', async () => {

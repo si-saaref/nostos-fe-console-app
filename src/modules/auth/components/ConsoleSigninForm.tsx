@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Button } from '@/components/Button'
+import { Field, Input } from '@/components/Field'
 import { CheckCircleMark } from '@/components/icons'
 
 interface SigninFormValues {
@@ -35,32 +37,25 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
 
   if (isSuccess) {
     return (
-      <div className="signin-success-state">
-        <div className="signin-success-icon">
+      <div className="text-center">
+        <div className="mb-3 flex justify-center text-success">
           <CheckCircleMark />
         </div>
-        <div className="signin-success-message">
-          <h2>Check your email</h2>
-          <p>
-            We've sent a signin link to <strong>{successEmail}</strong>
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setIsSuccess(false)}
-          className="signin-success-button"
-        >
+        <h2 className="mb-2 text-lg">Check your email</h2>
+        <p className="mx-auto text-md text-ink-2">
+          We've sent a signin link to <strong className="font-medium text-ink">{successEmail}</strong>
+        </p>
+        <Button className="mt-5 w-full" onClick={() => setIsSuccess(false)}>
           Try another email
-        </button>
+        </Button>
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="signin-form">
-      <div className="signin-form-group">
-        <label htmlFor="signin-email">Enter your email</label>
-        <input
+    <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
+      <Field htmlFor="signin-email" label="Enter your email" error={errors.email?.message}>
+        <Input
           id="signin-email"
           type="email"
           autoComplete="email"
@@ -74,23 +69,27 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
             onChange: handleEmailChange,
           })}
         />
-        {errors.email && (
-          <span id="signin-email-error" role="alert" className="signin-error">
-            {errors.email.message}
-          </span>
-        )}
-      </div>
+      </Field>
 
-      <button type="submit" disabled={isLoading} className="signin-button" aria-busy={isLoading}>
+      <Button
+        type="submit"
+        variant="primary"
+        disabled={isLoading}
+        aria-busy={isLoading}
+        className="mt-5 h-10 w-full"
+      >
         {isLoading ? (
-          <span className="signin-button-loading">
-            <span className="signin-button-spinner" />
+          <>
+            <span
+              aria-hidden="true"
+              className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-on-navy-border border-t-ink-inverse"
+            />
             Signing in...
-          </span>
+          </>
         ) : (
           'Sign In'
         )}
-      </button>
+      </Button>
     </form>
   )
 }

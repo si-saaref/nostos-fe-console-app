@@ -17,11 +17,13 @@ the same commit, the way you would update a test.
 create and repair households without touching the database. Not the household-member app.
 
 React 19 / TypeScript strict / Vite 8 / React Router 7 / TanStack Query 5 / React Hook Form /
-Axios. Plain CSS with custom properties, no framework.
+Axios. **Tailwind v4** utilities over CSS custom properties, plus **Radix** (`radix-ui`) for
+Dialog and AlertDialog. No other UI library.
 
 **Shipped:** magic-link signin and callback, sign-out with confirmation, dashboard metrics,
-household list (search / sort / paginate), household detail, create household, soft-delete with
-a 30-day grace period, restore, resend admin invite.
+household list (search / sort / status filter / page size / numbered pagination), household
+detail and create **as dialogs over the list**, soft-delete with a 30-day grace period, restore,
+resend admin invite. Desktop and mobile for the households surfaces.
 
 **Not built:** permission model (the session carries a `role` that nothing consumes), metrics
 drill-down, a Settings page, a catch-all route, CI, error tracking.
@@ -34,11 +36,13 @@ npm run build && npm run lint && npx vitest run    # the manual CI gate
 npx vitest run -t 'name of a test or describe'     # one test
 ```
 
-Currently green: 27 test files, 125 tests, clean build. **`npm run lint` is red** with 3
-pre-existing errors: `ToastProvider` fast-refresh, an unused `vi` in `ToastProvider.test`, and
-one `any` in `src/test/test-utils.tsx`.
+Currently green: 27 test files, 125 tests, clean build, and **`npm run lint` is clean** — 0
+errors. The three long-standing errors (ToastProvider fast-refresh, an unused `vi`, an `any` in
+`test-utils`) were fixed on 2026-08-23; `useToast` now lives in `src/components/toastContext.ts`
+so `ToastProvider.tsx` exports only a component. One warning remains and is not fixable here:
+React Compiler cannot memoize React Hook Form's `watch()`.
 
-## Six things that bite
+## Eight things that bite
 
 1. **Households speak snake_case and return `{ success, data }` — and the list's `data` is a
    bare array with its counts under `meta.pagination`.** Errors carry `status_code`, and
@@ -55,7 +59,18 @@ one `any` in `src/test/test-utils.tsx`.
    `notes/BE/` show bare `/console/...` paths and are wrong.
 4. **The session endpoint is `GET /auth/me`**, not `/auth/session`. The latter never existed.
 5. **The dashboard is `/console`**, not `/console/dashboard` as the PRD specifies.
-6. **Auth policy is not in `src/api/client.ts`** — that file is transport only. The 401/403
+6. **Two stylesheets, and Tailwind's scale is not Tailwind's default.** `src/styles/tokens.css`
+   holds every raw design value; `src/index.css` maps them to Tailwind via `@theme inline`, themes
+   the browser surfaces, and keeps the tag/ARIA-role globals. Everything else is utilities. Note
+   `text-sm` is **13px** and `text-base`/`text-md` are **14px** — the console's ramp is
+   12/13/14/16/20/24/30 — and the elevations are `shadow-rest` / `shadow-float` /
+   `shadow-overlay`, deliberately not `shadow-sm`/`-lg`, which would alias to themselves and
+   recurse. Full mapping table in `DESIGN.md`.
+7. **A keyframe on a centred dialog must not set the centring translate.** Tailwind v4 emits
+   `-translate-*` as the standalone `translate` property, which **composes** with `transform`, so
+   a `translate(-50%,-50%)` keyframe doubles the centring instead of replacing it. Cost real
+   debugging. See `modal-in` in `src/index.css`.
+8. **Auth policy is not in `src/api/client.ts`** — that file is transport only. The 401/403
    interceptor is registered by `AuthProvider` inside the router so it can navigate softly
    instead of reloading and discarding its own toast.
 
@@ -66,7 +81,7 @@ One owner per kind, no exceptions, and deliberately **no global client-state sto
 | Kind | Owner |
 |---|---|
 | Server data | TanStack Query — the cache is the only source of truth; never copy results elsewhere |
-| Filter / sort / pagination | URL search params (`useHouseholdFilters`) |
+| Filter / sort / pagination / page size | URL search params (`useHouseholdFilters`) — `page`, `search`, `sort`, `status`, `limit` |
 | Session | `AuthContext` |
 | Forms | React Hook Form |
 | Local UI | `useState`, component-local |
@@ -74,6 +89,9 @@ One owner per kind, no exceptions, and deliberately **no global client-state sto
 ## Conventions
 
 - Components `PascalCase.tsx`, hooks `useCamelCase.ts`, directories kebab-case.
+- **No new `.css` files.** If a value is missing, add a token to `tokens.css`.
+- `/console/households/new` and `/:id` are **nested routes** under the list, rendered into its
+  `<Outlet />` as dialogs. Closing navigates to the list carrying the current search params.
 - `@/` → `src/`, configured in **both** `vite.config.ts` and `tsconfig.app.json`.
 - Query keys are `['console', resource, ...]` so the domain can be invalidated in one call.
 - Tests live in `__tests__/` beside the code; use `renderWithProviders` from
@@ -93,8 +111,15 @@ One owner per kind, no exceptions, and deliberately **no global client-state sto
   snapshot, or rollback anywhere. Several superseded documents claimed otherwise.
 - There is no `staleTime` default on the `QueryClient` — only `refetchOnWindowFocus: false`.
 - Search is debounced **300 ms**, not 500 ms.
-- Only one media query exists (`max-width: 768px`), not a three-tier breakpoint system.
-- The gzipped bundle is ~120 kB, not "357 kB gzipped".
+- One breakpoint, 768px, now expressed mobile-first as Tailwind's `md:`. The dashboard's metric
+  grid carries one extra ad-hoc `min-[1100px]:` step, inherited from the stylesheet it replaced.
+- The gzipped bundle is ~140 kB JS + ~8 kB CSS (Radix and Tailwind added ~20 kB), not
+  "357 kB gzipped".
+- **The register reflows on mobile.** An older DESIGN.md rule said tables scroll and never
+  restack; that rule existed only because mobile was not a commitment, and it was reversed on
+  2026-08-23. Above 768px it is a real table; below, each row is a card.
+- **Sortable columns really are shipped now.** This file claimed them for months while
+  `HouseholdTable` never called `setSort`. Wired 2026-08-23.
 - **The households API is snake_case as of 2026-08-22.** Any camelCase request body, query param,
   or response field in an older document or commit predates that flip. Resend-invite is shipped
   and working; a superseded plan called for deleting it.

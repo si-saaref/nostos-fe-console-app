@@ -92,11 +92,18 @@ export interface HouseholdDetail {
   members: HouseholdMember[]
 }
 
+/** The API's page size, 1–100. The console offers three sensible stops. */
+export type HouseholdPageSize = 25 | 50 | 100
+
 export interface HouseholdFilters {
   page: number
   search: string
   sortBy: HouseholdSortField
   sortOrder: 'ASC' | 'DESC'
+  /** Rows per page. Sent as `limit`; the API's own default is 50. */
+  limit: HouseholdPageSize
+  /** `null` means both statuses — the API omits the parameter entirely. */
+  status: HouseholdStatus | null
 }
 
 export interface CreateHouseholdInput {
