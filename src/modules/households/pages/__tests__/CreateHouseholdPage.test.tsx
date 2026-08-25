@@ -11,9 +11,9 @@ describe('CreateHouseholdPage', () => {
   it('renders create household form', () => {
     renderWithProviders(
       <Routes>
-        <Route path="/console/households/new" element={<CreateHouseholdPage />} />
+        <Route path="/households/new" element={<CreateHouseholdPage />} />
       </Routes>,
-      { route: '/console/households/new' },
+      { route: '/households/new' },
     )
 
     expect(screen.getByText('Create Household')).toBeInTheDocument()
@@ -43,10 +43,10 @@ describe('CreateHouseholdPage', () => {
 
     renderWithProviders(
       <Routes>
-        <Route path="/console/households/new" element={<CreateHouseholdPage />} />
-        <Route path="/console/households/:id" element={<div>Detail Page for {'{id}'}</div>} />
+        <Route path="/households/new" element={<CreateHouseholdPage />} />
+        <Route path="/households/:id" element={<div>Detail Page for {'{id}'}</div>} />
       </Routes>,
-      { route: '/console/households/new' },
+      { route: '/households/new' },
     )
 
     const nameInput = screen.getByLabelText(/Household Name/)

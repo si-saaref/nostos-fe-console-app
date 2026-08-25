@@ -212,7 +212,7 @@ describe('AuthProvider on the signin page', () => {
       }),
     )
 
-    renderAuth('/console/signin')
+    renderAuth('/signin')
 
     await waitFor(() =>
       expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated'),
@@ -224,7 +224,7 @@ describe('AuthProvider on the signin page', () => {
     setHint()
     sessionValid()
 
-    renderAuth('/console/signin')
+    renderAuth('/signin')
 
     await waitFor(() =>
       expect(screen.getByTestId('status')).toHaveTextContent('authenticated'),
@@ -234,7 +234,7 @@ describe('AuthProvider on the signin page', () => {
   it('still asks on a protected route with no hint, so a cleared-cookie operator is not ejected', async () => {
     sessionValid()
 
-    renderAuth('/console')
+    renderAuth('/')
 
     await waitFor(() =>
       expect(screen.getByTestId('status')).toHaveTextContent('authenticated'),

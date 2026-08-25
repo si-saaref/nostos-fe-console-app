@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
 import { ConsoleSigninPage } from '@/modules/auth/pages/ConsoleSigninPage'
 import { ConsoleSigninCallbackPage } from '@/modules/auth/pages/ConsoleSigninCallbackPage'
@@ -10,11 +10,10 @@ import { HouseholdDetailPage } from '@/modules/households/pages/HouseholdDetailP
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/console" replace />} />
-      <Route path="/console/signin" element={<ConsoleSigninPage />} />
-      <Route path="/console/auth/signin/:token" element={<ConsoleSigninCallbackPage />} />
+      <Route path="/signin" element={<ConsoleSigninPage />} />
+      <Route path="/auth/signin/:token" element={<ConsoleSigninCallbackPage />} />
       <Route
-        path="/console"
+        path="/"
         element={
           <ProtectedRoute>
             <ConsoleDashboardPage />
@@ -27,7 +26,7 @@ export function AppRoutes() {
           addresses one household — it just no longer costs the operator their
           scroll position, their search, or their page. */}
       <Route
-        path="/console/households"
+        path="/households"
         element={
           <ProtectedRoute>
             <HouseholdsPage />

@@ -17,12 +17,12 @@ function renderCallback(token: string) {
   return renderWithProviders(
     <AuthProvider>
       <Routes>
-        <Route path="/console/signin" element={<div>signin page</div>} />
-        <Route path="/console" element={<DashboardStub />} />
-        <Route path="/console/auth/signin/:token" element={<ConsoleSigninCallbackPage />} />
+        <Route path="/signin" element={<div>signin page</div>} />
+        <Route path="/" element={<DashboardStub />} />
+        <Route path="/auth/signin/:token" element={<ConsoleSigninCallbackPage />} />
       </Routes>
     </AuthProvider>,
-    { route: `/console/auth/signin/${token}` },
+    { route: `/auth/signin/${token}` },
   )
 }
 

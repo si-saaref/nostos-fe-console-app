@@ -16,7 +16,7 @@ import { RestoreHouseholdButton } from '../components/RestoreHouseholdButton'
  * own. An operator resolving a ticket opens a row, acts, and closes it — they
  * never lose their scroll position, their search, or their page.
  *
- * Rendered by the nested `/console/households/:id` route, so the URL is still
+ * Rendered by the nested `/households/:id` route, so the URL is still
  * the address of one household and a link out of a ticket still works.
  */
 export function HouseholdDetailPage() {
@@ -27,7 +27,7 @@ export function HouseholdDetailPage() {
   const { data: detail, isPending, isError, error } = useHousehold(id)
 
   // Closing returns to the register carrying the filters it was opened from.
-  const close = () => navigate({ pathname: '/console/households', search: location.search })
+  const close = () => navigate({ pathname: '/households', search: location.search })
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ['console', 'households'] })

@@ -14,7 +14,7 @@ export function ConsoleSigninPage() {
   // hint here would ricochet the operator signin -> dashboard -> signin. Briefly
   // showing this form before a legitimate bounce is harmless by comparison.
   if (status === 'authenticated') {
-    return <Navigate to="/console" replace />
+    return <Navigate to="/" replace />
   }
 
   const handleSubmit = (email: string) => {

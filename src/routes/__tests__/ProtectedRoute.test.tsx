@@ -18,9 +18,9 @@ function renderGuarded(status: AuthStatus) {
 
   return renderWithProviders(
     <Routes>
-      <Route path="/console/signin" element={<div>signin page</div>} />
+      <Route path="/signin" element={<div>signin page</div>} />
       <Route
-        path="/console"
+        path="/"
         element={
           <ProtectedRoute>
             <div>dashboard page</div>
@@ -28,7 +28,7 @@ function renderGuarded(status: AuthStatus) {
         }
       />
     </Routes>,
-    { route: '/console' },
+    { route: '/' },
   )
 }
 

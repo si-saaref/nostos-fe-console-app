@@ -58,9 +58,9 @@ and should not be traded away:
 
 ## Operating Context
 
-**Signin.** Operator enters their email at `/console/signin`. The backend emails
-a magic link pointing at the frontend (`{FRONTEND_URL}/console/auth/signin/{token}`),
-which the app consumes at `/console/auth/signin/:token` to establish a session
+**Signin.** Operator enters their email at `/signin`. The backend emails
+a magic link pointing at the frontend (`{FRONTEND_URL}/auth/signin/{token}`),
+which the app consumes at `/auth/signin/:token` to establish a session
 cookie. Signin requests are rate-limited to 5 per email per hour. An email
 outside the allowlist gets the same non-revealing 401 as an unknown address.
 
@@ -86,10 +86,11 @@ last-updated timestamp. No drill-down.
 
 ## Capabilities and Constraints
 
-**Shipped routes.** `/console/signin`, `/console/auth/signin/:token`,
-`/console` (dashboard), `/console/households`, `/console/households/new`,
-`/console/households/:id`. Everything under `/console` is behind a session
-guard.
+**Shipped routes.** `/signin`, `/auth/signin/:token`, `/` (dashboard),
+`/households`, `/households/new`, `/households/:id`. Everything except signin
+and the token callback is behind a session guard. There is no `/console` path
+prefix: the console is its own subdomain (`console.<domain>`, alongside
+`app.<domain>` and `api.<domain>`), so a prefix would only repeat the hostname.
 
 **Shipped capabilities.** Magic-link signin and callback; sign-out with
 confirmation; dashboard metrics grid; household list with debounced search,

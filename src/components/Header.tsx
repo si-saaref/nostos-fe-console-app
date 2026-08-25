@@ -18,8 +18,8 @@ import { CloseMark, MenuMark, SignOutMark } from './icons'
  */
 
 const NAV = [
-  { to: '/console', label: 'Dashboard' },
-  { to: '/console/households', label: 'Households' },
+  { to: '/', label: 'Dashboard' },
+  { to: '/households', label: 'Households' },
 ]
 
 /** Uppercase plus wide tracking is a chrome treatment. It lives here and
@@ -27,7 +27,7 @@ const NAV = [
 const WORDMARK = 'text-sm font-semibold tracking-[0.16em] uppercase text-ink-inverse whitespace-nowrap'
 const NAV_LINK =
   'text-xs font-semibold tracking-[0.12em] uppercase no-underline pb-1 ' +
-  'border-b-2 transition-[color,border-color] duration-[120ms] ease-fast'
+  'border-b-2 transition-[color,border-color] duration-120 ease-fast'
 
 export function Header() {
   const location = useLocation()
@@ -66,8 +66,8 @@ export function Header() {
       className={cn(
         'inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md px-3',
         'border border-on-navy-border bg-transparent text-ink-inverse',
-        'text-xs font-semibold tracking-[0.1em] uppercase',
-        'transition-[background-color,border-color] duration-[120ms] ease-fast',
+        'text-xs font-semibold tracking-widest uppercase',
+        'transition-[background-color,border-color] duration-120 ease-fast',
         'hover:bg-on-navy-fill hover:border-on-navy-border-strong',
         'focus-visible:outline-focus-on-navy',
       )}
@@ -80,7 +80,7 @@ export function Header() {
   return (
     <>
       <header className="bg-navy text-ink-inverse border-b border-navy-edge">
-        <div className="mx-auto flex w-full max-w-[1280px] items-center gap-8 px-4 py-3 md:px-6 md:py-4">
+        <div className="mx-auto flex w-full max-w-7xl items-center gap-8 px-4 py-3 md:px-6 md:py-4">
           <p className={WORDMARK}>Nostos Operator Console</p>
 
           <nav className="mr-auto hidden items-center gap-6 md:flex" aria-label="Console sections">
@@ -124,7 +124,7 @@ export function Header() {
             className={cn(
               'ml-auto inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center md:hidden',
               'rounded-md border border-on-navy-border bg-transparent text-ink-inverse',
-              'transition-[background-color,border-color] duration-[120ms] ease-fast',
+              'transition-[background-color,border-color] duration-120 ease-fast',
               'hover:bg-on-navy-fill focus-visible:outline-focus-on-navy',
             )}
           >

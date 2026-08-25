@@ -78,14 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // The magic-link callback route cannot have a session yet — establishing one
   // is what it exists to do. Asking there is a guaranteed 401, so wait until the
   // exchange has run and refreshSession() asks on our behalf.
-  const onTokenExchange = useMatch('/console/auth/signin/:token') !== null
+  const onTokenExchange = useMatch('/auth/signin/:token') !== null
 
   // The signin page asks only to power its reverse guard (bounce an operator who
   // already has a session to the dashboard). With no hint there is nothing to
   // bounce, so skip the guaranteed 401 — every anonymous visit hits this path.
   // Protected routes always ask, so an operator whose hint was cleared but whose
   // session is live still gets rehydrated rather than ejected.
-  const onSigninPage = useMatch('/console/signin') !== null
+  const onSigninPage = useMatch('/signin') !== null
   const guardIsPointless = onSigninPage && !hadHint
 
   const session = useOperatorSession({
@@ -144,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           // A soft navigation, not window.location: a reload would discard the
           // toast we just queued before anyone could read it.
-          navigate('/console/signin', { replace: true })
+          navigate('/signin', { replace: true })
         }
 
         return Promise.reject(error)

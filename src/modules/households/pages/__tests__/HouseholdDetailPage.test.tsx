@@ -42,9 +42,9 @@ const detailPayload = {
 function renderPage() {
   return renderWithProviders(
     <Routes>
-      <Route path="/console/households/:id" element={<HouseholdDetailPage />} />
+      <Route path="/households/:id" element={<HouseholdDetailPage />} />
     </Routes>,
-    { route: `/console/households/${ID}` },
+    { route: `/households/${ID}` },
   )
 }
 

@@ -49,12 +49,12 @@ There is deliberately no global client-state store.
 ## Routes
 
 ```
-/console/signin                 magic-link signin        public
-/console/auth/signin/:token     token exchange           public
-/console                        dashboard metrics        protected
-/console/households             list                     protected
-/console/households/new         create                   protected
-/console/households/:id         detail                   protected
+/signin                         magic-link signin        public
+/auth/signin/:token             token exchange           public
+/                               dashboard metrics        protected
+/households                     list                     protected
+/households/new                 create                   protected
+/households/:id                 detail                   protected
 ```
 
 ## Where to read next
