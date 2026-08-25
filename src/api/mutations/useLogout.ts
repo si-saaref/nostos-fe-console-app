@@ -19,11 +19,11 @@ export function useLogout() {
     },
     onSuccess: () => {
       clearAuth()
-      navigate('/console/signin', { replace: true })
+      navigate('/signin', { replace: true })
     },
     onError: () => {
       clearAuth()
-      navigate('/console/signin', { replace: true })
+      navigate('/signin', { replace: true })
     },
   })
 }

@@ -16,7 +16,7 @@ export function ConsoleSigninCallbackPage() {
   useEffect(() => {
     if (isError) {
       toast.error(getErrorMessage(error))
-      navigate('/console/signin', { replace: true })
+      navigate('/signin', { replace: true })
     }
   }, [isError, error, toast, navigate])
 
@@ -25,7 +25,7 @@ export function ConsoleSigninCallbackPage() {
       // The server has set the session cookie on the exchange response. It only
       // returned the email, so pull the full operator from /auth/me.
       refreshSession()
-      navigate('/console', { replace: true })
+      navigate('/', { replace: true })
     }
   }, [isLoading, isError, token, refreshSession, navigate])
 

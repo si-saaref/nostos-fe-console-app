@@ -44,7 +44,7 @@ export function ConsoleDashboardPage() {
   return (
     <ConsoleLayout>
       <PageHeader title="Dashboard" description={description}>
-        <Link to="/console/households/new" className={buttonClasses('primary')}>
+        <Link to="/households/new" className={buttonClasses('primary')}>
           <PlusMark />
           New household
         </Link>
@@ -76,7 +76,7 @@ export function ConsoleDashboardPage() {
               <p className="text-md text-ink">Nothing is pending deletion right now.</p>
             )}
             <Link
-              to="/console/households?status=DELETION_PENDING"
+              to="/households?status=DELETION_PENDING"
               className="mt-4 inline-block text-md font-medium text-navy"
             >
               Review in Households
@@ -92,7 +92,7 @@ export function ConsoleDashboardPage() {
             <ul>
               <li className="border-b border-line pb-3">
                 <Link
-                  to="/console/households/new"
+                  to="/households/new"
                   className="block font-medium text-navy no-underline hover:underline hover:underline-offset-2"
                 >
                   Register a new household
@@ -103,7 +103,7 @@ export function ConsoleDashboardPage() {
               </li>
               <li className="pt-3">
                 <Link
-                  to="/console/households"
+                  to="/households"
                   className="block font-medium text-navy no-underline hover:underline hover:underline-offset-2"
                 >
                   Find a household

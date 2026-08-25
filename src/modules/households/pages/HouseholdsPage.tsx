@@ -34,7 +34,7 @@ export function HouseholdsPage() {
   // behind them and the search params they were opened with are still in the
   // URL. Opening a household never costs the operator their place.
   const openHousehold = (id: string) =>
-    navigate({ pathname: `/console/households/${id}`, search: location.search })
+    navigate({ pathname: `/households/${id}`, search: location.search })
 
   const description =
     total !== undefined ? `${total} ${total === 1 ? 'household' : 'households'}` : undefined
@@ -47,7 +47,7 @@ export function HouseholdsPage() {
     <ConsoleLayout>
       <PageHeader title="Households" description={description}>
         <Link
-          to={{ pathname: '/console/households/new', search: location.search }}
+          to={{ pathname: '/households/new', search: location.search }}
           className={buttonClasses('primary')}
         >
           <PlusMark />
@@ -126,7 +126,7 @@ export function HouseholdsPage() {
         ) : null}
       </Card>
 
-      {/* /console/households/new and /:id render here, over the register. */}
+      {/* /households/new and /:id render here, over the register. */}
       <Outlet />
     </ConsoleLayout>
   )

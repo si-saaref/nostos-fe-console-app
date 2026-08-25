@@ -402,8 +402,8 @@ focus trap on none.
 
 ### Detail and create are dialogs on the register, not pages
 
-`/console/households/:id` and `/console/households/new` are **nested routes** under
-`/console/households`, rendering into its `<Outlet />`. The register stays mounted behind them,
+`/households/:id` and `/households/new` are **nested routes** under
+`/households`, rendering into its `<Outlet />`. The register stays mounted behind them,
 so opening a household costs the operator neither their scroll position, their search, nor their
 page; Escape and Back both close. The URLs are unchanged, so a link out of a support ticket still
 addresses one household. Closing navigates back to the register **carrying the current search

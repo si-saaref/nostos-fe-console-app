@@ -58,7 +58,15 @@ React Compiler cannot memoize React Hook Form's `watch()`.
 3. **Every endpoint is `/api/v1/console/...`.** The PRDs in `notes/FE-Console/` and
    `notes/BE/` show bare `/console/...` paths and are wrong.
 4. **The session endpoint is `GET /auth/me`**, not `/auth/session`. The latter never existed.
-5. **The dashboard is `/console`**, not `/console/dashboard` as the PRD specifies.
+5. **Route paths have no `/console` prefix, but API paths still do.** The console is served
+   from its own subdomain (`console.<domain>`, beside `app.<domain>` and `api.<domain>`), so a
+   path prefix would only repeat the hostname; it was removed on 2026-08-25. Routes are
+   `/`, `/signin`, `/auth/signin/:token`, `/households`, `/households/new`, `/households/:id`.
+   The dashboard is `/` — the PRD's `/console/dashboard` was never built either. Endpoints are
+   untouched and remain `/api/v1/console/...` (see 3), and so does the query-key prefix
+   `['console', ...]`. **The magic-link email must now point at
+   `{FRONTEND_URL}/auth/signin/{token}`** — the backend still building the old path will send
+   operators to a blank page, because there is no catch-all route.
 6. **Two stylesheets, and Tailwind's scale is not Tailwind's default.** `src/styles/tokens.css`
    holds every raw design value; `src/index.css` maps them to Tailwind via `@theme inline`, themes
    the browser surfaces, and keeps the tag/ARIA-role globals. Everything else is utilities. Note
@@ -90,7 +98,7 @@ One owner per kind, no exceptions, and deliberately **no global client-state sto
 
 - Components `PascalCase.tsx`, hooks `useCamelCase.ts`, directories kebab-case.
 - **No new `.css` files.** If a value is missing, add a token to `tokens.css`.
-- `/console/households/new` and `/:id` are **nested routes** under the list, rendered into its
+- `/households/new` and `/:id` are **nested routes** under the list, rendered into its
   `<Outlet />` as dialogs. Closing navigates to the list carrying the current search params.
 - `@/` → `src/`, configured in **both** `vite.config.ts` and `tsconfig.app.json`.
 - Query keys are `['console', resource, ...]` so the domain can be invalidated in one call.
@@ -120,6 +128,11 @@ One owner per kind, no exceptions, and deliberately **no global client-state sto
   2026-08-23. Above 768px it is a real table; below, each row is a card.
 - **Sortable columns really are shipped now.** This file claimed them for months while
   `HouseholdTable` never called `setSort`. Wired 2026-08-23.
+- **There is no `/console` route prefix and no `/` → dashboard redirect.** Removed 2026-08-25
+  when the subdomain split was settled; the dashboard *is* `/`. Every older document, plan,
+  spec, and commit shows `/console/...` route paths and predates it. The dated documents under
+  `docs/superpowers/plans/` and `docs/superpowers/specs/` were deliberately left alone — they
+  are a record of what was decided when, not a description of the app.
 - **The households API is snake_case as of 2026-08-22.** Any camelCase request body, query param,
   or response field in an older document or commit predates that flip. Resend-invite is shipped
   and working; a superseded plan called for deleting it.

@@ -19,7 +19,7 @@ export function CreateHouseholdPage() {
   const toast = useToast()
   const [isPending, setIsPending] = useState(false)
 
-  const close = () => navigate({ pathname: '/console/households', search: location.search })
+  const close = () => navigate({ pathname: '/households', search: location.search })
 
   const handleSuccess = (created: CreatedHousehold) => {
     // The household exists either way; a null `inviteSentAt` means the claim
@@ -33,7 +33,7 @@ export function CreateHouseholdPage() {
     }
 
     // Straight into the new household's record, carrying the register's filters.
-    navigate({ pathname: `/console/households/${created.householdId}`, search: location.search })
+    navigate({ pathname: `/households/${created.householdId}`, search: location.search })
   }
 
   return (

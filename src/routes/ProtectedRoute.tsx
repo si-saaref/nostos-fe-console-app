@@ -17,5 +17,5 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
     return <SessionSplash />
   }
 
-  return <Navigate to="/console/signin" replace />
+  return <Navigate to="/signin" replace />
 }

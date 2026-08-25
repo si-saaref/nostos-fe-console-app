@@ -44,7 +44,10 @@ Request a magic signin link for an operator email.
 { "success": false, "error": { "code": "TOO_MANY_REQUESTS", "message": "Too many signin attempts. Try again in 1 hour.", ... } }
 ```
 
-The emailed link points at the **frontend**: `{FRONTEND_URL}/console/auth/signin/{token}`.
+The emailed link points at the **frontend**: `{FRONTEND_URL}/auth/signin/{token}`.
+The console frontend dropped its `/console` route prefix on 2026-08-25 — it is served from
+its own subdomain — so the emailed path must not carry one. The API paths in this document
+are unaffected.
 
 ---
 
