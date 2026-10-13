@@ -47,11 +47,11 @@ function renderWithCaller(request: () => Promise<unknown>) {
   return renderWithProviders(
     <AuthProvider>
       <Routes>
-        <Route path="/console/signin" element={<div>signin page</div>} />
-        <Route path="/console" element={<Caller request={request} />} />
+        <Route path="/signin" element={<div>signin page</div>} />
+        <Route path="/" element={<Caller request={request} />} />
       </Routes>
     </AuthProvider>,
-    { route: '/console' },
+    { route: '/' },
   )
 }
 

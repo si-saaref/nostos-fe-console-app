@@ -14,7 +14,12 @@ customer-success team inherits it, so an operator with no domain context and no
 knowledge of the codebase must be able to act correctly.
 
 They work in a desktop browser at a desk — laptop or external monitor, pointer
-and full keyboard available. Mobile is not a commitment.
+and full keyboard available. **Mobile became a commitment on 2026-08-23**, at
+the operator's request: desktop is still where the work happens, but the console
+has to be genuinely usable on a phone, not merely unbroken. That commitment is
+delivered for the households surfaces (list, detail, create, confirmations) and
+for the top bar; signin and the dashboard were migrated at their desktop
+appearance and degrade honestly, and designing their mobile layout is open work.
 
 Sessions are short and errand-shaped, in two flavors:
 
@@ -53,9 +58,9 @@ and should not be traded away:
 
 ## Operating Context
 
-**Signin.** Operator enters their email at `/console/signin`. The backend emails
-a magic link pointing at the frontend (`{FRONTEND_URL}/console/auth/signin/{token}`),
-which the app consumes at `/console/auth/signin/:token` to establish a session
+**Signin.** Operator enters their email at `/signin`. The backend emails
+a magic link pointing at the frontend (`{FRONTEND_URL}/auth/signin/{token}`),
+which the app consumes at `/auth/signin/:token` to establish a session
 cookie. Signin requests are rate-limited to 5 per email per hour. An email
 outside the allowlist gets the same non-revealing 401 as an unknown address.
 
@@ -81,16 +86,22 @@ last-updated timestamp. No drill-down.
 
 ## Capabilities and Constraints
 
-**Shipped routes.** `/console/signin`, `/console/auth/signin/:token`,
-`/console` (dashboard), `/console/households`, `/console/households/new`,
-`/console/households/:id`. Everything under `/console` is behind a session
-guard.
+**Shipped routes.** `/signin`, `/auth/signin/:token`, `/` (dashboard),
+`/households`, `/households/new`, `/households/:id`. Everything except signin
+and the token callback is behind a session guard. There is no `/console` path
+prefix: the console is its own subdomain (`console.<domain>`, alongside
+`app.<domain>` and `api.<domain>`), so a prefix would only repeat the hostname.
 
 **Shipped capabilities.** Magic-link signin and callback; sign-out with
 confirmation; dashboard metrics grid; household list with debounced search,
-sortable columns, and pagination; household detail with admin section and member
-list; create-household form; soft delete with confirmation; restore; resend
-admin invite; toast feedback for success and every specified error.
+**sortable columns, a status filter and a selectable page size**, and numbered
+pagination; household detail and create, both as **dialogs over the list rather
+than separate pages**; soft delete with confirmation; restore with confirmation;
+resend admin invite; toast feedback for success and every specified error.
+
+Sortable columns were listed as shipped for months and were not: the sort writer
+existed in `useHouseholdFilters` and no component called it. It is wired as of
+2026-08-23.
 
 **Terminology (fixed).** household, operator (staff using this console),
 household admin (the invited member who owns a household), member, invite /
@@ -103,6 +114,11 @@ claim, deletion pending, grace period.
   into other state.
 - Filter, sort, and pagination state lives in URL search params.
 - Forms use React Hook Form. There is deliberately no global client-state store.
+- Dialogs are Radix primitives (`radix-ui`, Dialog and AlertDialog only). They
+  provide the focus trap, Escape, focus restoration and scroll lock; do not
+  hand-roll those again.
+- Styling is Tailwind v4 utilities over `src/styles/tokens.css`. There are two
+  stylesheets in the repo and there should not be a third.
 - Query keys follow `[domain, resource, filters]`, and household-scoped keys
   carry the household id explicitly.
 - Vitest + Testing Library + MSW is the installed test stack; the shipped
@@ -131,6 +147,10 @@ claim, deletion pending, grace period.
   familiar pattern at that level of finish, without irony or smuggled quirk.
   Two elements were explicitly kept from the earlier build and should not be
   redesigned without asking: the **navy top bar** and the **loading treatment**.
+- **The burger is the top bar's mobile answer.** Below 768px the nav, operator
+  email and sign-out move into a panel behind a burger on the same navy field.
+  The operator chose this over letting the bar wrap. The bar's desktop
+  appearance is unchanged and still must not be redesigned without asking.
 - **Everything else visual is open.** There is no Nostos brand for this console to
   match. The PRD's original `#007AFF / #F2F2F7` scaffolding palette is gone; what
   ships now is a navy-and-neutral system recorded in `DESIGN.md` and
@@ -183,6 +203,13 @@ own merits, and `docs/FRONTEND.md` §13 lists the real unmet items: no focus tra
 in any dialog, Escape-to-close only on the logout modal, no focus restoration
 after a dialog closes, no `aria-sort` on sortable columns, and no screen-reader
 testing. Treat that list as a to-do, not as a compliance claim.
+
+Four of those five items are now closed, as a byproduct of moving dialogs onto
+Radix on 2026-08-23: there is a focus trap, Escape closes every dialog, focus is
+restored to whatever opened it, and the background is inert while one is open.
+`aria-sort` is now on the register's sortable columns. **No screen-reader testing
+has been done**, so this remains a list of mechanisms present, not a compliance
+claim.
 
 One thing that *was* verified: colour contrast. Every text pair in the shipped
 palette clears WCAG AA, measured 2026-08-20. An earlier audit guessed the danger

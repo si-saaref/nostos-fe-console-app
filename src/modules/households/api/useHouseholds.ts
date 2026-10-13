@@ -1,32 +1,25 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { apiClient } from '@/api/client'
-import type { HouseholdFilters, HouseholdsListResponse, HouseholdsBackendResponse } from '../types'
+import { unwrapPaginated } from '@/utils/responseHandlers'
+import type { HouseholdFilters, HouseholdsListResponse } from '../types'
+import { toHouseholdSummary, toListQuery, toPagination } from './wire'
+import type { HouseholdListItemWire } from './wire'
 
 export function useHouseholds(filters: HouseholdFilters) {
   return useQuery({
     queryKey: ['console', 'households', filters],
-    queryFn: async () => {
-      const response = await apiClient.get<HouseholdsBackendResponse>('/api/v1/console/households', {
-        params: filters,
+    queryFn: async (): Promise<HouseholdsListResponse> => {
+      const response = await apiClient.get<unknown>('/api/v1/console/households', {
+        params: toListQuery(filters),
       })
 
-      // Transform backend response to frontend format
-      const backend = response.data
+      // `data` is a bare array here; the counts live in `meta.pagination`.
+      const { items, pagination } = unwrapPaginated<HouseholdListItemWire>(response.data)
+
       return {
-        data: backend.households.map(h => ({
-          id: h.id,
-          name: h.name,
-          adminName: h.admin_name,
-          adminEmail: h.admin_email,
-          createdAt: h.created_at,
-          memberCount: h.member_count,
-          status: h.status,
-          deletionScheduledFor: h.deletion_scheduled_for,
-        })),
-        page: backend.pagination.page,
-        totalPages: backend.pagination.total_pages,
-        total: backend.pagination.total,
-      } as HouseholdsListResponse
+        households: items.map(toHouseholdSummary),
+        pagination: toPagination(pagination),
+      }
     },
     placeholderData: keepPreviousData,
   })

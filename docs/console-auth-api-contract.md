@@ -5,7 +5,10 @@
 
 All responses use the standard envelope:
 - Success: `{ "success": true, "data": <T>, "message"?: string }`
-- Error: `{ "success": false, "error": { "code", "message", "statusCode", "timestamp", "path", "details"? } }`
+- Error: `{ "success": false, "error": { "code", "message", "status_code", "timestamp", "path", "details"? } }`
+
+> **Corrected 2026-08-22:** this field is `status_code`, not `statusCode`. The API moved its
+> payloads to snake_case; verified against a live `401` from `GET /console/auth/me`.
 
 All three endpoints below are called via `fetch`/`axios` with `credentials: 'include'` /
 `withCredentials: true` — none of them are meant to be reached by a top-level browser
@@ -41,7 +44,10 @@ Request a magic signin link for an operator email.
 { "success": false, "error": { "code": "TOO_MANY_REQUESTS", "message": "Too many signin attempts. Try again in 1 hour.", ... } }
 ```
 
-The emailed link points at the **frontend**: `{FRONTEND_URL}/console/auth/signin/{token}`.
+The emailed link points at the **frontend**: `{FRONTEND_URL}/auth/signin/{token}`.
+The console frontend dropped its `/console` route prefix on 2026-08-25 — it is served from
+its own subdomain — so the emailed path must not carry one. The API paths in this document
+are unaffected.
 
 ---
 

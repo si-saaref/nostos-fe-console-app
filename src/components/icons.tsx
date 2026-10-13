@@ -78,3 +78,93 @@ export function InfoCircleMark() {
     </svg>
   )
 }
+
+export function ChevronDownMark() {
+  return (
+    <svg {...base}>
+      <path d="M4 6.5 8 10.5l4-4" />
+    </svg>
+  )
+}
+
+export function ChevronLeftMark() {
+  return (
+    <svg {...base}>
+      <path d="M9.5 4 5.5 8l4 4" />
+    </svg>
+  )
+}
+
+export function ChevronRightMark() {
+  return (
+    <svg {...base}>
+      <path d="M6.5 4l4 4-4 4" />
+    </svg>
+  )
+}
+
+/** Sort direction. Rendered only on the column that is actually sorted. */
+export function ArrowUpMark() {
+  return (
+    <svg {...base}>
+      <path d="M8 12.5v-9" />
+      <path d="M4.5 7 8 3.5 11.5 7" />
+    </svg>
+  )
+}
+
+export function ArrowDownMark() {
+  return (
+    <svg {...base}>
+      <path d="M8 3.5v9" />
+      <path d="M4.5 9 8 12.5 11.5 9" />
+    </svg>
+  )
+}
+
+export function MenuMark() {
+  return (
+    <svg {...base}>
+      <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" />
+    </svg>
+  )
+}
+
+export function TrashMark() {
+  return (
+    <svg {...base}>
+      <path d="M2.75 4.5h10.5" />
+      <path d="M6.5 4.5V3.25h3V4.5" />
+      <path d="M4 4.5l.6 8.25h6.8L12 4.5" />
+      <path d="M6.75 7v3M9.25 7v3" />
+    </svg>
+  )
+}
+
+export function UndoMark() {
+  return (
+    <svg {...base}>
+      <path d="M3 7.5V4" />
+      <path d="M3 7.5h3.5" />
+      <path d="M3.9 6.4A5 5 0 1 1 3.5 10.4" />
+    </svg>
+  )
+}
+
+export function MailMark() {
+  return (
+    <svg {...base}>
+      <rect x="2.25" y="3.75" width="11.5" height="8.5" rx="1.25" />
+      <path d="m2.75 4.75 5.25 3.9 5.25-3.9" />
+    </svg>
+  )
+}
+
+export function RefreshMark() {
+  return (
+    <svg {...base}>
+      <path d="M13 8a5 5 0 1 1-1.6-3.65" />
+      <path d="M13.25 2.75v3h-3" />
+    </svg>
+  )
+}

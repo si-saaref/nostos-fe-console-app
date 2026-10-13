@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
@@ -11,9 +11,9 @@ describe('CreateHouseholdPage', () => {
   it('renders create household form', () => {
     renderWithProviders(
       <Routes>
-        <Route path="/console/households/new" element={<CreateHouseholdPage />} />
+        <Route path="/households/new" element={<CreateHouseholdPage />} />
       </Routes>,
-      { route: '/console/households/new' },
+      { route: '/households/new' },
     )
 
     expect(screen.getByText('Create Household')).toBeInTheDocument()
@@ -25,24 +25,28 @@ describe('CreateHouseholdPage', () => {
 
     server.use(
       http.post('*/console/households', () =>
-        HttpResponse.json({
-          success: true,
-          data: {
-            household_id: 'hhd_new123',
-            admin_id: 'usr_456',
-            invite_sent_at: '2026-08-02T10:00:00Z',
+        HttpResponse.json(
+          {
+            success: true,
             message: 'Household created',
+            data: {
+              household_id: 'h-new',
+              admin_id: 'a-new',
+              admin_email: 'admin@newfamily.com',
+              invite_sent_at: '2026-08-02T10:00:00.000Z',
+            },
           },
-        }),
+          { status: 201 },
+        ),
       ),
     )
 
     renderWithProviders(
       <Routes>
-        <Route path="/console/households/new" element={<CreateHouseholdPage />} />
-        <Route path="/console/households/:id" element={<div>Detail Page for {'{id}'}</div>} />
+        <Route path="/households/new" element={<CreateHouseholdPage />} />
+        <Route path="/households/:id" element={<div>Detail Page for {'{id}'}</div>} />
       </Routes>,
-      { route: '/console/households/new' },
+      { route: '/households/new' },
     )
 
     const nameInput = screen.getByLabelText(/Household Name/)

@@ -1,9 +1,14 @@
 import { isAxiosError } from 'axios'
+import { ApiError } from './responseHandlers'
 
 const NETWORK_ERROR_MESSAGE = 'Network error. Please try again.'
 const GENERIC_ERROR_MESSAGE = 'Something went wrong. Please try again later.'
 
 export function getErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    return error.message
+  }
+
   if (!isAxiosError(error)) {
     return GENERIC_ERROR_MESSAGE
   }

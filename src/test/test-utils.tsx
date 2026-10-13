@@ -27,7 +27,7 @@ export function createQueryClientWrapper() {
 
 export function renderWithProviders(
   ui: ReactElement,
-  options: { route?: string; queryClient?: QueryClient; router?: any } = {},
+  options: { route?: string; queryClient?: QueryClient } = {},
 ) {
   const { route = '/', queryClient = createTestQueryClient() } = options
 

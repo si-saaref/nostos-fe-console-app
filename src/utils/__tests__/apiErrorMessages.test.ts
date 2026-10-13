@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { AxiosError } from 'axios'
 import { getErrorMessage } from '../apiErrorMessages'
+import { ApiError } from '../responseHandlers'
 
 function makeAxiosError(status: number, data?: unknown): AxiosError {
   return {
@@ -44,5 +45,17 @@ describe('getErrorMessage', () => {
       },
     })
     expect(getErrorMessage(error)).toBe('Email not authorized to access console')
+  })
+
+  it('uses the message from an ApiError thrown by unwrapEnvelope', () => {
+    const error = new ApiError({
+      code: 'INVALID_STATE',
+      message: 'Household is already marked for deletion',
+      status_code: 400,
+      timestamp: '2026-01-31T09:15:00.000Z',
+      path: '/api/v1/console/households/x/delete',
+    })
+
+    expect(getErrorMessage(error)).toBe('Household is already marked for deletion')
   })
 })

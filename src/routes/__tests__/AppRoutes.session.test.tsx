@@ -59,7 +59,7 @@ describe('reloading the console with a live session', () => {
     sessionValid()
     metricsAvailable()
 
-    renderAppAt('/console')
+    renderAppAt('/')
 
     expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Sign In' })).not.toBeInTheDocument()
@@ -75,7 +75,7 @@ describe('reloading the console with a live session', () => {
       }),
     )
 
-    renderAppAt('/console')
+    renderAppAt('/')
 
     // Synchronous on purpose: no waitFor. The dashboard must be on screen while
     // the session check is still in flight.
@@ -86,7 +86,7 @@ describe('reloading the console with a live session', () => {
   })
 
   it('sends an operator with no session to signin', async () => {
-    renderAppAt('/console')
+    renderAppAt('/')
 
     expect(await screen.findByRole('heading', { name: 'Sign In' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Dashboard' })).not.toBeInTheDocument()

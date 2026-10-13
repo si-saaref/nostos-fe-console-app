@@ -1,81 +1,330 @@
-/* src/index.css — reset and browser surfaces. */
+/* src/index.css — the whole stylesheet.
+ *
+ * tokens.css holds the raw design values. This file does three things and
+ * nothing else:
+ *
+ *   1. exposes those tokens to Tailwind via `@theme inline`, so a utility like
+ *      `bg-surface` compiles to `var(--surface)` and there is exactly one place
+ *      a colour is defined;
+ *   2. resets and themes the browser surfaces we did not draw — caret, caret
+ *      colour, selection, scrollbar, focus ring, placeholder;
+ *   3. keeps the handful of globals DESIGN.md relies on being styled by *tag or
+ *      ARIA role* rather than by class: headings, prose, `[role="alert"]`,
+ *      `[role="status"]`, and the `aria-invalid` input state. Giving an element
+ *      the right role is what styles it, so the visual state and the accessible
+ *      state cannot drift apart.
+ *
+ * Everything else is Tailwind utilities in the component that needs them.
+ */
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@import 'tailwindcss';
+
+/* ─── Tokens → Tailwind ─────────────────────────────────────────────────────
+ * `inline` matters: the generated utility emits `var(--surface)` directly
+ * instead of copying the value into a second variable. tokens.css stays the
+ * single source of truth.
+ * -------------------------------------------------------------------------- */
+
+@theme inline {
+  /* Surfaces. `canvas` is the page ground; `surface` is anything on it. */
+  --color-canvas: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-overlay: var(--overlay);
+
+  /* Rules. Depth is carried by borders first, shadow second. */
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-line-hover: var(--border-hover);
+
+  /* Text. `ink` is primary, 2 is secondary, 3 is tertiary. */
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-ink-3: var(--text-3);
+  --color-ink-inverse: var(--text-inverse);
+
+  /* The navy of the top bar — the single brand accent. */
+  --color-navy: var(--navy);
+  --color-navy-hover: var(--navy-hover);
+  --color-navy-soft: var(--navy-soft);
+  --color-navy-edge: var(--navy-edge);
+
+  /* Text and edges that sit on the navy field. */
+  --color-on-navy: var(--on-navy);
+  --color-on-navy-muted: var(--on-navy-muted);
+  --color-on-navy-dim: var(--on-navy-dim);
+  --color-on-navy-border: var(--on-navy-border);
+  --color-on-navy-border-soft: var(--on-navy-border-soft);
+  --color-on-navy-border-strong: var(--on-navy-border-strong);
+  --color-on-navy-fill: var(--on-navy-fill);
+
+  --color-focus: var(--focus);
+  --color-focus-on-navy: var(--focus-on-navy);
+
+  /* Status. Each triple means one thing: foreground, fill, edge. */
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-line: var(--success-border);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-line: var(--danger-border);
+
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-line: var(--warning-border);
+
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-line: var(--info-border);
+
+  /* Type. One family; the 12/13/14/16/20/24/30 scale from DESIGN.md. */
+  --font-sans: var(--face);
+
+  --text-xs: var(--t-xs);
+  --text-xs--line-height: 1.4;
+  --text-sm: var(--t-sm);
+  --text-sm--line-height: 1.5;
+  --text-base: var(--t-md);
+  --text-base--line-height: 1.5;
+  --text-md: var(--t-md);
+  --text-md--line-height: 1.5;
+  --text-lg: var(--t-lg);
+  --text-lg--line-height: 1.4;
+  --text-xl: var(--t-xl);
+  --text-xl--line-height: 1.3;
+  --text-2xl: var(--t-2xl);
+  --text-2xl--line-height: 1.25;
+  --text-3xl: var(--t-3xl);
+  --text-3xl--line-height: 1.2;
+
+  /* Shape. 6px for controls, 8px for containers, nothing between. */
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r);
+  --radius-lg: var(--r-lg);
+  --radius-full: var(--r-full);
+
+  /* Elevation, named for DESIGN.md's three levels. A fourth means the
+   * hierarchy is wrong. Deliberately not called shadow-sm/-lg: those names
+   * already exist in tokens.css and aliasing them to themselves recurses. */
+  --shadow-rest: var(--shadow-sm);
+  --shadow-float: var(--shadow);
+  --shadow-overlay: var(--shadow-lg);
+
+  --ease-fast: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html {
-  color-scheme: light;
-  -webkit-text-size-adjust: 100%;
+/* ─── Motion ────────────────────────────────────────────────────────────────
+ * Two entrances (the toast, the loading sweep) were already in the system.
+ * The dialog adds one authored moment per presentation: it scales up into
+ * place on a pointer, and rises from the bottom edge on a phone.
+ * -------------------------------------------------------------------------- */
+
+@theme {
+  --animate-overlay-in: overlay-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-overlay-out: overlay-in 120ms cubic-bezier(0.4, 0, 0.2, 1) reverse both;
+  --animate-modal-in: modal-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-modal-out: modal-in 120ms cubic-bezier(0.4, 0, 0.2, 1) reverse both;
+  --animate-sheet-in: sheet-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-sheet-out: sheet-in 160ms cubic-bezier(0.4, 0, 0.2, 1) reverse both;
+  --animate-toast-in: toast-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-rule-sweep: rule-sweep 1100ms ease-in-out infinite alternate;
+
+  @keyframes overlay-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Offset only — never the centring translate.
+   *
+   * The centred modal is positioned by `top/left: 50%` plus Tailwind's
+   * `-translate-x-1/2 -translate-y-1/2`, and Tailwind v4 emits those as the
+   * standalone `translate` property, not as `transform`. The two compose. So a
+   * `translate(-50%, -50%)` in here does not *replace* the centring, it doubles
+   * it, and the panel lands a full width up and to the left of centre.
+   * `transform` here carries the entrance offset and nothing else. */
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes rule-sweep {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(263%);
+    }
+  }
 }
 
-body {
-  margin: 0;
-  min-height: 100svh;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--face);
-  font-size: var(--t-md);
-  line-height: 1.5;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* ─── Browser surfaces ─────────────────────────────────────────────────────── */
 
-#root {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-}
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
 
-::selection {
-  background: var(--selection);
-  color: var(--text);
-}
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--face);
+    font-size: var(--t-md);
+    line-height: 1.5;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-:root {
-  scrollbar-color: var(--scrollbar) transparent;
-  scrollbar-width: thin;
-}
+  #root {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
 
-::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
+  ::selection {
+    background: var(--selection);
+    color: var(--text);
+  }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+  :root {
+    scrollbar-color: var(--scrollbar) transparent;
+    scrollbar-width: thin;
+    /* The caret is a browser surface too, and its default is not our navy. */
+    caret-color: var(--navy);
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar);
-  border: 3px solid var(--bg);
-  border-radius: var(--r-full);
-}
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-hover);
-}
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-::placeholder {
-  color: var(--text-3);
-  opacity: 1;
-}
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar);
+    border: 3px solid var(--bg);
+    border-radius: var(--r-full);
+  }
 
-a {
-  color: var(--navy);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-}
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);
+  }
 
-/* One focus ring everywhere: a blue halo outside the element's own edge. */
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-  border-radius: var(--r-sm);
+  ::placeholder {
+    color: var(--text-3);
+    opacity: 1;
+  }
+
+  /* One focus ring everywhere: a blue halo outside the element's own edge. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--r-sm);
+  }
+
+  /* ─── Typography, by tag ──────────────────────────────────────────────── */
+
+  h1,
+  h2,
+  h3 {
+    color: var(--text);
+    font-weight: 600;
+    letter-spacing: -0.011em;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: var(--t-2xl);
+    line-height: 1.25;
+  }
+
+  h2 {
+    font-size: var(--t-xl);
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: var(--t-lg);
+    line-height: 1.4;
+  }
+
+  p {
+    margin: 0;
+    max-width: 70ch;
+  }
+
+  /* ─── State, by ARIA role ─────────────────────────────────────────────────
+   * The styling hook is the attribute a screen reader reads, so the visual
+   * state and the announced state are the same fact.
+   * ---------------------------------------------------------------------- */
+
+  [role='alert'] {
+    font-size: var(--t-sm);
+    line-height: 1.5;
+    color: var(--danger);
+  }
+
+  [role='status'] {
+    font-size: var(--t-sm);
+    line-height: 1.5;
+    color: var(--text-2);
+  }
+
+  /* An invalid input is red because it is marked invalid, not because a class
+   * was remembered. `aria-describedby="…-error"` counts as the mark too. */
+  input[aria-invalid='true'],
+  input[aria-describedby$='-error'],
+  textarea[aria-invalid='true'],
+  textarea[aria-describedby$='-error'] {
+    border-color: var(--danger);
+  }
+
+  input[aria-invalid='true']:focus,
+  input[aria-describedby$='-error']:focus,
+  textarea[aria-invalid='true']:focus,
+  textarea[aria-describedby$='-error']:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px var(--danger-ring);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -88,6 +337,8 @@ a {
   }
 }
 
+/* Screen-reader-only. Kept as a class because there is no tag or role for
+ * "present to assistive tech, absent from the page". */
 .vh {
   position: absolute;
   width: 1px;
