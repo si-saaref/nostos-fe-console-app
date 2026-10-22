@@ -33,4 +33,21 @@ describe('ConsoleSigninForm', () => {
     expect(screen.getByLabelText(/email/i)).toBeDisabled()
     expect(screen.getByRole('button', { name: /signing in/i })).toBeDisabled()
   })
+
+  it('keeps the destination visible after a successful request', async () => {
+    const onTryAnother = vi.fn()
+    renderWithProviders(
+      <ConsoleSigninForm
+        onSubmit={vi.fn()}
+        isLoading={false}
+        sentTo="operator@nostos.com"
+        onTryAnother={onTryAnother}
+      />,
+    )
+
+    expect(screen.getByText('operator@nostos.com')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /sign in/i })).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: /try another email/i }))
+    expect(onTryAnother).toHaveBeenCalledOnce()
+  })
 })

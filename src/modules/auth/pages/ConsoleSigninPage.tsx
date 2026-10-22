@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/useAuth'
 import { useToast } from '@/components/toastContext'
@@ -6,6 +7,7 @@ import { getErrorMessage } from '@/utils/apiErrorMessages'
 import { ConsoleSigninForm } from '../components/ConsoleSigninForm'
 
 export function ConsoleSigninPage() {
+  const [sentTo, setSentTo] = useState('')
   const { status } = useAuth()
   const toast = useToast()
   const { mutate, isPending, reset } = useSignin()
@@ -20,6 +22,7 @@ export function ConsoleSigninPage() {
   const handleSubmit = (email: string) => {
     mutate(email, {
       onSuccess: () => {
+        setSentTo(email)
         toast.success('Check your email for a signin link')
         reset()
       },
@@ -48,7 +51,12 @@ export function ConsoleSigninPage() {
             We'll email you a single-use link to sign in. No password required.
           </p>
 
-          <ConsoleSigninForm onSubmit={handleSubmit} isLoading={isPending} />
+          <ConsoleSigninForm
+            onSubmit={handleSubmit}
+            isLoading={isPending}
+            sentTo={sentTo}
+            onTryAnother={() => setSentTo('')}
+          />
 
           <ul className="mt-5 flex flex-col gap-2 border-t border-line pt-4">
             {[

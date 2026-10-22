@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/Button'
 import { Field, Input } from '@/components/Field'
@@ -11,12 +10,11 @@ interface SigninFormValues {
 export interface ConsoleSigninFormProps {
   onSubmit: (email: string) => void
   isLoading: boolean
+  sentTo?: string
+  onTryAnother?: () => void
 }
 
-export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProps) {
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [successEmail, setSuccessEmail] = useState('')
-
+export function ConsoleSigninForm({ onSubmit, isLoading, sentTo, onTryAnother }: ConsoleSigninFormProps) {
   const {
     register,
     handleSubmit,
@@ -24,18 +22,10 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
   } = useForm<SigninFormValues>({ mode: 'onBlur' })
 
   const handleFormSubmit = (values: SigninFormValues) => {
-    setSuccessEmail(values.email)
     onSubmit(values.email)
   }
 
-  // Reset success state when user starts typing again
-  const handleEmailChange = () => {
-    if (isSuccess) {
-      setIsSuccess(false)
-    }
-  }
-
-  if (isSuccess) {
+  if (sentTo) {
     return (
       <div className="text-center">
         <div className="mb-3 flex justify-center text-success">
@@ -43,9 +33,9 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
         </div>
         <h2 className="mb-2 text-lg">Check your email</h2>
         <p className="mx-auto text-md text-ink-2">
-          We've sent a signin link to <strong className="font-medium text-ink">{successEmail}</strong>
+          We've sent a signin link to <strong className="font-medium text-ink">{sentTo}</strong>
         </p>
-        <Button className="mt-5 w-full" onClick={() => setIsSuccess(false)}>
+        <Button className="mt-5 w-full" onClick={onTryAnother}>
           Try another email
         </Button>
       </div>
@@ -66,7 +56,6 @@ export function ConsoleSigninForm({ onSubmit, isLoading }: ConsoleSigninFormProp
           {...register('email', {
             required: 'Email is required',
             pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
-            onChange: handleEmailChange,
           })}
         />
       </Field>
