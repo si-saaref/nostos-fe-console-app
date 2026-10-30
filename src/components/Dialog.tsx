@@ -98,7 +98,7 @@ export function Dialog({
 
           <div className="flex shrink-0 items-start justify-between gap-4 px-5 pt-4 pb-4 md:px-6 md:pt-5">
             <div className="min-w-0">
-              <DialogPrimitive.Title className="truncate text-lg">{title}</DialogPrimitive.Title>
+              <DialogPrimitive.Title className="text-lg [overflow-wrap:anywhere]">{title}</DialogPrimitive.Title>
               {description && (
                 <DialogPrimitive.Description className="mt-1 text-sm text-ink-2">
                   {description}
@@ -116,7 +116,7 @@ export function Dialog({
             </div>
           </div>
 
-          <div className="grow overflow-y-auto border-t border-line px-5 py-5 md:px-6">
+          <div className="min-h-0 grow overflow-y-auto overscroll-contain border-t border-line px-5 py-5 md:px-6">
             {children}
           </div>
 
@@ -186,7 +186,7 @@ export function ConfirmDialog({
         >
           <SheetHandle />
 
-          <div className="grow overflow-y-auto px-5 pt-4 pb-5 md:px-6 md:pt-6">
+          <div className="min-h-0 grow overflow-y-auto overscroll-contain px-5 pt-4 pb-5 md:px-6 md:pt-6 [overflow-wrap:anywhere]">
             <AlertDialog.Title className="text-lg">{title}</AlertDialog.Title>
             <AlertDialog.Description className="mt-2 text-md text-ink-2">
               {description}
@@ -196,7 +196,7 @@ export function ConfirmDialog({
 
           <div
             className={cn(
-              'flex shrink-0 items-center justify-end gap-3',
+              'flex shrink-0 flex-wrap items-center justify-end gap-3',
               'border-t border-line bg-surface-2 px-5 py-3 md:rounded-b-lg md:px-6',
               'pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-3',
             )}

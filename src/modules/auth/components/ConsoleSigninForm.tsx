@@ -32,7 +32,7 @@ export function ConsoleSigninForm({ onSubmit, isLoading, sentTo, onTryAnother }:
           <CheckCircleMark />
         </div>
         <h2 className="mb-2 text-lg">Check your email</h2>
-        <p className="mx-auto text-md text-ink-2">
+        <p className="mx-auto text-md text-ink-2 [overflow-wrap:anywhere]">
           We've sent a signin link to <strong className="font-medium text-ink">{sentTo}</strong>
         </p>
         <Button className="mt-5 w-full" onClick={onTryAnother}>
@@ -51,6 +51,7 @@ export function ConsoleSigninForm({ onSubmit, isLoading, sentTo, onTryAnother }:
           autoComplete="email"
           placeholder="operator@nostos.com"
           aria-required="true"
+          aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? 'signin-email-error' : undefined}
           disabled={isLoading}
           {...register('email', {

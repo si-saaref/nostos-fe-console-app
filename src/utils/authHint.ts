@@ -1,7 +1,7 @@
 /**
  * The backend sets this readable (non-HttpOnly) cookie alongside the HttpOnly
  * session cookie, and clears it on logout. It holds no secret and grants no
- * access — `connect.sid` is the only thing that authenticates a request.
+ * access — `household.sid` is the only thing that authenticates a request.
  *
  * Its presence means "this browser was signed in recently", which is used for
  * exactly two rendering decisions:

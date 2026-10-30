@@ -21,8 +21,8 @@ export function ConsoleSigninPage() {
 
   const handleSubmit = (email: string) => {
     mutate(email, {
-      onSuccess: () => {
-        setSentTo(email)
+      onSuccess: (data) => {
+        setSentTo(data.email)
         toast.success('Check your email for a signin link')
         reset()
       },

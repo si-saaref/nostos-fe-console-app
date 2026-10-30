@@ -26,7 +26,7 @@ export function Fact({
       <dt className="shrink-0 text-sm text-ink-3 md:w-32">{label}</dt>
       <dd
         className={cn(
-          'min-w-0 text-md break-words',
+          'min-w-0 text-md [overflow-wrap:anywhere]',
           tone === 'danger' ? 'text-danger' : tone === 'warning' ? 'text-warning' : 'text-ink',
         )}
       >

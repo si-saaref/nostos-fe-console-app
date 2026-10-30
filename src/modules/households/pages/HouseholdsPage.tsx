@@ -7,6 +7,8 @@ import { Select } from '@/components/Field'
 import { buttonClasses } from '@/components/buttonStyles'
 import { Card, CardFooter } from '@/components/Card'
 import { PlusMark } from '@/components/icons'
+import { Button } from '@/components/Button'
+import { Notice } from '@/components/Notice'
 import { PAGE_SIZES, useHouseholdFilters } from '../hooks/useHouseholdFilters'
 import { useHouseholds } from '../api/useHouseholds'
 import { HouseholdTable } from '../components/HouseholdTable'
@@ -25,7 +27,7 @@ export function HouseholdsPage() {
     setPage,
     clearFilters,
   } = useHouseholdFilters()
-  const { data, isLoading } = useHouseholds(filters)
+  const { data, isLoading, isError, isFetching, refetch } = useHouseholds(filters)
 
   const pagination = data?.pagination
   const total = pagination?.total
@@ -100,17 +102,29 @@ export function HouseholdsPage() {
           </div>
         </div>
 
-        <HouseholdTable
-          households={data?.households ?? []}
-          isLoading={isLoading}
-          search={filters.search}
-          hasFilters={hasFilters}
-          onClearFilters={clearFilters}
-          sortBy={filters.sortBy}
-          sortOrder={filters.sortOrder}
-          onSort={toggleSort}
-          onRowClick={openHousehold}
-        />
+        {isError && (
+          <div className="p-4 md:p-5">
+            <Notice tone="danger" role="alert">
+              <p>Could not load households. Try again to get the latest results.</p>
+              <Button className="mt-3" onClick={() => void refetch()} disabled={isFetching}>
+                {isFetching ? 'Retrying…' : 'Try again'}
+              </Button>
+            </Notice>
+          </div>
+        )}
+        {(!isError || data) && (
+          <HouseholdTable
+            households={data?.households ?? []}
+            isLoading={isLoading}
+            search={filters.search}
+            hasFilters={hasFilters}
+            onClearFilters={clearFilters}
+            sortBy={filters.sortBy}
+            sortOrder={filters.sortOrder}
+            onSort={toggleSort}
+            onRowClick={openHousehold}
+          />
+        )}
 
         {pagination && total ? (
           <CardFooter>

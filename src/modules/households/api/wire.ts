@@ -76,7 +76,8 @@ export interface HouseholdDetailWire {
 export interface CreateHouseholdBodyWire {
   household_name: string
   admin_email: string
-  admin_name: string
+  admin_first_name: string
+  admin_last_name: string
   notes?: string
 }
 
@@ -209,7 +210,8 @@ export function toCreateHouseholdBody(input: CreateHouseholdInput): CreateHouseh
   const body: CreateHouseholdBodyWire = {
     household_name: input.householdName,
     admin_email: input.adminEmail,
-    admin_name: input.adminName,
+    admin_first_name: input.adminFirstName,
+    admin_last_name: input.adminLastName,
   }
 
   // The field is optional and capped at 1000 chars; an empty string is not a note.
@@ -253,7 +255,8 @@ export function toResendInvite(wire: ResendInviteWire): ResendInvite {
 const FORM_FIELD_FROM_WIRE: Record<string, keyof CreateHouseholdInput> = {
   household_name: 'householdName',
   admin_email: 'adminEmail',
-  admin_name: 'adminName',
+  admin_first_name: 'adminFirstName',
+  admin_last_name: 'adminLastName',
   notes: 'notes',
 }
 

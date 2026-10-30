@@ -21,17 +21,6 @@ function clearHint() {
   document.cookie = `${SESSION_HINT_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`
 }
 
-function metricsAvailable() {
-  server.use(
-    http.get('*/api/v1/console/dashboard/metrics', () =>
-      HttpResponse.json({
-        success: true,
-        data: { households: 0, members: 0, activeSignins: 0, failedSignins: 0 },
-      }),
-    ),
-  )
-}
-
 function sessionValid() {
   server.use(
     http.get('*/api/v1/console/auth/me', () =>
@@ -57,7 +46,6 @@ describe('reloading the console with a live session', () => {
     // the only evidence of a session is the cookie the browser sends.
     setHint()
     sessionValid()
-    metricsAvailable()
 
     renderAppAt('/')
 
@@ -67,7 +55,6 @@ describe('reloading the console with a live session', () => {
 
   it('shows the dashboard before /auth/me answers, so the refresh does not flicker', async () => {
     setHint()
-    metricsAvailable()
     server.use(
       http.get('*/api/v1/console/auth/me', async () => {
         await delay(100)
@@ -97,7 +84,6 @@ describe('reloading the console with a live session', () => {
     // renders nothing at all — a blank page, not an error.
     setHint()
     sessionValid()
-    metricsAvailable()
 
     renderAppAt('/')
 

@@ -27,7 +27,7 @@ export function CreateHouseholdForm({
     setError,
   } = useForm<CreateHouseholdInput>({
     mode: 'onBlur',
-    defaultValues: { householdName: '', adminEmail: '', adminName: '', notes: '' },
+    defaultValues: { householdName: '', adminEmail: '', adminFirstName: '', adminLastName: '', notes: '' },
   })
   const { mutate, isPending, error } = useCreateHousehold()
 
@@ -75,10 +75,6 @@ export function CreateHouseholdForm({
             required: 'Household name is required',
             minLength: { value: 1, message: 'Household name is required' },
             maxLength: { value: 100, message: 'Max 100 characters' },
-            pattern: {
-              value: /^[a-zA-Z0-9\s\-']+$/,
-              message: 'Only letters, numbers, spaces, hyphens, and apostrophes allowed',
-            },
           })}
         />
       </Field>
@@ -98,6 +94,7 @@ export function CreateHouseholdForm({
           aria-required="true"
           aria-describedby={errors.adminEmail ? 'adminEmail-error' : 'adminEmail-hint'}
           autoComplete="email"
+          maxLength={254}
           {...register('adminEmail', {
             required: 'Admin email is required',
             pattern: {
@@ -108,31 +105,54 @@ export function CreateHouseholdForm({
         />
       </Field>
 
-      <Field
-        htmlFor="adminName"
-        label="Admin Name"
-        required
-        error={errors.adminName?.message}
-      >
-        <Input
-          id="adminName"
-          type="text"
-          placeholder="e.g., Javier"
-          maxLength={50}
-          disabled={isPending}
-          aria-required="true"
-          aria-describedby={errors.adminName ? 'adminName-error' : undefined}
-          {...register('adminName', {
-            required: 'Admin name is required',
-            minLength: { value: 1, message: 'Admin name is required' },
-            maxLength: { value: 50, message: 'Max 50 characters' },
-            pattern: {
-              value: /^[a-zA-Z\s\-']+$/,
-              message: 'Only letters, spaces, hyphens, and apostrophes allowed',
-            },
-          })}
-        />
-      </Field>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <Field
+          htmlFor="adminFirstName"
+          label="Admin First Name"
+          required
+          error={errors.adminFirstName?.message}
+        >
+          <Input
+            id="adminFirstName"
+            type="text"
+            placeholder="e.g., Javier"
+            autoComplete="given-name"
+            maxLength={50}
+            disabled={isPending}
+            aria-required="true"
+            aria-invalid={Boolean(errors.adminFirstName)}
+            aria-describedby={errors.adminFirstName ? 'adminFirstName-error' : undefined}
+            {...register('adminFirstName', {
+              setValueAs: (value: string) => value.trim(),
+              required: 'Admin first name is required',
+              maxLength: { value: 50, message: 'Max 50 characters' },
+            })}
+          />
+        </Field>
+        <Field
+          htmlFor="adminLastName"
+          label="Admin Last Name"
+          required
+          error={errors.adminLastName?.message}
+        >
+          <Input
+            id="adminLastName"
+            type="text"
+            placeholder="e.g., O’Neill"
+            autoComplete="family-name"
+            maxLength={50}
+            disabled={isPending}
+            aria-required="true"
+            aria-invalid={Boolean(errors.adminLastName)}
+            aria-describedby={errors.adminLastName ? 'adminLastName-error' : undefined}
+            {...register('adminLastName', {
+              setValueAs: (value: string) => value.trim(),
+              required: 'Admin last name is required',
+              maxLength: { value: 50, message: 'Max 50 characters' },
+            })}
+          />
+        </Field>
+      </div>
 
       <Field
         htmlFor="notes"

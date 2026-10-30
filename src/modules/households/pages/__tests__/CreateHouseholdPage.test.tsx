@@ -51,11 +51,13 @@ describe('CreateHouseholdPage', () => {
 
     const nameInput = screen.getByLabelText(/Household Name/)
     const emailInput = screen.getByLabelText(/Admin Email/)
-    const adminNameInput = screen.getByLabelText(/Admin Name/)
+    const adminFirstNameInput = screen.getByLabelText(/Admin First Name/)
+    const adminLastNameInput = screen.getByLabelText(/Admin Last Name/)
 
     await user.type(nameInput, 'New Family')
     await user.type(emailInput, 'admin@newfamily.com')
-    await user.type(adminNameInput, 'Admin')
+    await user.type(adminFirstNameInput, 'Admin')
+    await user.type(adminLastNameInput, 'Family')
 
     await user.click(screen.getByText('Create'))
 

@@ -95,7 +95,7 @@ function EmptyState({
 }: Pick<HouseholdTableProps, 'search' | 'hasFilters' | 'onClearFilters'>) {
   if (hasFilters) {
     return (
-      <div className="px-6 py-12 text-center">
+      <div className="px-6 py-12 text-center [overflow-wrap:anywhere]">
         <p className="mx-auto text-ink-2">
           {search
             ? `No households match “${search}”. Check the spelling, or search by admin email.`
@@ -111,7 +111,7 @@ function EmptyState({
   }
 
   return (
-    <div className="px-6 py-12 text-center">
+    <div className="px-6 py-12 text-center [overflow-wrap:anywhere]">
       <p className="mx-auto text-ink-2">No households yet. Create one to get started.</p>
     </div>
   )
@@ -212,7 +212,7 @@ function DesktopTable({
                     event.stopPropagation()
                     onRowClick(household.id)
                   }}
-                  className="cursor-pointer rounded-sm bg-transparent p-0 text-left text-md font-medium text-navy hover:underline hover:underline-offset-2"
+                  className="cursor-pointer rounded-sm bg-transparent p-0 text-left text-md font-medium text-navy hover:underline hover:underline-offset-2 [overflow-wrap:anywhere]"
                 >
                   {household.name}
                 </button>
@@ -278,7 +278,7 @@ function MobileList({
             >
               <span className="flex items-start justify-between gap-3">
                 {/* A card title, at the ramp's card-title step: 16px / 600. */}
-                <span className="min-w-0 text-lg font-semibold tracking-[-0.011em] text-ink">
+                <span className="min-w-0 text-lg font-semibold tracking-[-0.011em] text-ink [overflow-wrap:anywhere]">
                   {household.name}
                 </span>
                 {isPending ? (

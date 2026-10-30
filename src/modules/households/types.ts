@@ -109,7 +109,8 @@ export interface HouseholdFilters {
 export interface CreateHouseholdInput {
   householdName: string
   adminEmail: string
-  adminName: string
+  adminFirstName: string
+  adminLastName: string
   notes?: string
 }
 
