@@ -1,8 +1,8 @@
 # Console Households API Contract (for frontend integration)
 
-**Last updated:** 2026-08-22
+**Last updated:** 2026-10-31 (create request rechecked against current OpenAPI and Postman)
 **Source:** the backend's own OpenAPI document, `GET {API_URL}/docs-json`, cross-checked against
-`notes/Postman/nostos-api.postman_collection.json` (regenerated 2026-08-22 14:50 from the same
+`notes/Postman/nostos-api.postman_collection.json` (regenerated 2026-10-30 from the same
 document). The two agree exactly.
 **Base URL:** `{API_URL}/api/v1/console/households`
 
@@ -76,7 +76,8 @@ Create a household, its ADMIN member, and email a claim link.
 {
   "household_name": "Adios Family",
   "admin_email": "javier@adios.com",
-  "admin_name": "Javier",
+  "admin_first_name": "Javier",
+  "admin_last_name": "O’Neill",
   "notes": "Early adopter, VIP tier"
 }
 ```
@@ -85,8 +86,15 @@ Create a household, its ADMIN member, and email a claim link.
 |---|---|---|
 | `household_name` | yes | 1–100 chars |
 | `admin_email` | yes | ≤254 chars, email format |
-| `admin_name` | yes | 1–50 chars |
+| `admin_first_name` | yes, for structured-name creation | 1–50 chars |
+| `admin_last_name` | yes, for structured-name creation | 1–50 chars |
 | `notes` | no | ≤1000 chars |
+
+`admin_name` is deprecated and retained by the backend only for temporary compatibility.
+The console sends the structured pair and maps validation errors for each field separately.
+The OpenAPI `required` array lists only household name and email because the backend also
+accepts the legacy-name alternative; new console-created admins supply both name fields.
+List sorting still uses `admin_name`, and detail responses still expose the derived display `name`.
 
 **Response `201`:**
 
@@ -313,7 +321,7 @@ the wait), or the global request throttle.
   control, and 50 (the API's own default) is what a URL without `?limit=` still means.
 - `status` is sent when the register is filtered to one status, and omitted — not sent empty — to
   mean both.
-- The `status` query parameter is available but no UI exposes it yet.
+- The status selector exposes `ACTIVE` and `DELETION_PENDING`; All statuses omits the parameter.
 - Unwrapping is strict: `unwrapEnvelope` / `unwrapPaginated` in `src/utils/responseHandlers.ts`
   throw an `ApiError` carrying `error.code` rather than guessing at a missing `data`, so a shape
   change surfaces as an error instead of a blank page.

@@ -482,8 +482,8 @@ info must never be mistaken for each other; that is the whole job of the tint.
 ### Notice
 
 `Notice`. A standing statement about the page or the record, where a toast is what disappears.
-Tinted panel, status icon, `role="status"` or `role="alert"`. Used for the sample-metrics
-disclaimer and for the deletion-pending statement on a household.
+Tinted panel, status icon, `role="status"` or `role="alert"`. Used for the metrics-unavailable
+notice and for the deletion-pending statement on a household.
 
 ### Inline messages
 

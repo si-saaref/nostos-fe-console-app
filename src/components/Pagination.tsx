@@ -58,7 +58,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
   const items = pageItems(page, totalPages)
 
   return (
-    <nav aria-label="Pagination" className={cn('flex items-center gap-1', className)}>
+    <nav aria-label="Pagination" className={cn('flex max-w-full flex-wrap items-center gap-1', className)}>
       <button
         type="button"
         onClick={() => onPageChange(page - 1)}

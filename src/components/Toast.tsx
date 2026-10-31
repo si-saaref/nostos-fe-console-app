@@ -40,7 +40,7 @@ export function Toast({ toast }: { toast: ToastItem }) {
       <span className={cn('mt-px flex shrink-0', tone.icon)}>
         <Icon />
       </span>
-      <span className="min-w-0">{toast.message}</span>
+      <span className="min-w-0 [overflow-wrap:anywhere]">{toast.message}</span>
     </div>
   )
 }

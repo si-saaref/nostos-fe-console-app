@@ -80,8 +80,8 @@ export function Header() {
   return (
     <>
       <header className="bg-navy text-ink-inverse border-b border-navy-edge">
-        <div className="mx-auto flex w-full max-w-7xl items-center gap-8 px-4 py-3 md:px-6 md:py-4">
-          <p className={WORDMARK}>Nostos Operator Console</p>
+        <div className="mx-auto flex w-full max-w-7xl items-center gap-2 px-4 py-3 md:gap-8 md:px-6 md:py-4">
+          <p className={cn(WORDMARK, 'min-w-0 truncate md:shrink-0')}>Nostos Operator Console</p>
 
           <nav className="mr-auto hidden items-center gap-6 md:flex" aria-label="Console sections">
             {NAV.map((item) => (

@@ -17,6 +17,8 @@ describe('useHouseholds', () => {
       http.get('*/api/v1/console/households', ({ request }) => {
         const url = new URL(request.url)
         expect(url.searchParams.get('page')).toBe('1')
+        expect(url.searchParams.get('limit')).toBe('50')
+        expect(url.searchParams.has('status')).toBe(false)
         expect(url.searchParams.get('search')).toBe('Adios')
         expect(url.searchParams.get('sort_by')).toBe('created_at')
         expect(url.searchParams.get('sort_order')).toBe('DESC')
@@ -41,7 +43,7 @@ describe('useHouseholds', () => {
     )
 
     const { result } = renderHook(
-      () => useHouseholds({ page: 1, search: 'Adios', sortBy: 'createdAt', sortOrder: 'DESC' }),
+      () => useHouseholds({ page: 1, search: 'Adios', sortBy: 'createdAt', sortOrder: 'DESC', limit: 50, status: null }),
       { wrapper },
     )
 
@@ -74,7 +76,7 @@ describe('useHouseholds', () => {
     )
 
     const { result } = renderHook(
-      () => useHouseholds({ page: 1, search: '', sortBy: 'memberCount', sortOrder: 'ASC' }),
+      () => useHouseholds({ page: 1, search: '', sortBy: 'memberCount', sortOrder: 'ASC', limit: 50, status: null }),
       { wrapper },
     )
 
@@ -102,7 +104,7 @@ describe('useHouseholds', () => {
     )
 
     const { result } = renderHook(
-      () => useHouseholds({ page: 1, search: '', sortBy: 'createdAt', sortOrder: 'DESC' }),
+      () => useHouseholds({ page: 1, search: '', sortBy: 'createdAt', sortOrder: 'DESC', limit: 50, status: null }),
       { wrapper },
     )
 

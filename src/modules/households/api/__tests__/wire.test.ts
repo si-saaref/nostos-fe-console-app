@@ -138,13 +138,15 @@ describe('request and mutation mappers', () => {
       toCreateHouseholdBody({
         householdName: 'Adios Family',
         adminEmail: 'javier@adios.com',
-        adminName: 'Javier',
+        adminFirstName: 'Javier',
+        adminLastName: "O'Neill",
         notes: '',
       }),
     ).toEqual({
       household_name: 'Adios Family',
       admin_email: 'javier@adios.com',
-      admin_name: 'Javier',
+      admin_first_name: 'Javier',
+      admin_last_name: "O'Neill",
     })
   })
 
@@ -153,7 +155,8 @@ describe('request and mutation mappers', () => {
       toCreateHouseholdBody({
         householdName: 'Adios Family',
         adminEmail: 'javier@adios.com',
-        adminName: 'Javier',
+        adminFirstName: 'Javier',
+        adminLastName: "O'Neill",
         notes: 'VIP',
       }).notes,
     ).toBe('VIP')

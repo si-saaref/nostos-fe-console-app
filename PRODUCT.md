@@ -81,8 +81,9 @@ admin claims the invite (invites expire in 48 hours; resend is rate-limited to
 roughly once per 24 hours) → active with members → deletion pending (30-day
 grace, restorable) → deleted.
 
-**Metrics.** Read-only, auto-refreshing every 5 minutes, with a
-last-updated timestamp. No drill-down.
+**Metrics.** Unavailable as of the 2026-10-31 contract check: neither the live OpenAPI nor
+Postman defines a console metrics endpoint. The dashboard shows an unavailable notice and
+common tasks; it no longer requests an invented endpoint or displays sample operational counts.
 
 ## Capabilities and Constraints
 
@@ -93,7 +94,7 @@ prefix: the console is its own subdomain (`console.<domain>`, alongside
 `app.<domain>` and `api.<domain>`), so a prefix would only repeat the hostname.
 
 **Shipped capabilities.** Magic-link signin and callback; sign-out with
-confirmation; dashboard metrics grid; household list with debounced search,
+confirmation; dashboard with common tasks and an unavailable-metrics notice; household list with debounced search,
 **sortable columns, a status filter and a selectable page size**, and numbered
 pagination; household detail and create, both as **dialogs over the list rather
 than separate pages**; soft delete with confirmation; restore with confirmation;

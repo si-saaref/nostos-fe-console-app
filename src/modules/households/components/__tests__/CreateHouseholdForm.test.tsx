@@ -45,9 +45,10 @@ const created = {
 }
 
 async function fillRequiredFields(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText(/Household Name/), 'Test Family')
+  await user.type(screen.getByLabelText(/Household Name/), 'José Family')
   await user.type(screen.getByLabelText(/Admin Email/), 'test@example.com')
-  await user.type(screen.getByLabelText(/Admin Name/), 'Test Admin')
+  await user.type(screen.getByLabelText(/Admin First Name/), 'Test')
+  await user.type(screen.getByLabelText(/Admin Last Name/), "O’Neill-Smith")
 }
 
 describe('CreateHouseholdForm', () => {
@@ -58,7 +59,8 @@ describe('CreateHouseholdForm', () => {
 
     expect(screen.getByLabelText(/Household Name/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Admin Email/)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Admin Name/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Admin First Name/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Admin Last Name/)).toBeInTheDocument()
     expect(screen.getByLabelText(/Notes/)).toBeInTheDocument()
   })
 
@@ -84,9 +86,10 @@ describe('CreateHouseholdForm', () => {
       ),
     )
     expect(submitted).toEqual({
-      household_name: 'Test Family',
+      household_name: 'José Family',
       admin_email: 'test@example.com',
-      admin_name: 'Test Admin',
+      admin_first_name: 'Test',
+      admin_last_name: 'O’Neill-Smith',
     })
   })
 
@@ -122,7 +125,11 @@ describe('CreateHouseholdForm', () => {
     expect(onSuccess).not.toHaveBeenCalled()
   })
 
-  it('attaches a per-field validation error to its own input', async () => {
+  it.each([
+    ['admin_email', /Admin Email/, 'admin_email must be an email'],
+    ['admin_first_name', /Admin First Name/, 'admin_first_name must be shorter than or equal to 50 characters'],
+    ['admin_last_name', /Admin Last Name/, 'admin_last_name must be shorter than or equal to 50 characters'],
+  ])('attaches the backend %s error to its own input', async (field, label, message) => {
     const onSuccess = vi.fn()
     const user = userEvent.setup()
 
@@ -139,9 +146,9 @@ describe('CreateHouseholdForm', () => {
               path: '/api/v1/console/households',
               details: [
                 {
-                  field: 'admin_email',
-                  code: 'IS_EMAIL',
-                  message: 'admin_email must be an email',
+                  field,
+                  code: 'VALIDATION_ERROR',
+                  message,
                 },
               ],
             },
@@ -156,8 +163,25 @@ describe('CreateHouseholdForm', () => {
     await user.click(screen.getByText('Create'))
 
     await waitFor(() =>
-      expect(screen.getByText('admin_email must be an email')).toBeInTheDocument(),
+      expect(screen.getByLabelText(label)).toHaveAccessibleDescription(message),
     )
+  })
+
+  it('requires both structured names before making a request', async () => {
+    let requests = 0
+    server.use(http.post('*/api/v1/console/households', () => {
+      requests += 1
+      return HttpResponse.json(created, { status: 201 })
+    }))
+    const user = userEvent.setup()
+    renderWithProviders(<Harness onSuccess={vi.fn()} />)
+    await user.type(screen.getByLabelText(/Household Name/), 'José Family')
+    await user.type(screen.getByLabelText(/Admin Email/), 'test@example.com')
+    await user.type(screen.getByLabelText(/Admin First Name/), '   ')
+    await user.click(screen.getByText('Create'))
+    expect(screen.getByText('Admin first name is required')).toBeInTheDocument()
+    expect(screen.getByText('Admin last name is required')).toBeInTheDocument()
+    expect(requests).toBe(0)
   })
 
   it('shows validation error for invalid email', async () => {
